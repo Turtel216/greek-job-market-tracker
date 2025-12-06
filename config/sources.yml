@@ -1,0 +1,4 @@
+# Source registry. This is the only list of active sources.
+# A source must not be enabled until terms_reviewed_on and
+# robots_reviewed_on are filled in. See docs/design.md, section Ingestion.
+sources: []

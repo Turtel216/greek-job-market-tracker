@@ -1,0 +1,9 @@
+# Shared ruff settings for every Python folder in the repo.
+target-version = "py312"
+line-length = 100
+
+[lint]
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[lint.isort]
+known-first-party = ["jobtracker_ingest"]

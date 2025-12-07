@@ -10,8 +10,8 @@ project is built.
 
 ## Status
 
-Phase 1, Foundations. The repo skeleton and tooling are in place; the stack,
-ingestion and dbt project are still to come.
+Phase 1, Foundations. The repo skeleton, tooling, Postgres and the object
+store are in place; ingestion and the dbt project are still to come.
 
 ## Repository layout
 
@@ -37,8 +37,14 @@ ingestion and dbt project are still to come.
 ```sh
 cp .env.example .env    # then fill in real values
 make setup              # install dev dependencies and git hooks
+make up                 # start Postgres and the object store
 make help               # list every target
 ```
+
+`make up` also runs a one-off `objectstore-init` container that creates the
+`jobtracker-raw` bucket and its access key. The Postgres init scripts in
+`infra/postgres/init/` run only on the first start with an empty volume, so
+after changing them reset the database with `docker compose down -v`.
 
 Before opening a pull request, run:
 

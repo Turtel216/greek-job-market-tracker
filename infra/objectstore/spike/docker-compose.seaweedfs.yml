@@ -1,0 +1,33 @@
+# SeaweedFS for the ADR-001 storage spike only, it is not part of the stack.
+# Start with:
+#   docker compose --env-file .env -f infra/objectstore/spike/docker-compose.seaweedfs.yml up -d
+# It reuses the S3 key from .env so the spike script works unchanged.
+
+name: jobtracker-spike
+
+services:
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.48
+    restart: "no"
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+    ports:
+      - "127.0.0.1:8333:8333"
+    volumes:
+      - seaweedfs-data:/data
+    # Master, volume, filer and S3 gateway in one process. The S3 identity
+    # file is written at start so the key never lands in the repo.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        cat > /tmp/s3.json <<EOF
+        {"identities": [{"name": "jobtracker",
+          "credentials": [{"accessKey": "$${S3_ACCESS_KEY_ID}", "secretKey": "$${S3_SECRET_ACCESS_KEY}"}],
+          "actions": ["Admin", "Read", "Write", "List", "Tagging"]}]}
+        EOF
+        exec weed server -dir=/data -ip.bind=0.0.0.0 -master.volumeSizeLimitMB=1024 \
+          -s3 -s3.port=8333 -s3.config=/tmp/s3.json
+
+volumes:
+  seaweedfs-data:

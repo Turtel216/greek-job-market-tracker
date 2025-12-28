@@ -26,7 +26,15 @@ repos:
       - id: mypy
         files: ^ingestion/src/jobtracker_ingest/(core|sources)/
         args: [--config-file=ingestion/pyproject.toml]
-        additional_dependencies: [requests==2.34.2, structlog==26.1.0, types-requests==2.33.0.20261006]
+        additional_dependencies:
+          - beautifulsoup4==4.15.0
+          - boto3==1.43.118
+          - pydantic==2.14.1
+          - requests==2.34.2
+          - structlog==26.1.0
+          - types-boto3[s3]==1.43.118
+          - types-pyyaml==6.0.12.20260906
+          - types-requests==2.33.0.20261006
 
   - repo: https://github.com/sqlfluff/sqlfluff
     rev: 4.4.0

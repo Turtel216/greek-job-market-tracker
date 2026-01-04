@@ -1,4 +1,18 @@
 # Source registry. This is the only list of active sources.
 # A source must not be enabled until terms_reviewed_on and
 # robots_reviewed_on are filled in. See docs/design.md, section Ingestion.
-sources: []
+sources:
+  - name: greenhouse
+    kind: ats_api
+    # Disabled until the terms and robots.txt review is done and the
+    # accounts below are filled in
+    enabled: false
+    base_url: https://boards-api.greenhouse.io/v1/boards
+    # Board tokens of Greek tech companies, as in boards.greenhouse.io/<token>
+    accounts: []
+    min_delay_seconds: 3
+    max_pages: 50
+    render_js: false
+    terms_reviewed_on:
+    robots_reviewed_on:
+    contact:

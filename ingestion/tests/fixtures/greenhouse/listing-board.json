@@ -1,0 +1,74 @@
+{
+  "jobs": [
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345008",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null
+        }
+      ],
+      "internal_job_id": 3011111008,
+      "location": {
+        "name": "Athens, Attica, Greece"
+      },
+      "metadata": null,
+      "id": 4012345008,
+      "updated_at": "2026-10-20T11:42:07-04:00",
+      "requisition_id": "ENG-104",
+      "title": "Senior Data Engineer",
+      "company_name": "Acropolis Analytics",
+      "first_published": "2026-10-01T09:15:00-04:00"
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345009",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null
+        }
+      ],
+      "internal_job_id": 3011111009,
+      "location": {
+        "name": "Θεσσαλονίκη"
+      },
+      "metadata": null,
+      "id": 4012345009,
+      "updated_at": "2026-10-22T03:05:51-04:00",
+      "requisition_id": "ENG-107",
+      "title": "Backend Developer (Python)",
+      "company_name": "Acropolis Analytics",
+      "first_published": "2026-10-22T03:05:51-04:00"
+    },
+    {
+      "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345010",
+      "data_compliance": [
+        {
+          "type": "gdpr",
+          "requires_consent": false,
+          "requires_processing_consent": false,
+          "requires_retention_consent": false,
+          "retention_period": null
+        }
+      ],
+      "internal_job_id": 3011111010,
+      "location": {
+        "name": "Remote - Greece"
+      },
+      "metadata": null,
+      "id": 4012345010,
+      "requisition_id": null,
+      "title": "QA Automation Engineer",
+      "company_name": "Acropolis Analytics"
+    }
+  ],
+  "meta": {
+    "total": 3
+  }
+}

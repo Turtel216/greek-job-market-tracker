@@ -1,0 +1,76 @@
+{
+  "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345009",
+  "data_compliance": [
+    {
+      "type": "gdpr",
+      "requires_consent": false,
+      "requires_processing_consent": false,
+      "requires_retention_consent": false,
+      "retention_period": null
+    }
+  ],
+  "internal_job_id": 3011111009,
+  "location": {
+    "name": "  Θεσσαλονίκη  "
+  },
+  "metadata": [
+    {
+      "id": 9004,
+      "name": "Τύπος απασχόλησης",
+      "value": "Πλήρης",
+      "value_type": "single_select"
+    },
+    {
+      "id": 9005,
+      "name": "Work Mode",
+      "value": [
+        "Hybrid",
+        " ",
+        "On-site"
+      ],
+      "value_type": "multi_select"
+    },
+    {
+      "id": 9006,
+      "name": "Contract Type",
+      "value": "  ",
+      "value_type": "short_text"
+    },
+    {
+      "id": 9007,
+      "name": "Job Type",
+      "value": "Permanent",
+      "value_type": "single_select"
+    }
+  ],
+  "id": 4012345009,
+  "updated_at": "2026-10-22T03:05:51-04:00",
+  "requisition_id": "ENG-107",
+  "title": " Backend Developer (Python) ",
+  "company_name": "Acropolis Analytics",
+  "first_published": "2026-10-22T03:05:51-04:00",
+  "language": "el",
+  "content": "&lt;p&gt;&lt;strong&gt;Ποιοι είμαστε&lt;/strong&gt;&lt;/p&gt;\n&lt;p&gt;Η Acropolis Analytics αναπτύσσει λογισμικό για την εφοδιαστική αλυσίδα.&lt;br&gt;Αναζητούμε &lt;em&gt;Backend Developer&lt;/em&gt; για την ομάδα μας στη Θεσσαλονίκη.&lt;/p&gt;\n&lt;p&gt;&lt;strong&gt;Απαιτούμενα προσόντα&lt;/strong&gt;&lt;/p&gt;\n&lt;ul&gt;\n&lt;li&gt;3+ χρόνια εμπειρίας με Python &amp;amp; Django&lt;/li&gt;\n&lt;li&gt;Γνώση PostgreSQL, Docker και CI/CD&lt;/li&gt;\n&lt;/ul&gt;\n&lt;p&gt;Υβριδικό μοντέλο εργασίας &amp;nbsp; με μικτές αποδοχές 1.800 - 2.200 € μηνιαίως.&lt;/p&gt;\n&lt;p&gt;&amp;nbsp;&lt;/p&gt;",
+  "departments": [
+    {
+      "id": 402,
+      "name": "Engineering",
+      "child_ids": [],
+      "parent_id": null
+    },
+    {
+      "id": 403,
+      "name": "",
+      "child_ids": [],
+      "parent_id": null
+    },
+    {
+      "id": 404,
+      "name": "Logistics Products",
+      "child_ids": [],
+      "parent_id": 402
+    }
+  ],
+  "offices": [],
+  "pay_input_ranges": []
+}

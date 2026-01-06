@@ -1,0 +1,19 @@
+{
+  "source": "greenhouse",
+  "source_job_id": "4012345010",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345010",
+  "title_raw": "QA Automation Engineer",
+  "company_raw": "Acropolis Analytics",
+  "location_raw": "Remote - Greece",
+  "workplace_raw": "Remote: Yes",
+  "employment_type_raw": "40",
+  "salary_raw": "1800.50 EUR; 2500",
+  "department_raw": "Quality",
+  "description_raw": "Test automation with pytest and Playwright.",
+  "posted_at_raw": null,
+  "object_key": "raw/greenhouse/2026-10-25/run/detail/4012345010.json.gz",
+  "parser_version": "1",
+  "content_hash": "668bbe660511dc6dafaa9eac30cf99d737c15ccc57f17f3ec3e96e7ff03c5cc1"
+}

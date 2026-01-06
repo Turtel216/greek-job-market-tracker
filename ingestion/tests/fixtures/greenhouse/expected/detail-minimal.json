@@ -1,0 +1,19 @@
+{
+  "source": "greenhouse",
+  "source_job_id": "4012345011",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345011",
+  "title_raw": "Intern, Software Engineering",
+  "company_raw": "acropolisanalytics",
+  "location_raw": null,
+  "workplace_raw": null,
+  "employment_type_raw": null,
+  "salary_raw": null,
+  "department_raw": null,
+  "description_raw": null,
+  "posted_at_raw": null,
+  "object_key": "raw/greenhouse/2026-10-25/run/detail/4012345011.json.gz",
+  "parser_version": "1",
+  "content_hash": "8e955d7fc2f2f70db46a98e77ed38b4d3dada5b640575f65decd48bef82d518f"
+}

@@ -1,0 +1,73 @@
+{
+  "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345008",
+  "data_compliance": [
+    {
+      "type": "gdpr",
+      "requires_consent": false,
+      "requires_processing_consent": false,
+      "requires_retention_consent": false,
+      "retention_period": null
+    }
+  ],
+  "internal_job_id": 3011111008,
+  "location": {
+    "name": "Athens, Attica, Greece"
+  },
+  "metadata": [
+    {
+      "id": 9001,
+      "name": "Workplace Type",
+      "value": "Hybrid",
+      "value_type": "single_select"
+    },
+    {
+      "id": 9002,
+      "name": "Employment Type",
+      "value": "Full-time",
+      "value_type": "single_select"
+    },
+    {
+      "id": 9003,
+      "name": "Cost Center",
+      "value": {
+        "unit": "EUR",
+        "amount": "1000"
+      },
+      "value_type": "currency"
+    }
+  ],
+  "id": 4012345008,
+  "updated_at": "2026-10-20T11:42:07-04:00",
+  "requisition_id": "ENG-104",
+  "title": "Senior Data Engineer",
+  "company_name": "Acropolis Analytics",
+  "first_published": "2026-10-01T09:15:00-04:00",
+  "language": "en",
+  "content": "&lt;h3&gt;&lt;strong&gt;About the role&lt;/strong&gt;&lt;/h3&gt;\n&lt;p&gt;We are looking for a &lt;strong&gt;Senior Data Engineer&lt;/strong&gt; to build our batch &amp;amp; streaming pipelines on AWS.&lt;/p&gt;\n&lt;h3&gt;What you will do&lt;/h3&gt;\n&lt;ul&gt;\n&lt;li&gt;Design and run pipelines with Python, Airflow and dbt&lt;/li&gt;\n&lt;li&gt;Model data in PostgreSQL and Snowflake&lt;/li&gt;\n&lt;/ul&gt;\n&lt;h3&gt;What we offer&lt;/h3&gt;\n&lt;ul&gt;&lt;li&gt;Hybrid work, 2 days in our Marousi office&lt;/li&gt;&lt;li&gt;Private health insurance&lt;/li&gt;&lt;/ul&gt;",
+  "departments": [
+    {
+      "id": 401,
+      "name": "Data Platform",
+      "child_ids": [],
+      "parent_id": 400
+    }
+  ],
+  "offices": [
+    {
+      "id": 501,
+      "name": "Athens",
+      "location": "Athens, Attica, Greece",
+      "child_ids": [],
+      "parent_id": null
+    }
+  ],
+  "pay_input_ranges": [
+    {
+      "min_cents": 5600000,
+      "max_cents": 7000000,
+      "currency_type": "EUR",
+      "title": "Base salary",
+      "blurb": "Gross per year, over 14 payments."
+    }
+  ]
+}

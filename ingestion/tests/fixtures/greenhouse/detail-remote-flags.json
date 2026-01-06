@@ -1,0 +1,77 @@
+{
+  "absolute_url": "https://job-boards.greenhouse.io/acropolisanalytics/jobs/4012345010",
+  "internal_job_id": 3011111010,
+  "location": {
+    "name": "Remote - Greece"
+  },
+  "metadata": [
+    {
+      "id": 9008,
+      "name": "Remote",
+      "value": true,
+      "value_type": "yes_no"
+    },
+    {
+      "id": 9009,
+      "name": "remote",
+      "value": false,
+      "value_type": "yes_no"
+    },
+    {
+      "id": 9010,
+      "name": "",
+      "value": "ignored",
+      "value_type": "short_text"
+    },
+    {
+      "id": 9011,
+      "name": "Employment Type",
+      "value": 40,
+      "value_type": "number"
+    },
+    {
+      "id": 9012,
+      "name": "Notes",
+      "value": null,
+      "value_type": "long_text"
+    }
+  ],
+  "id": 4012345010,
+  "requisition_id": null,
+  "title": "QA Automation Engineer",
+  "company_name": "Acropolis Analytics",
+  "language": "en",
+  "content": "&lt;div&gt;Test automation with &lt;code&gt;pytest&lt;/code&gt; and Playwright.&lt;/div&gt;",
+  "departments": [
+    {
+      "id": 405,
+      "name": "Quality",
+      "child_ids": [],
+      "parent_id": null
+    }
+  ],
+  "offices": [],
+  "pay_input_ranges": [
+    {
+      "min_cents": 180050,
+      "max_cents": null,
+      "currency_type": "EUR",
+      "title": null,
+      "blurb": null
+    },
+    {
+      "min_cents": 250000,
+      "max_cents": 250000,
+      "currency_type": null,
+      "title": "  ",
+      "blurb": null
+    },
+    {
+      "min_cents": null,
+      "max_cents": true,
+      "currency_type": "EUR",
+      "title": "Bonus",
+      "blurb": null
+    }
+  ]
+}

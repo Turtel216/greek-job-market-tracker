@@ -15,6 +15,7 @@ from collections.abc import Callable
 from datetime import UTC, date, datetime
 
 import structlog
+from structlog.contextvars import bound_contextvars
 
 from jobtracker_ingest import __version__
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError, PoliteClient
@@ -54,9 +55,22 @@ def run_extract(
 ) -> RunManifest:
     started_at = datetime.now(UTC)
     run_id = run_id or new_run_id(started_at)
-    log = structlog.get_logger(__name__).bind(
-        source=config.name, run_date=run_date.isoformat(), run_id=run_id
-    )
+    # Bound for every log line in the run, including the HTTP client's
+    with bound_contextvars(source=config.name, run_date=run_date.isoformat(), run_id=run_id):
+        return _run(adapter, config, run_date, store, client, run_id, needs_detail, started_at)
+
+
+def _run(
+    adapter: SourceAdapter,
+    config: SourceConfig,
+    run_date: date,
+    store: ObjectStore,
+    client: PoliteClient,
+    run_id: str,
+    needs_detail: NeedsDetail,
+    started_at: datetime,
+) -> RunManifest:
+    log = structlog.get_logger(__name__)
     writer = RunWriter(store, config.name, run_date, run_id)
     ctx = RunContext(config, run_date, run_id, client, writer, log)
     counts: Counter[str] = Counter()

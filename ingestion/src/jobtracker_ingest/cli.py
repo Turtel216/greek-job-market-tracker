@@ -1,0 +1,64 @@
+"""Command line entry point, used by the Airflow tasks.
+
+    jobtracker extract --source greenhouse --run-date 2026-10-25
+
+load and reparse come with the loader.
+"""
+
+import argparse
+import sys
+from collections.abc import Sequence
+from datetime import date
+from pathlib import Path
+
+import structlog
+
+from jobtracker_ingest.core.http import HttpError, PoliteClient, user_agent_from_env
+from jobtracker_ingest.core.logs import configure_logging
+from jobtracker_ingest.core.registry import load_registry
+from jobtracker_ingest.core.storage import S3ObjectStore
+from jobtracker_ingest.extract import ExtractError, run_extract
+from jobtracker_ingest.sources import get_adapter
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="jobtracker")
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    extract = commands.add_parser("extract", help="fetch one source and store its payloads")
+    extract.add_argument("--source", required=True)
+    extract.add_argument("--run-date", required=True, type=date.fromisoformat)
+    extract.add_argument(
+        "--registry", type=Path, help="path to sources.yml (default: JOBTRACKER_SOURCES)"
+    )
+    return parser
+
+
+def extract(args: argparse.Namespace) -> int:
+    log = structlog.get_logger("jobtracker_ingest.cli")
+    config = load_registry(args.registry).get(args.source)
+    if not config.enabled:
+        log.error("source_disabled", source=config.name)
+        return 1
+
+    client = PoliteClient(user_agent_from_env(config.contact), config.min_delay_seconds)
+    try:
+        run_extract(
+            get_adapter(config.name), config, args.run_date, S3ObjectStore.from_env(), client
+        )
+    except (ExtractError, HttpError) as err:
+        log.error("extract_failed", source=config.name, error=str(err), http=client.stats.as_dict())
+        return 1
+    return 0
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    configure_logging()
+    args = build_parser().parse_args(argv)
+    if args.command == "extract":
+        return extract(args)
+    return 2
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,22 @@
+# Keep the build context small. Images only need ingestion/, config/
+# and infra/.
+.git/
+docs/
+backups/
+logs/
+metabase/
+.env
+.env.*
+
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+**/.coverage
+**/htmlcov/
+
+ingestion/tests/
+transform/target/
+transform/dbt_packages/
+transform/logs/

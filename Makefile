@@ -5,12 +5,13 @@ UV ?= uv
 PRE_COMMIT ?= pre-commit
 DBT ?= dbt
 COMPOSE ?= docker compose
+AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down lint test dbt-build backup restore
+.PHONY: help setup up down lint test dbt-build airflow-image dbt-lock backup restore
 
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-12s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
 
 setup: ## Install dev tools and git hooks
 	cd ingestion && $(UV) sync
@@ -34,6 +35,13 @@ dbt-build: ## Build and test the dbt project
 	else \
 		echo "No dbt project yet, skipping"; \
 	fi
+
+airflow-image: ## Build the Airflow image with the ingestion CLI and dbt
+	docker build -f infra/airflow/Dockerfile -t $(AIRFLOW_IMAGE) .
+
+dbt-lock: ## Regenerate the locked dbt requirements for the Airflow image
+	$(UV) pip compile infra/airflow/requirements-dbt.in --python-version 3.12 \
+		--universal --no-header --quiet -o infra/airflow/requirements-dbt.txt
 
 backup: ## Dump the warehouse and metabase_app databases
 	./scripts/backup.sh

@@ -1,0 +1,4 @@
+# Top level dbt packages for the dbt venv in the Airflow image.
+# After changing this file, regenerate the lock file with `make dbt-lock`.
+dbt-core==1.12.5
+dbt-postgres==1.11.0

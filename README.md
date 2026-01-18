@@ -10,8 +10,10 @@ project is built.
 
 ## Status
 
-Phase 1, Foundations. The repo skeleton, tooling, Postgres and the object
-store are in place; ingestion and the dbt project are still to come.
+Phase 2, Orchestration. Phase 1 is done: the repo skeleton, tooling,
+Postgres, the object store and the first ingestion adapter are in place.
+The Airflow image is built; the DAGs, the loader and the dbt project are
+still to come.
 
 ## Repository layout
 
@@ -45,6 +47,25 @@ make help               # list every target
 `jobtracker-raw` bucket and its access key. The Postgres init scripts in
 `infra/postgres/init/` run only on the first start with an empty volume, so
 after changing them reset the database with `docker compose down -v`.
+
+## Airflow image
+
+`infra/airflow/Dockerfile` builds the image that runs every pipeline task.
+It adds two things to the official Airflow image, each in its own virtualenv
+so their pinned dependencies never touch Airflow's:
+
+- the ingestion package, installed from `ingestion/uv.lock`, as `jobtracker`
+- dbt Core with dbt-postgres, installed from
+  `infra/airflow/requirements-dbt.txt`, as `dbt`
+
+```sh
+make airflow-image
+docker run --rm --entrypoint bash jobtracker-airflow:dev -c "jobtracker --help && dbt --version"
+```
+
+The image also contains `config/sources.yml`, so rebuild it after changing
+the registry or the ingestion package. To change the dbt version, edit
+`infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
 
 Before opening a pull request, run:
 

@@ -37,6 +37,10 @@ last with the counts, HTTP stats, every posting seen and the key of each
 stored detail. A run that fails, for example on a block or zero listings,
 leaves no manifest, so the loader ignores it.
 
+The command exits with 1 on a failure worth retrying and with 3 when the
+source blocked us (401, 403, a CAPTCHA or a login wall). Airflow does not
+retry a block, because the source is stopped for the day.
+
 ## Adding a source
 
 Write an adapter in `sources/` that follows `sources/base.py`, register it

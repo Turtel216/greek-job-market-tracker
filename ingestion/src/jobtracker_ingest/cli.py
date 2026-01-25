@@ -3,6 +3,10 @@
     jobtracker extract --source greenhouse --run-date 2026-10-25
 
 load and reparse come with the loader.
+
+Exit codes: 0 on success, 1 on a failure worth retrying later, and 3 when
+the source blocked us. Airflow does not retry a block, since the source is
+stopped for the day.
 """
 
 import argparse
@@ -13,12 +17,15 @@ from pathlib import Path
 
 import structlog
 
-from jobtracker_ingest.core.http import HttpError, PoliteClient, user_agent_from_env
+from jobtracker_ingest.core.http import BlockedError, HttpError, PoliteClient, user_agent_from_env
 from jobtracker_ingest.core.logs import configure_logging
 from jobtracker_ingest.core.registry import load_registry
 from jobtracker_ingest.core.storage import S3ObjectStore
 from jobtracker_ingest.extract import ExtractError, run_extract
 from jobtracker_ingest.sources import get_adapter
+
+EXIT_FAILED = 1
+EXIT_BLOCKED = 3
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -39,16 +46,26 @@ def extract(args: argparse.Namespace) -> int:
     config = load_registry(args.registry).get(args.source)
     if not config.enabled:
         log.error("source_disabled", source=config.name)
-        return 1
+        return EXIT_FAILED
 
     client = PoliteClient(user_agent_from_env(config.contact), config.min_delay_seconds)
     try:
         run_extract(
             get_adapter(config.name), config, args.run_date, S3ObjectStore.from_env(), client
         )
+    except BlockedError as err:
+        log.error(
+            "extract_blocked",
+            source=config.name,
+            url=err.url,
+            status=err.status,
+            error=str(err),
+            http=client.stats.as_dict(),
+        )
+        return EXIT_BLOCKED
     except (ExtractError, HttpError) as err:
         log.error("extract_failed", source=config.name, error=str(err), http=client.stats.as_dict())
-        return 1
+        return EXIT_FAILED
     return 0
 
 

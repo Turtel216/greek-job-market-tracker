@@ -93,6 +93,14 @@ def test_extract_writes_a_run(
 def test_a_failed_extract_returns_1(
     tmp_path: Path, store: MemoryObjectStore, rsps: responses.RequestsMock
 ) -> None:
+    rsps.get(BOARD, body=(FIXTURES / "listing-empty.json").read_bytes(), content_type=JSON)
+    assert extract(tmp_path) == cli.EXIT_FAILED == 1
+    assert not any(k.endswith("/_manifest.json") for k in store.objects)
+
+
+def test_a_blocked_extract_returns_3(
+    tmp_path: Path, store: MemoryObjectStore, rsps: responses.RequestsMock
+) -> None:
     rsps.get(BOARD, status=403)
-    assert extract(tmp_path) == 1
+    assert extract(tmp_path) == cli.EXIT_BLOCKED == 3
     assert not any(k.endswith("/_manifest.json") for k in store.objects)

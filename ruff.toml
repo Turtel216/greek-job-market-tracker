@@ -6,4 +6,4 @@ line-length = 100
 select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
 
 [lint.isort]
-known-first-party = ["jobtracker_ingest"]
+known-first-party = ["jobtracker_ingest", "common"]

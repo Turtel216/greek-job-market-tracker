@@ -1,19 +1,13 @@
-"""Settings shared by every DAG.
-
-run_date is the Europe/Athens calendar date of the run. Every task gets it
-as a rendered template argument, worked out from the time the run was due,
-never from the data interval.
-"""
+"""Settings shared by every DAG."""
 
 import os
-from datetime import datetime
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
-from zoneinfo import ZoneInfo
 
 import yaml
 
-TIMEZONE = "Europe/Athens"
+from common import alerts
 
 # Caps how many sources are extracted at the same time
 HTTP_POOL = "http_sources"
@@ -22,17 +16,14 @@ HTTP_POOL = "http_sources"
 # the same variable the ingestion CLI reads, so both see the same registry.
 REPO_REGISTRY = Path(__file__).resolve().parents[2] / "config" / "sources.yml"
 
-# Needs athens_date in the DAG's user_defined_macros
-RUN_DATE = "{{ athens_date(dag_run.run_after) }}"
-
-
-def athens_date(when: datetime) -> str:
-    return when.astimezone(ZoneInfo(TIMEZONE)).date().isoformat()
-
-
-def run_date_from_context(context: Any) -> str:
-    """The same run_date the tasks got, for use outside templates."""
-    return athens_date(context["dag_run"].run_after)
+DEFAULT_ARGS: dict[str, Any] = {
+    "owner": "jobtracker",
+    "retries": 0,
+    # A hung task must not hold the run until the 10:00 watchdog
+    "execution_timeout": timedelta(hours=2),
+    "on_failure_callback": alerts.task_failed,
+    "on_retry_callback": alerts.task_retried,
+}
 
 
 def enabled_sources(path: Path | None = None) -> list[str]:

@@ -15,7 +15,7 @@ from typing import Any
 
 import requests
 
-from common.defaults import run_date_from_context
+from common.rundate import run_date_from_context
 
 log = logging.getLogger(__name__)
 

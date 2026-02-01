@@ -12,8 +12,8 @@ project is built.
 
 Phase 2, Orchestration. Phase 1 is done: the repo skeleton, tooling,
 Postgres, the object store and the first ingestion adapter are in place.
-The Airflow image is built; the DAGs, the loader and the dbt project are
-still to come.
+Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts; the
+loader and the dbt project are still to come.
 
 ## Repository layout
 
@@ -39,12 +39,15 @@ still to come.
 ```sh
 cp .env.example .env    # then fill in real values
 make setup              # install dev dependencies and git hooks
-make up                 # start Postgres and the object store
+make up                 # start Postgres, the object store and Airflow
 make help               # list every target
 ```
 
-`make up` also runs a one-off `objectstore-init` container that creates the
-`jobtracker-raw` bucket and its access key. The Postgres init scripts in
+`make up` also runs two one-off containers: `objectstore-init` creates the
+`jobtracker-raw` bucket and its access key, and `airflow-init` migrates the
+Airflow database, creates the `admin` user (password from
+`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` pool. The Airflow UI is at
+<http://localhost:8080>; on the server, reach it through an SSH tunnel. The Postgres init scripts in
 `infra/postgres/init/` run only on the first start with an empty volume, so
 after changing them reset the database with `docker compose down -v`.
 
@@ -67,8 +70,42 @@ The image also contains `config/sources.yml`, so rebuild it after changing
 the registry or the ingestion package. To change the dbt version, edit
 `infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
 
+## DAGs
+
+`dags/jobtracker_daily.py` runs at 06:00 Europe/Athens. It has one task
+group per enabled source in `config/sources.yml`, each running
+`jobtracker extract` and then `jobtracker load` for that day's `run_date`.
+Extract tasks share the `http_sources` pool, so at most 3 sources are
+fetched at once. A source that blocks us fails without a retry.
+
+Shared code lives in `dags/common/`:
+
+| Module | Contents |
+| --- | --- |
+| `defaults.py` | Default task args, the pool name, enabled sources |
+| `rundate.py` | `run_date`, the Europe/Athens date of the run |
+| `cli.py` | `CliOperator`, which runs a CLI command and keeps its last lines |
+| `alerts.py` | Failure and retry alerts |
+
+Every task alerts on failure and on retry. Alerts go to the Discord webhook
+in `ALERT_DISCORD_WEBHOOK_URL`, and by email to `ALERT_EMAIL` through the
+`AIRFLOW_CONN_SMTP_DEFAULT` connection when Discord is not set or does not
+answer. A failure alert has the task, `run_date`, a log link and the last
+lines of the command's output.
+
+DAGs are paused when first created. Unpause `jobtracker_daily` in the UI
+once at least one source is enabled.
+
+The DAG tests in `tests/dags/` need Airflow, so they run inside the Airflow
+image:
+
+```sh
+make airflow-image   # after changing the image
+make test-dags
+```
+
 Before opening a pull request, run:
 
 ```sh
-make lint test dbt-build
+make lint test test-dags dbt-build
 ```

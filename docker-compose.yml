@@ -3,6 +3,47 @@
 
 name: jobtracker
 
+# Shared by every Airflow service. Tasks run inside the scheduler
+# (LocalExecutor), so it is the one that needs the pipeline variables, but
+# every service gets the same set to keep them in step.
+x-airflow-common: &airflow-common
+  image: jobtracker-airflow:dev
+  build:
+    context: .
+    dockerfile: infra/airflow/Dockerfile
+  restart: unless-stopped
+  environment: &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__PARALLELISM: "4"
+    AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+    AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
+    AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:${AIRFLOW_DB_PASSWORD}@postgres:5432/airflow
+    AIRFLOW__API_AUTH__JWT_SECRET: ${AIRFLOW__API_AUTH__JWT_SECRET}
+    # Used for the log links in alerts, reached through the SSH tunnel
+    AIRFLOW__API__BASE_URL: http://localhost:8080
+    # Alerts
+    ALERT_DISCORD_WEBHOOK_URL: ${ALERT_DISCORD_WEBHOOK_URL:-}
+    ALERT_EMAIL: ${ALERT_EMAIL:-}
+    AIRFLOW_CONN_SMTP_DEFAULT: ${AIRFLOW_CONN_SMTP_DEFAULT:-}
+    # Read by the jobtracker CLI
+    S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
+    S3_REGION: ${S3_REGION}
+    S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID}
+    S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY}
+    S3_BUCKET_RAW: ${S3_BUCKET_RAW}
+    SCRAPER_CONTACT_EMAIL: ${SCRAPER_CONTACT_EMAIL}
+    SCRAPER_REPO_URL: ${SCRAPER_REPO_URL}
+    SCRAPER_USER_AGENT_VERSION: ${SCRAPER_USER_AGENT_VERSION}
+  volumes:
+    - ./dags:/opt/airflow/dags:ro
+    - airflow-logs:/opt/airflow/logs
+  depends_on: &airflow-depends-on
+    postgres:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:17.11
@@ -62,6 +103,69 @@ services:
       - ./infra/objectstore/init_bucket.py:/init_bucket.py:ro
     command: ["python", "/init_bucket.py"]
 
+  # Runs once: migrates the Airflow database, creates the admin user and
+  # the http_sources pool, then exits. The image entrypoint does the first
+  # two because of the _AIRFLOW_* variables.
+  airflow-init:
+    <<: *airflow-common
+    restart: "no"
+    environment:
+      <<: *airflow-env
+      _AIRFLOW_DB_MIGRATE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+    command: ["bash", "-c", "airflow pools set http_sources 3 'Concurrent extract tasks'"]
+
+  # Web UI and API, also the execution API the tasks report to
+  airflow-apiserver:
+    <<: *airflow-common
+    command: api-server
+    ports:
+      - "127.0.0.1:8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/api/v2/monitor/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  # Schedules the DAGs and runs their tasks
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends-on
+      objectstore:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    command: dag-processor
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      <<: *airflow-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
 volumes:
   postgres-data:
   objectstore-data:
+  airflow-logs:

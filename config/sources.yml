@@ -16,3 +16,37 @@ sources:
     terms_reviewed_on:
     robots_reviewed_on:
     contact:
+
+  - name: kariera
+    kind: job_board_html
+    # Disabled until the maintainer signs off the terms review below and
+    # fills in the two dates.
+    #
+    # Review notes, 2026-10-25:
+    # - robots.txt allows /jobs and disallows /admin/, /_next/data/, /api/
+    #   and *.json, so the adapter reads only the HTML pages.
+    # - The terms (version of 2023-07-31) have no clause on bots or
+    #   scraping, but section 4.2 limits use to personal job search, allows
+    #   one saved copy and forbids making material available to third
+    #   parties. We store pages for 30 days and publish only aggregates.
+    #   Asking Kariera for written OK first is the safe route.
+    # - Fixtures are made up, so no kariera content is committed.
+    enabled: false
+    base_url: https://www.kariera.gr/jobs
+    # Listing categories, as in kariera.gr/jobs/<category>
+    accounts: [it-jobs]
+    # Higher than the floor while the terms question is open
+    min_delay_seconds: 5
+    # Per category. it-jobs had 3 pages of 50 at review time.
+    max_pages: 10
+    render_js: false
+    terms_reviewed_on:
+    robots_reviewed_on:
+    contact:
+
+# Reviewed on 2026-10-25 and not used:
+# - jobfind.gr: its terms (section 4.2e) ban bots, spiders and crawlers, and
+#   section 4.3 bans repeated and systematic extraction of any part of its
+#   database. That covers its RSS feed as well.
+# - skywalker.gr: same personal use terms as kariera. Kept as a fallback
+#   if kariera says no.

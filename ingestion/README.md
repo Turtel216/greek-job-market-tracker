@@ -51,3 +51,13 @@ in `sources/__init__.py`, and add its fixtures under
 The first adapter is `sources/greenhouse.py`, for the public Greenhouse Job
 Board API. Its fixtures are shaped like real API responses but use a made
 up company; add trimmed real responses during onboarding.
+
+`sources/kariera.py` reads the kariera.gr job board, one registry account
+per listing category such as `it-jobs`. It takes almost everything from the
+schema.org JSON-LD on each page and only uses the Next.js flight data for
+the remote work field, which JSON-LD has no value for. It never calls the
+site's JSON endpoints, which robots.txt disallows. Its fixtures copy the
+structure of real pages with made up companies and texts, because the
+site's terms do not allow passing its content on. The source is disabled
+until its terms review is signed off; see the notes in
+`config/sources.yml`.

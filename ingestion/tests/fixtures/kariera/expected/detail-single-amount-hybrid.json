@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410104",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410104",
+  "title_raw": "IT Support Engineer",
+  "company_raw": "Thriasio Logistics",
+  "location_raw": "Ασπρόπυργος, Αττική, Ελλάδα",
+  "workplace_raw": "PARTIALLY_REMOTE",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": "1250 EUR per month",
+  "department_raw": "IT",
+  "description_raw": "Η Thriasio Logistics αναζητά IT Support Engineer για τις εγκαταστάσεις της.\n- Υποστήριξη χρηστών σε Windows και Microsoft 365\n- Διαχείριση δικτύου και εκτυπωτών\nΥβριδικό μοντέλο εργασίας, 2 ημέρες τηλεργασία.",
+  "posted_at_raw": "2026-10-22T06:07:04.857Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410104.html.gz",
+  "parser_version": "1",
+  "content_hash": "3543af41078c1fb86a208e19eb49d97e8eb1cfb9ca09ae725753cb04036d81de"
+}

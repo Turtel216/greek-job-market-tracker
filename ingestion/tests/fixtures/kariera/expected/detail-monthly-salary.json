@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410102",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410102",
+  "title_raw": "Backend Developer (Java)",
+  "company_raw": "Aegean Payments Α.Ε.",
+  "location_raw": "Αθήνα, Αττική, Ελλάδα",
+  "workplace_raw": "DISABLED",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": "2000 - 2500 EUR per month",
+  "department_raw": "IT",
+  "description_raw": "Ποιοι είμαστε\nΗ Aegean Payments αναπτύσσει λύσεις πληρωμών για το ηλεκτρονικό εμπόριο.\nΑπαιτούμενα προσόντα\nΠτυχίο Πληροφορικής\n4+ χρόνια εμπειρίας με Java και Spring Boot\nΓνώση PostgreSQL και Kafka\nΜικτές αποδοχές 2.000 - 2.500 € μηνιαίως.",
+  "posted_at_raw": "2026-10-21T06:45:37.612Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410102.html.gz",
+  "parser_version": "1",
+  "content_hash": "b7256c9c3b01364c79062ce1a03bf90f48551966a3a5217e8f4579adbf27dbc0"
+}

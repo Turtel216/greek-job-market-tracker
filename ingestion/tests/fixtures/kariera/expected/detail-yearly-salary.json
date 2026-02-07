@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410103",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410103",
+  "title_raw": "Senior Cloud Architect",
+  "company_raw": "Hermes Infrastructure",
+  "location_raw": "Κρωπία, Αττική, Ελλάδα",
+  "workplace_raw": "DISABLED",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": "53000 - 72000 EUR per year",
+  "department_raw": "IT",
+  "description_raw": "Hermes Infrastructure is hiring a Senior Cloud Architect to lead our AWS and Azure practice.\nDesign landing zones with Terraform\nOwn presales for cloud migrations\nGross annual salary 53,000 - 72,000 EUR.",
+  "posted_at_raw": "2026-10-09T08:27:02.824Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410103.html.gz",
+  "parser_version": "1",
+  "content_hash": "154647b067ca097c9d6a9beaac3e20ce7a017a9ae54c901810dfc54c4496f869"
+}

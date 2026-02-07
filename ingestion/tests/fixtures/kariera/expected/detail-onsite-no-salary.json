@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410101",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410101",
+  "title_raw": "Frontend Engineer (Angular)",
+  "company_raw": "Pelion Software",
+  "location_raw": "Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",
+  "workplace_raw": "DISABLED",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "About us\nPelion Software builds booking software for small hotels across Greece.\nWhat you will do\nBuild and test Angular components\nWork with our backend team on REST APIs\nWhat we are looking for\n3+ years with Angular & TypeScript\nExperience with Git and CI/CD",
+  "posted_at_raw": "2026-10-20T09:00:00.000Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410101.html.gz",
+  "parser_version": "1",
+  "content_hash": "146d1eeff76bb6225b488609ea497458345afc9b953a6870cee2f9340108af1c"
+}

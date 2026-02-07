@@ -2,9 +2,11 @@
 
 from jobtracker_ingest.sources.base import SourceAdapter
 from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
+from jobtracker_ingest.sources.kariera import KarieraAdapter
 
 ADAPTERS: dict[str, type[SourceAdapter]] = {
     GreenhouseAdapter.name: GreenhouseAdapter,
+    KarieraAdapter.name: KarieraAdapter,
 }
 
 

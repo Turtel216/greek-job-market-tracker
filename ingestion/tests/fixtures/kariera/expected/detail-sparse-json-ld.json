@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410110",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410110",
+  "title_raw": "DevOps Engineer",
+  "company_raw": "Ionian Cloud ΙΚΕ",
+  "location_raw": "Ιωάννινα, Ήπειρος, Ελλάδα",
+  "workplace_raw": "PARTIALLY_REMOTE",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "Ζητείται DevOps Engineer με εμπειρία σε Kubernetes.",
+  "posted_at_raw": "2026-10-19T08:00:00.000Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410110.html.gz",
+  "parser_version": "1",
+  "content_hash": "8f8741ad5a5564847e526258b900266667467c6b66d0ebcb1fd79be043f2756a"
+}

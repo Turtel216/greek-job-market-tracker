@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410107",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410107",
+  "title_raw": "Προγραμματιστής / Αναλυτής IBM i",
+  "company_raw": "confidential",
+  "location_raw": "Αθήνα, Αττική, Ελλάδα",
+  "workplace_raw": "PARTIALLY_REMOTE",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "Ζητείται Προγραμματιστής / Αναλυτής για εγκαταστάσεις IBM i (AS/400).\nRPG ILE και SQL\nΤουλάχιστον 5 χρόνια εμπειρίας\nΕργασία εξ αποστάσεως 2 ημέρες την εβδομάδα.",
+  "posted_at_raw": "2026-10-22T09:10:18.662Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410107.html.gz",
+  "parser_version": "1",
+  "content_hash": "7d3b5504891c0de90a7a59aa569522dfb48b1ae6dc16abbbe9fd61c9c841bc6d"
+}

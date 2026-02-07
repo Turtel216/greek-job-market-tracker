@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410109",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410109",
+  "title_raw": "QA Automation Engineer",
+  "company_raw": "Lefkada Labs",
+  "location_raw": "Πάτρα, Δυτική Ελλάδα, Ελλάδα",
+  "workplace_raw": "TELECOMMUTE",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": "12.5 - 18 EUR per hour",
+  "department_raw": "IT",
+  "description_raw": "Fully remote QA Engineer role, Cypress and Playwright.",
+  "posted_at_raw": "2026-10-18T10:00:00.000Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410109.html.gz",
+  "parser_version": "1",
+  "content_hash": "ff4db12786b69afbd5c9729e5076cb2ea51e94e4f53902ad93d6b959ecfa6713"
+}

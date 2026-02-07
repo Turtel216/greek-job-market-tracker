@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410108",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410108",
+  "title_raw": "Junior Software Engineer",
+  "company_raw": "Kastro Consulting",
+  "location_raw": "Αθήνα, Αττική, Ελλάδα; Θεσσαλονίκη, Ελλάδα",
+  "workplace_raw": "PARTIALLY_REMOTE",
+  "employment_type_raw": "FULL_TIME, PART_TIME",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "Join the graduate programme at Kastro Consulting in Athens or Thessaloniki.\nDegree in Computer Science\nSome Java, C# or Python",
+  "posted_at_raw": "2026-10-21T12:47:55.150Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410108.html.gz",
+  "parser_version": "1",
+  "content_hash": "91d2faf85d20bc6220462516220191c8975311749bfe7bdfd22978f41a2a043f"
+}

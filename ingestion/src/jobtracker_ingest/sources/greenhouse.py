@@ -15,18 +15,14 @@ import json
 from collections.abc import Iterator
 from typing import Any, ClassVar
 
-from bs4 import BeautifulSoup
-
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.text import clean, markup_to_text
 
 # Metadata field names that companies use for these values, lowercased
 WORKPLACE_FIELDS = ("workplace type", "workplace", "work mode", "location type", "remote")
 EMPLOYMENT_FIELDS = ("employment type", "job type", "contract type")
-
-# Tags that start a new line in the plain text description
-BLOCK_TAGS = ("p", "div", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "tr", "table")
 
 
 class GreenhouseAdapter:
@@ -103,12 +99,6 @@ def listing_fingerprint(job: dict[str, Any]) -> str:
     return hashlib.sha256(card.encode("utf-8")).hexdigest()
 
 
-def clean(value: Any) -> str | None:
-    if not isinstance(value, str):
-        return None
-    return value.strip() or None
-
-
 def metadata_values(metadata: Any) -> dict[str, str]:
     """Custom fields as {lowercased name: value as text}."""
     values: dict[str, str] = {}
@@ -182,11 +172,4 @@ def html_to_text(content: Any) -> str | None:
     """
     if not isinstance(content, str):
         return None
-    soup = BeautifulSoup(html.unescape(content), "html.parser")
-    for br in soup.find_all("br"):
-        br.replace_with("\n")
-    for tag in soup.find_all(BLOCK_TAGS):
-        tag.insert_before("\n")
-        tag.insert_after("\n")
-    lines = (" ".join(line.split()) for line in soup.get_text().splitlines())
-    return "\n".join(line for line in lines if line) or None
+    return markup_to_text(html.unescape(content))

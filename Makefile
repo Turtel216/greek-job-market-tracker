@@ -8,7 +8,7 @@ COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down lint test test-dags dbt-build airflow-image dbt-lock backup restore
+.PHONY: help setup up down db-tables lint test test-dags dbt-build airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -22,6 +22,12 @@ up: ## Start the whole stack
 
 down: ## Stop the whole stack
 	$(COMPOSE) down
+
+# The init scripts only run on an empty volume. This applies the raw and
+# ops tables to a database that already exists; it is safe to run again.
+db-tables: ## Create the raw and ops tables on a running stack
+	$(COMPOSE) exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" \
+		-d "$$POSTGRES_DB" -f /docker-entrypoint-initdb.d/03-raw-and-ops-tables.sql'
 
 lint: ## Run every pre-commit check on all files
 	$(PRE_COMMIT) run --all-files

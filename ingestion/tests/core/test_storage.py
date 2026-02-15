@@ -4,11 +4,13 @@ from datetime import date
 
 import boto3
 import pytest
+from botocore.exceptions import ClientError
 from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
 from jobtracker_ingest.core.storage import (
     MemoryObjectStore,
+    ObjectNotFound,
     S3ObjectStore,
     gzip_bytes,
     run_prefix,
@@ -54,6 +56,25 @@ def test_s3_get(s3: S3ObjectStore) -> None:
     with Stubber(s3.client) as stub:
         stub.add_response("get_object", {"Body": body}, {"Bucket": BUCKET, "Key": "raw/a.json"})
         assert s3.get("raw/a.json") == b"{}"
+
+
+def test_s3_get_missing_key(s3: S3ObjectStore) -> None:
+    with Stubber(s3.client) as stub:
+        stub.add_client_error("get_object", service_error_code="NoSuchKey", http_status_code=404)
+        with pytest.raises(ObjectNotFound):
+            s3.get("raw/gone.json")
+
+
+def test_s3_get_other_errors_are_raised(s3: S3ObjectStore) -> None:
+    with Stubber(s3.client) as stub:
+        stub.add_client_error("get_object", service_error_code="AccessDenied", http_status_code=403)
+        with pytest.raises(ClientError):
+            s3.get("raw/a.json")
+
+
+def test_memory_get_missing_key() -> None:
+    with pytest.raises(ObjectNotFound):
+        MemoryObjectStore().get("raw/gone.json")
 
 
 def test_s3_list_keys_pages_through_results(s3: S3ObjectStore) -> None:

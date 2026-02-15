@@ -19,11 +19,16 @@ from typing import TYPE_CHECKING, Protocol
 
 import boto3
 from botocore.config import Config
+from botocore.exceptions import ClientError
 
 if TYPE_CHECKING:
     from types_boto3_s3 import S3Client
 
 MANIFEST_NAME = "_manifest.json"
+
+
+class ObjectNotFound(KeyError):
+    """No object under this key, for example after the 30 day retention."""
 
 
 def run_prefix(source: str, run_date: date, run_id: str) -> str:
@@ -65,7 +70,12 @@ class S3ObjectStore:
         self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ContentType=content_type)
 
     def get(self, key: str) -> bytes:
-        response = self.client.get_object(Bucket=self.bucket, Key=key)
+        try:
+            response = self.client.get_object(Bucket=self.bucket, Key=key)
+        except ClientError as err:
+            if err.response.get("Error", {}).get("Code") in ("NoSuchKey", "404"):
+                raise ObjectNotFound(key) from err
+            raise
         return response["Body"].read()
 
     def list_keys(self, prefix: str) -> Iterator[str]:
@@ -89,7 +99,10 @@ class MemoryObjectStore:
         self.put_order.append(key)
 
     def get(self, key: str) -> bytes:
-        return self.objects[key]
+        try:
+            return self.objects[key]
+        except KeyError:
+            raise ObjectNotFound(key) from None
 
     def list_keys(self, prefix: str) -> Iterator[str]:
         yield from sorted(k for k in self.objects if k.startswith(prefix))

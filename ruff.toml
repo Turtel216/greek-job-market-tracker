@@ -4,6 +4,12 @@ line-length = 100
 
 [lint]
 select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF"]
+# Greek text is normal here, in patterns and test data, so Greek letters
+# that look like Latin ones are not flagged
+allowed-confusables = [
+    "Α", "Β", "Ε", "Ζ", "Η", "Ι", "Κ", "Μ", "Ν", "Ο", "Ρ", "Τ", "Υ", "Χ",
+    "α", "γ", "ι", "κ", "ν", "ο", "ρ", "υ",
+]
 
 [lint.isort]
 known-first-party = ["jobtracker_ingest", "common"]

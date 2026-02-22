@@ -1,13 +1,17 @@
 from collections.abc import Iterator
+from contextlib import nullcontext
+from datetime import date
 from pathlib import Path
 
+import psycopg
 import pytest
 import responses
 import structlog
 
 from jobtracker_ingest import cli
 from jobtracker_ingest.core.ratelimit import HostRateLimiter
-from jobtracker_ingest.core.storage import MemoryObjectStore
+from jobtracker_ingest.core.storage import MemoryObjectStore, gzip_bytes
+from jobtracker_ingest.loader.warehouse import MemoryWarehouse
 
 FIXTURES = Path(__file__).parent / "fixtures" / "greenhouse"
 API = "https://boards-api.greenhouse.io/v1/boards"
@@ -45,6 +49,13 @@ def store(monkeypatch: pytest.MonkeyPatch) -> MemoryObjectStore:
 
 
 @pytest.fixture
+def warehouse(monkeypatch: pytest.MonkeyPatch) -> MemoryWarehouse:
+    memory = MemoryWarehouse()
+    monkeypatch.setattr(cli.PostgresWarehouse, "connect", lambda: nullcontext(memory))
+    return memory
+
+
+@pytest.fixture
 def rsps() -> Iterator[responses.RequestsMock]:
     with responses.RequestsMock() as mock:
         mock.get("https://boards-api.greenhouse.io/robots.txt", status=404)
@@ -69,9 +80,7 @@ def test_disabled_source_is_refused(tmp_path: Path, store: MemoryObjectStore) ->
     assert store.objects == {}
 
 
-def test_extract_writes_a_run(
-    tmp_path: Path, store: MemoryObjectStore, rsps: responses.RequestsMock
-) -> None:
+def mock_board(rsps: responses.RequestsMock) -> None:
     rsps.get(BOARD, body=(FIXTURES / "listing-board.json").read_bytes(), content_type=JSON)
     for job_id, name in [
         ("4012345008", "detail-senior-data-engineer.json"),
@@ -83,6 +92,12 @@ def test_extract_writes_a_run(
             body=(FIXTURES / name).read_bytes(),
             content_type=JSON,
         )
+
+
+def test_extract_writes_a_run(
+    tmp_path: Path, store: MemoryObjectStore, rsps: responses.RequestsMock
+) -> None:
+    mock_board(rsps)
 
     assert extract(tmp_path) == 0
     manifests = [k for k in store.objects if k.endswith("/_manifest.json")]
@@ -104,3 +119,61 @@ def test_a_blocked_extract_returns_3(
     rsps.get(BOARD, status=403)
     assert extract(tmp_path) == cli.EXIT_BLOCKED == 3
     assert not any(k.endswith("/_manifest.json") for k in store.objects)
+
+
+def load(tmp_path: Path) -> int:
+    path = registry(tmp_path, enabled=True)
+    return cli.main(
+        ["load", "--source", "greenhouse", "--run-date", "2026-10-25", "--registry", path]
+    )
+
+
+def test_load_after_extract(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+
+    assert load(tmp_path) == 0
+
+    assert len(warehouse.raw_postings) == 3
+    assert {key[2] for key in warehouse.raw_postings} == {date(2026, 10, 25)}
+    [run] = warehouse.ingest_runs.values()
+    assert (run.status, run.rows_inserted) == ("succeeded", 3)
+
+
+def test_load_without_a_complete_run_returns_1(
+    tmp_path: Path, store: MemoryObjectStore, warehouse: MemoryWarehouse
+) -> None:
+    assert load(tmp_path) == cli.EXIT_FAILED
+    assert warehouse.ingest_runs == {}
+
+
+def test_load_with_zero_parsed_rows_returns_1(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+    # Break every stored detail, as a site change would break the parser
+    for key in [k for k in store.objects if "/detail/" in k]:
+        store.objects[key] = gzip_bytes(b"not json")
+
+    assert load(tmp_path) == cli.EXIT_FAILED
+    [run] = warehouse.ingest_runs.values()
+    assert run.status == "failed"
+
+
+def test_load_when_the_database_is_down_returns_1(
+    tmp_path: Path, store: MemoryObjectStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse() -> None:
+        raise psycopg.OperationalError("connection refused")
+
+    monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
+    assert load(tmp_path) == cli.EXIT_FAILED

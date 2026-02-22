@@ -1,18 +1,19 @@
 import gzip
 import json
 from collections.abc import Iterator
-from datetime import date
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
 import responses
 
 from jobtracker_ingest.core.http import BlockedError, PoliteClient
-from jobtracker_ingest.core.models import RawPayload
+from jobtracker_ingest.core.models import ListingRef, RawPayload
 from jobtracker_ingest.core.ratelimit import HostRateLimiter
 from jobtracker_ingest.core.registry import SourceConfig
 from jobtracker_ingest.core.storage import MemoryObjectStore
-from jobtracker_ingest.extract import ExtractError, new_run_id, run_extract
+from jobtracker_ingest.extract import ExtractError, detail_needed, new_run_id, run_extract
+from jobtracker_ingest.loader.models import Fingerprint
 from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
 
 FIXTURES = Path(__file__).parent / "fixtures" / "greenhouse"
@@ -206,3 +207,36 @@ def test_a_block_stops_the_run_without_a_manifest(
         run_extract(GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1")
 
     assert f"{PREFIX}_manifest.json" not in store.objects
+
+
+def fingerprint_row(job_id: str, value: str, fetched_at: datetime) -> Fingerprint:
+    return Fingerprint(
+        source="greenhouse",
+        source_job_id=job_id,
+        listing_fingerprint=value,
+        account="acropolisanalytics",
+        url=f"https://example.org/jobs/{job_id}",
+        last_seen_run_date=RUN_DATE,
+        detail_object_key=f"raw/greenhouse/2026-10-24/r0/detail/{job_id}.json.gz",
+        detail_url=detail_url(job_id),
+        detail_content_type=JSON,
+        detail_fetched_at=fetched_at,
+        content_hash="abc",
+    )
+
+
+@pytest.mark.parametrize(
+    ("job_id", "fingerprint", "age_days", "needed"),
+    [
+        ("new", "fp", 0, True),
+        ("1", "changed", 1, True),
+        ("1", "fp", 15, True),
+        ("1", "fp", 14, False),
+        ("1", "fp", 1, False),
+    ],
+)
+def test_detail_needed(job_id: str, fingerprint: str, age_days: int, needed: bool) -> None:
+    now = datetime(2026, 10, 25, 6, tzinfo=UTC)
+    known = {"1": fingerprint_row("1", "fp", now - timedelta(days=age_days))}
+    ref = ListingRef(source_job_id=job_id, url="u", listing_fingerprint=fingerprint)
+    assert detail_needed(known, now)(ref) is needed

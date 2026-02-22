@@ -1,3 +1,4 @@
+import json
 from collections.abc import Iterator
 from contextlib import nullcontext
 from datetime import date
@@ -48,8 +49,9 @@ def store(monkeypatch: pytest.MonkeyPatch) -> MemoryObjectStore:
     return memory
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def warehouse(monkeypatch: pytest.MonkeyPatch) -> MemoryWarehouse:
+    # Both commands read or write the warehouse
     memory = MemoryWarehouse()
     monkeypatch.setattr(cli.PostgresWarehouse, "connect", lambda: nullcontext(memory))
     return memory
@@ -177,3 +179,37 @@ def test_load_when_the_database_is_down_returns_1(
 
     monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
     assert load(tmp_path) == cli.EXIT_FAILED
+
+
+def test_extract_skips_details_the_loader_already_has(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+    assert load(tmp_path) == 0
+    detail_calls = len([c for c in rsps.calls if "/jobs/" in str(c.request.url)])
+
+    # The board is unchanged the next time, so only the listing is fetched
+    assert extract(tmp_path) == 0
+
+    later_calls = len([c for c in rsps.calls if "/jobs/" in str(c.request.url)])
+    assert later_calls == detail_calls
+    # Both runs started in the same second, so go by start time
+    manifests = [json.loads(v) for k, v in store.objects.items() if k.endswith("_manifest.json")]
+    newest = max(manifests, key=lambda m: m["started_at"])
+    assert newest["counts"]["details_skipped"] == 3
+
+
+def test_extract_when_the_database_is_down_sends_no_requests(
+    tmp_path: Path, store: MemoryObjectStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse() -> None:
+        raise psycopg.OperationalError("connection refused")
+
+    monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
+    with responses.RequestsMock() as mock:
+        assert extract(tmp_path) == cli.EXIT_FAILED
+        assert len(mock.calls) == 0

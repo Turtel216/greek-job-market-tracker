@@ -11,7 +11,7 @@ stopped for the day.
 import argparse
 import sys
 from collections.abc import Sequence
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import psycopg
@@ -22,7 +22,7 @@ from jobtracker_ingest.core.http import BlockedError, HttpError, PoliteClient, u
 from jobtracker_ingest.core.logs import configure_logging
 from jobtracker_ingest.core.registry import load_registry
 from jobtracker_ingest.core.storage import S3ObjectStore
-from jobtracker_ingest.extract import ExtractError, run_extract
+from jobtracker_ingest.extract import ExtractError, detail_needed, run_extract
 from jobtracker_ingest.loader.load import LoadError, run_load
 from jobtracker_ingest.loader.runs import NoCompleteRun
 from jobtracker_ingest.loader.warehouse import PostgresWarehouse
@@ -59,10 +59,24 @@ def extract(args: argparse.Namespace) -> int:
         log.error("source_disabled", source=config.name)
         return EXIT_FAILED
 
+    # Read before the first request, so a database problem costs the site
+    # nothing. The connection is not held open while fetching.
+    try:
+        with PostgresWarehouse.connect() as warehouse:
+            known = warehouse.fingerprints(config.name)
+    except psycopg.Error as err:
+        log.error("extract_failed", source=config.name, error=f"{type(err).__name__}: {err}")
+        return EXIT_FAILED
+
     client = PoliteClient(user_agent_from_env(config.contact), config.min_delay_seconds)
     try:
         run_extract(
-            get_adapter(config.name), config, args.run_date, S3ObjectStore.from_env(), client
+            get_adapter(config.name),
+            config,
+            args.run_date,
+            S3ObjectStore.from_env(),
+            client,
+            needs_detail=detail_needed(known, datetime.now(UTC)),
         )
     except BlockedError as err:
         log.error(

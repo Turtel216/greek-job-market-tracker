@@ -11,8 +11,8 @@ listed in the manifest errors.
 
 import uuid
 from collections import Counter
-from collections.abc import Callable
-from datetime import UTC, date, datetime
+from collections.abc import Callable, Mapping
+from datetime import UTC, date, datetime, timedelta
 
 import structlog
 from structlog.contextvars import bound_contextvars
@@ -23,11 +23,15 @@ from jobtracker_ingest.core.manifest import RunManifest, RunWriter
 from jobtracker_ingest.core.models import ListingRef
 from jobtracker_ingest.core.registry import SourceConfig
 from jobtracker_ingest.core.storage import ObjectStore
+from jobtracker_ingest.loader.models import Fingerprint
 from jobtracker_ingest.sources.base import RunContext, SourceAdapter
 
-# Decides whether a posting's detail is fetched this run. Until the loader
-# keeps ops.posting_fingerprints, every detail is fetched.
+# Decides whether a posting's detail is fetched this run
 NeedsDetail = Callable[[ListingRef], bool]
+
+# A stored detail older than this is fetched again even if the listing
+# looks the same, in case the site changed the page without the listing
+DETAIL_MAX_AGE = timedelta(days=14)
 
 
 class ExtractError(Exception):
@@ -42,6 +46,25 @@ def new_run_id(now: datetime | None = None) -> str:
 
 def fetch_everything(ref: ListingRef) -> bool:
     return True
+
+
+def detail_needed(known: Mapping[str, Fingerprint], now: datetime) -> NeedsDetail:
+    """The fetch strategy from the design doc, from what the loader stored.
+
+    Fetch the detail when the posting is new, its listing fingerprint
+    changed, or the stored detail is older than 14 days. Otherwise the
+    loader reuses the stored detail.
+    """
+
+    def needs(ref: ListingRef) -> bool:
+        last = known.get(ref.source_job_id)
+        return (
+            last is None
+            or last.listing_fingerprint != ref.listing_fingerprint
+            or now - last.detail_fetched_at > DETAIL_MAX_AGE
+        )
+
+    return needs
 
 
 def run_extract(

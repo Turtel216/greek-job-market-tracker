@@ -12,8 +12,9 @@ project is built.
 
 Phase 2, Orchestration. Phase 1 is done: the repo skeleton, tooling,
 Postgres, the object store and the first ingestion adapter are in place.
-Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts; the
-loader and the dbt project are still to come.
+Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
+the loader writes each run to `raw` and `ops`; the dbt project is still to
+come.
 
 ## Repository layout
 
@@ -49,7 +50,8 @@ Airflow database, creates the `admin` user (password from
 `AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` pool. The Airflow UI is at
 <http://localhost:8080>; on the server, reach it through an SSH tunnel. The Postgres init scripts in
 `infra/postgres/init/` run only on the first start with an empty volume, so
-after changing them reset the database with `docker compose down -v`.
+after changing them reset the database with `docker compose down -v`, or
+run `make db-tables` to add the raw and ops tables to an existing one.
 
 ## Airflow image
 
@@ -104,8 +106,15 @@ make airflow-image   # after changing the image
 make test-dags
 ```
 
+The loader's warehouse tests need a real Postgres. This starts a throwaway
+one with the init scripts, runs them and removes it:
+
+```sh
+make test-db
+```
+
 Before opening a pull request, run:
 
 ```sh
-make lint test test-dags dbt-build
+make lint test test-db test-dags dbt-build
 ```

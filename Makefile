@@ -8,7 +8,7 @@ COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down db-tables lint test test-dags dbt-build airflow-image dbt-lock backup restore
+.PHONY: help setup up down db-tables lint test test-db test-dags dbt-build airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -34,6 +34,9 @@ lint: ## Run every pre-commit check on all files
 
 test: ## Run the Python tests
 	cd ingestion && $(UV) run pytest
+
+test-db: ## Run the loader tests against a throwaway Postgres
+	./scripts/test-db.sh
 
 # The DAG tests need Airflow, so they run in the Airflow image with the repo
 # mounted. pytest goes into a throwaway folder, not the image.

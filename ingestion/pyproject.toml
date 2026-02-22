@@ -36,6 +36,7 @@ build-backend = "uv_build"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+markers = ["postgres: needs a test database, see make test-db"]
 
 [tool.mypy]
 python_version = "3.12"

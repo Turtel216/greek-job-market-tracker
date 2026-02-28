@@ -13,8 +13,8 @@ project is built.
 Phase 2, Orchestration. Phase 1 is done: the repo skeleton, tooling,
 Postgres, the object store and the first ingestion adapter are in place.
 Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
-the loader writes each run to `raw` and `ops`; the dbt project is still to
-come.
+the loader writes each run to `raw` and `ops`. CI runs lint and the Python
+tests on every pull request. The dbt project is still to come.
 
 ## Repository layout
 
@@ -118,3 +118,25 @@ Before opening a pull request, run:
 ```sh
 make lint test test-db test-dags dbt-build
 ```
+
+`make test` also measures coverage and fails when `core/` and `sources/`
+together drop below 85%.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to
+`main`. Each job calls the same make target as above:
+
+| Job | Runs |
+| --- | --- |
+| `lint` | `make lint`, then a gitleaks scan of the whole git history |
+| `test` | `make test`, with the coverage check |
+| `test-db` | `make test-db`, using the Docker on the runner |
+
+The gitleaks pre-commit hook only looks at staged changes, so CI skips it
+and scans every commit instead. When you bump gitleaks in
+`.pre-commit-config.yaml`, update the version and checksum in the workflow
+too. CI sets `UV_LOCKED=1`, so it fails if `ingestion/uv.lock` is out of
+date; run `uv lock` in `ingestion/` and commit the result.
+
+The DAG tests and dbt are not in CI yet.

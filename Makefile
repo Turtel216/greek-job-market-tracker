@@ -30,7 +30,7 @@ db-tables: ## Create the raw and ops tables on a running stack
 		-d "$$POSTGRES_DB" -f /docker-entrypoint-initdb.d/03-raw-and-ops-tables.sql'
 
 lint: ## Run every pre-commit check on all files
-	$(PRE_COMMIT) run --all-files
+	$(PRE_COMMIT) run --all-files --show-diff-on-failure
 
 # The design asks for at least 85% coverage on core/ and sources/, so the
 # second step fails the target when those two folders fall below it.

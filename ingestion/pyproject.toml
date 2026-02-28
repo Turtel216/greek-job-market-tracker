@@ -38,6 +38,10 @@ testpaths = ["tests"]
 addopts = "-ra"
 markers = ["postgres: needs a test database, see make test-db"]
 
+[tool.coverage.run]
+source = ["jobtracker_ingest"]
+branch = true
+
 [tool.mypy]
 python_version = "3.12"
 strict = true

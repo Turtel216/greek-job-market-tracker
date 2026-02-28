@@ -32,8 +32,13 @@ db-tables: ## Create the raw and ops tables on a running stack
 lint: ## Run every pre-commit check on all files
 	$(PRE_COMMIT) run --all-files
 
-test: ## Run the Python tests
-	cd ingestion && $(UV) run pytest
+# The design asks for at least 85% coverage on core/ and sources/, so the
+# second step fails the target when those two folders fall below it.
+test: ## Run the Python tests with coverage
+	cd ingestion && $(UV) run pytest --cov
+	@echo "Coverage of core/ and sources/ (at least 85%):"
+	@cd ingestion && $(UV) run coverage report --format=total --fail-under=85 \
+		--include='src/jobtracker_ingest/core/*,src/jobtracker_ingest/sources/*'
 
 test-db: ## Run the loader tests against a throwaway Postgres
 	./scripts/test-db.sh

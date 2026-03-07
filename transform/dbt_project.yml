@@ -1,0 +1,20 @@
+# dbt project for the warehouse. See "Transformation logic" in the design doc.
+name: jobtracker
+version: "0.1.0"
+profile: jobtracker
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+
+clean-targets: ["target", "dbt_packages"]
+
+# Seeds are lookup tables for staging, so they live in the staging schema.
+# The transformer role cannot create schemas of its own.
+seeds:
+  jobtracker:
+    +schema: staging
+    +quote_columns: false

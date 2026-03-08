@@ -34,3 +34,39 @@ seeds:
           - accepted_values:
               arguments:
                 values: [language, framework, database, cloud, tool]
+
+  - name: skill_aliases
+    description: >
+      Words that mark a skill in a posting. An alias matches the normalized
+      title or description when it stands alone, using the boundary
+      (^|[^a-z0-9+#.])alias($|[^a-z0-9+#]) with the alias regex-escaped.
+      So java does not match javascript, and c does not match c++ or c#.
+    config:
+      column_types:
+        skill_id: text
+        alias: text
+        pattern_override: text
+    columns:
+      - name: skill_id
+        description: The skill this alias marks.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('skills')
+                field: skill_id
+      - name: alias
+        description: The alias in normalized form. Each alias marks one skill only.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω+#.]+( [a-z0-9α-ρσ-ω+#.]+)*$"
+      - name: pattern_override
+        description: >
+          A full Postgres regular expression used instead of the alias and
+          boundary, for names that are ambiguous on their own, such as go, r,
+          c and react. Empty for most aliases.
+        data_tests:
+          - valid_regex

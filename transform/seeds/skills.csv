@@ -1,0 +1,98 @@
+skill_id,name,category
+python,Python,language
+java,Java,language
+javascript,JavaScript,language
+typescript,TypeScript,language
+c,C,language
+cpp,C++,language
+csharp,C#,language
+go,Go,language
+rust,Rust,language
+kotlin,Kotlin,language
+swift,Swift,language
+objective_c,Objective-C,language
+php,PHP,language
+ruby,Ruby,language
+scala,Scala,language
+r,R,language
+sql,SQL,language
+bash,Bash,language
+powershell,PowerShell,language
+dart,Dart,language
+matlab,MATLAB,language
+html,HTML,language
+css,CSS,language
+abap,ABAP,language
+react,React,framework
+react_native,React Native,framework
+angular,Angular,framework
+vue,Vue.js,framework
+svelte,Svelte,framework
+nextjs,Next.js,framework
+nodejs,Node.js,framework
+express,Express,framework
+nestjs,NestJS,framework
+django,Django,framework
+flask,Flask,framework
+fastapi,FastAPI,framework
+spring,Spring,framework
+dotnet,.NET,framework
+laravel,Laravel,framework
+symfony,Symfony,framework
+rails,Ruby on Rails,framework
+flutter,Flutter,framework
+jquery,jQuery,framework
+pandas,pandas,framework
+numpy,NumPy,framework
+scikit_learn,scikit-learn,framework
+pytorch,PyTorch,framework
+tensorflow,TensorFlow,framework
+spark,Apache Spark,framework
+postgresql,PostgreSQL,database
+mysql,MySQL,database
+mariadb,MariaDB,database
+sql_server,SQL Server,database
+oracle_db,Oracle Database,database
+sqlite,SQLite,database
+mongodb,MongoDB,database
+redis,Redis,database
+elasticsearch,Elasticsearch,database
+cassandra,Cassandra,database
+dynamodb,DynamoDB,database
+snowflake,Snowflake,database
+bigquery,BigQuery,database
+redshift,Redshift,database
+aws,AWS,cloud
+azure,Azure,cloud
+gcp,Google Cloud,cloud
+docker,Docker,tool
+kubernetes,Kubernetes,tool
+helm,Helm,tool
+terraform,Terraform,tool
+ansible,Ansible,tool
+jenkins,Jenkins,tool
+github_actions,GitHub Actions,tool
+gitlab_ci,GitLab CI,tool
+git,Git,tool
+linux,Linux,tool
+nginx,Nginx,tool
+kafka,Apache Kafka,tool
+rabbitmq,RabbitMQ,tool
+graphql,GraphQL,tool
+airflow,Apache Airflow,tool
+dbt,dbt,tool
+databricks,Databricks,tool
+tableau,Tableau,tool
+power_bi,Power BI,tool
+excel,Excel,tool
+grafana,Grafana,tool
+prometheus,Prometheus,tool
+selenium,Selenium,tool
+cypress,Cypress,tool
+playwright,Playwright,tool
+jest,Jest,tool
+postman,Postman,tool
+jira,Jira,tool
+figma,Figma,tool
+sap,SAP,tool
+salesforce,Salesforce,tool

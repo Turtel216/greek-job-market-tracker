@@ -1,0 +1,36 @@
+# Lookup tables and rules used by staging and intermediate models. Edit the
+# CSV files to improve matching; see "Transformation logic" in the design doc.
+#
+# Every alias and keyword is written the way normalize_text leaves text:
+# lowercase, no accents, final sigma written as σ, punctuation other than
+# + # . replaced by a space, single spaces only.
+
+seeds:
+  - name: skills
+    description: One row per skill that skill extraction can find.
+    config:
+      column_types:
+        skill_id: text
+        name: text
+        category: text
+    columns:
+      - name: skill_id
+        description: Stable slug, such as postgresql. Used as the key in every layer.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9]+(_[a-z0-9]+)*$"
+      - name: name
+        description: Display name for the dashboard.
+        data_tests:
+          - unique
+          - not_null
+      - name: category
+        description: Kind of skill.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [language, framework, database, cloud, tool]

@@ -119,3 +119,22 @@ seeds:
                   - Thessaly
                   - Western Greece
                   - Western Macedonia
+
+  - name: company_suffixes
+    description: >
+      Legal forms removed from the end of a company name to build
+      company_key. The name is normalized and its dots removed first, so
+      "Α.Ε." and "ΑΕ" both become "αε". Suffixes are removed again and
+      again until none is left, so "μονοπροσωπη αε" loses both words.
+    config:
+      column_types:
+        suffix: text
+    columns:
+      - name: suffix
+        description: The legal form in normalized form, without dots.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"

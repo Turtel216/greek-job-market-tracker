@@ -1,0 +1,206 @@
+alias,city,region
+αθηνα,Athens,Attica
+αθηνασ,Athens,Attica
+athens,Athens,Attica
+athina,Athens,Attica
+αττικη,Athens,Attica
+αττικησ,Athens,Attica
+attica,Athens,Attica
+attiki,Athens,Attica
+μαρουσι,Athens,Attica
+αμαρουσιο,Athens,Attica
+marousi,Athens,Attica
+maroussi,Athens,Attica
+amarousio,Athens,Attica
+χαλανδρι,Athens,Attica
+chalandri,Athens,Attica
+halandri,Athens,Attica
+κηφισια,Athens,Attica
+kifisia,Athens,Attica
+kifissia,Athens,Attica
+ψυχικο,Athens,Attica
+psychiko,Athens,Attica
+χολαργοσ,Athens,Attica
+cholargos,Athens,Attica
+αγια παρασκευη,Athens,Attica
+agia paraskevi,Athens,Attica
+βριλησσια,Athens,Attica
+vrilissia,Athens,Attica
+μεταμορφωση,Athens,Attica
+metamorfosi,Athens,Attica
+λυκοβρυση,Athens,Attica
+lykovrysi,Athens,Attica
+πευκη,Athens,Attica
+pefki,Athens,Attica
+νεο ηρακλειο,Athens,Attica
+ηρακλειο αττικησ,Athens,Attica
+neo iraklio,Athens,Attica
+γερακασ,Athens,Attica
+gerakas,Athens,Attica
+παλληνη,Athens,Attica
+pallini,Athens,Attica
+πειραιασ,Athens,Attica
+πειραια,Athens,Attica
+piraeus,Athens,Attica
+pireas,Athens,Attica
+καλλιθεα,Athens,Attica
+kallithea,Athens,Attica
+μοσχατο,Athens,Attica
+moschato,Athens,Attica
+ταυροσ,Athens,Attica
+tavros,Athens,Attica
+νεα σμυρνη,Athens,Attica
+nea smyrni,Athens,Attica
+παλαιο φαληρο,Athens,Attica
+palaio faliro,Athens,Attica
+αλιμοσ,Athens,Attica
+alimos,Athens,Attica
+ελληνικο,Athens,Attica
+elliniko,Athens,Attica
+γλυφαδα,Athens,Attica
+glyfada,Athens,Attica
+βουλα,Athens,Attica
+voula,Athens,Attica
+ζωγραφου,Athens,Attica
+zografou,Athens,Attica
+βυρωνασ,Athens,Attica
+vyronas,Athens,Attica
+περιστερι,Athens,Attica
+peristeri,Athens,Attica
+αιγαλεω,Athens,Attica
+aigaleo,Athens,Attica
+egaleo,Athens,Attica
+ασπροπυργοσ,Athens,Attica
+aspropyrgos,Athens,Attica
+ελευσινα,Athens,Attica
+elefsina,Athens,Attica
+κορωπι,Athens,Attica
+koropi,Athens,Attica
+παιανια,Athens,Attica
+paiania,Athens,Attica
+peania,Athens,Attica
+σπατα,Athens,Attica
+spata,Athens,Attica
+θεσσαλονικη,Thessaloniki,Central Macedonia
+θεσσαλονικησ,Thessaloniki,Central Macedonia
+θεσ νικη,Thessaloniki,Central Macedonia
+θεσ νικησ,Thessaloniki,Central Macedonia
+thessaloniki,Thessaloniki,Central Macedonia
+salonica,Thessaloniki,Central Macedonia
+salonika,Thessaloniki,Central Macedonia
+καλαμαρια,Thessaloniki,Central Macedonia
+kalamaria,Thessaloniki,Central Macedonia
+πυλαια,Thessaloniki,Central Macedonia
+pylaia,Thessaloniki,Central Macedonia
+pylea,Thessaloniki,Central Macedonia
+θερμη,Thessaloniki,Central Macedonia
+thermi,Thessaloniki,Central Macedonia
+ευοσμοσ,Thessaloniki,Central Macedonia
+evosmos,Thessaloniki,Central Macedonia
+σταυρουπολη,Thessaloniki,Central Macedonia
+stavroupoli,Thessaloniki,Central Macedonia
+σινδοσ,Thessaloniki,Central Macedonia
+sindos,Thessaloniki,Central Macedonia
+ωραιοκαστρο,Thessaloniki,Central Macedonia
+oraiokastro,Thessaloniki,Central Macedonia
+σερρεσ,Serres,Central Macedonia
+σερρων,Serres,Central Macedonia
+serres,Serres,Central Macedonia
+κατερινη,Katerini,Central Macedonia
+κατερινησ,Katerini,Central Macedonia
+katerini,Katerini,Central Macedonia
+βεροια,Veria,Central Macedonia
+βεροιασ,Veria,Central Macedonia
+veria,Veria,Central Macedonia
+veroia,Veria,Central Macedonia
+πατρα,Patras,Western Greece
+πατρασ,Patras,Western Greece
+patra,Patras,Western Greece
+patras,Patras,Western Greece
+αγρινιο,Agrinio,Western Greece
+αγρινιου,Agrinio,Western Greece
+agrinio,Agrinio,Western Greece
+ηρακλειο,Heraklion,Crete
+ηρακλειου,Heraklion,Crete
+heraklion,Heraklion,Crete
+iraklio,Heraklion,Crete
+iraklion,Heraklion,Crete
+χανια,Chania,Crete
+χανιων,Chania,Crete
+chania,Chania,Crete
+hania,Chania,Crete
+ρεθυμνο,Rethymno,Crete
+ρεθυμνου,Rethymno,Crete
+rethymno,Rethymno,Crete
+rethymnon,Rethymno,Crete
+λαρισα,Larissa,Thessaly
+λαρισασ,Larissa,Thessaly
+λαρισσα,Larissa,Thessaly
+larissa,Larissa,Thessaly
+larisa,Larissa,Thessaly
+βολοσ,Volos,Thessaly
+βολου,Volos,Thessaly
+volos,Volos,Thessaly
+τρικαλα,Trikala,Thessaly
+τρικαλων,Trikala,Thessaly
+trikala,Trikala,Thessaly
+καρδιτσα,Karditsa,Thessaly
+καρδιτσασ,Karditsa,Thessaly
+karditsa,Karditsa,Thessaly
+ιωαννινα,Ioannina,Epirus
+ιωαννινων,Ioannina,Epirus
+γιαννενα,Ioannina,Epirus
+ioannina,Ioannina,Epirus
+καβαλα,Kavala,Eastern Macedonia and Thrace
+καβαλασ,Kavala,Eastern Macedonia and Thrace
+kavala,Kavala,Eastern Macedonia and Thrace
+ξανθη,Xanthi,Eastern Macedonia and Thrace
+ξανθησ,Xanthi,Eastern Macedonia and Thrace
+xanthi,Xanthi,Eastern Macedonia and Thrace
+κομοτηνη,Komotini,Eastern Macedonia and Thrace
+κομοτηνησ,Komotini,Eastern Macedonia and Thrace
+komotini,Komotini,Eastern Macedonia and Thrace
+αλεξανδρουπολη,Alexandroupoli,Eastern Macedonia and Thrace
+αλεξανδρουπολησ,Alexandroupoli,Eastern Macedonia and Thrace
+alexandroupoli,Alexandroupoli,Eastern Macedonia and Thrace
+alexandroupolis,Alexandroupoli,Eastern Macedonia and Thrace
+δραμα,Drama,Eastern Macedonia and Thrace
+δραμασ,Drama,Eastern Macedonia and Thrace
+κοζανη,Kozani,Western Macedonia
+κοζανησ,Kozani,Western Macedonia
+kozani,Kozani,Western Macedonia
+λαμια,Lamia,Central Greece
+λαμιασ,Lamia,Central Greece
+lamia,Lamia,Central Greece
+χαλκιδα,Chalkida,Central Greece
+χαλκιδασ,Chalkida,Central Greece
+chalkida,Chalkida,Central Greece
+halkida,Chalkida,Central Greece
+καλαματα,Kalamata,Peloponnese
+καλαματασ,Kalamata,Peloponnese
+kalamata,Kalamata,Peloponnese
+τριπολη,Tripoli,Peloponnese
+τριπολησ,Tripoli,Peloponnese
+tripoli,Tripoli,Peloponnese
+κορινθοσ,Corinth,Peloponnese
+κορινθου,Corinth,Peloponnese
+corinth,Corinth,Peloponnese
+korinthos,Corinth,Peloponnese
+ναυπλιο,Nafplio,Peloponnese
+ναυπλιου,Nafplio,Peloponnese
+nafplio,Nafplio,Peloponnese
+κερκυρα,Corfu,Ionian Islands
+κερκυρασ,Corfu,Ionian Islands
+corfu,Corfu,Ionian Islands
+kerkyra,Corfu,Ionian Islands
+ροδοσ,Rhodes,South Aegean
+ροδου,Rhodes,South Aegean
+rhodes,Rhodes,South Aegean
+rodos,Rhodes,South Aegean
+μυτιληνη,Mytilene,North Aegean
+μυτιληνησ,Mytilene,North Aegean
+mytilene,Mytilene,North Aegean
+mytilini,Mytilene,North Aegean
+χιοσ,Chios,North Aegean
+χιου,Chios,North Aegean
+chios,Chios,North Aegean

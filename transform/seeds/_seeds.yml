@@ -70,3 +70,52 @@ seeds:
           c and react. Empty for most aliases.
         data_tests:
           - valid_regex
+
+  - name: city_aliases
+    description: >
+      Place names found in location text, mapped to a city and region. The
+      city is the metropolitan area, so Attica suburbs and Piraeus map to
+      Athens. When several aliases match, the longest wins, so
+      "ηρακλειο αττικησ" beats "ηρακλειο". Values that match nothing
+      become Unknown and show up in qa_unmapped_locations.
+    config:
+      column_types:
+        alias: text
+        city: text
+        region: text
+    columns:
+      - name: alias
+        description: The place name in normalized form, in nominative and genitive.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"
+      - name: city
+        description: Canonical English city name.
+        data_tests:
+          - not_null
+          - maps_to_one:
+              arguments:
+                column: region
+      - name: region
+        description: One of the 13 administrative regions of Greece, in English.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - Attica
+                  - Central Macedonia
+                  - Central Greece
+                  - Crete
+                  - Eastern Macedonia and Thrace
+                  - Epirus
+                  - Ionian Islands
+                  - North Aegean
+                  - Peloponnese
+                  - South Aegean
+                  - Thessaly
+                  - Western Greece
+                  - Western Macedonia

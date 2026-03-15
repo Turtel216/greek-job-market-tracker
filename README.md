@@ -10,11 +10,12 @@ project is built.
 
 ## Status
 
-Phase 2, Orchestration. Phase 1 is done: the repo skeleton, tooling,
-Postgres, the object store and the first ingestion adapter are in place.
+Phase 3, Modeling. Phases 1 and 2 are done: the repo skeleton, tooling,
+Postgres, the object store and the ingestion adapters are in place.
 Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
 the loader writes each run to `raw` and `ops`. CI runs lint and the Python
-tests on every pull request. The dbt project is still to come.
+tests on every pull request. The dbt project has its seeds; the models come
+next.
 
 ## Repository layout
 
@@ -121,6 +122,36 @@ make lint test test-db test-dags dbt-build
 
 `make test` also measures coverage and fails when `core/` and `sources/`
 together drop below 85%.
+
+## dbt
+
+The dbt project is in `transform/`. `transform/profiles.yml` reads the
+connection from the environment (`POSTGRES_HOST`, `POSTGRES_PORT`,
+`WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`, `DBT_TARGET`, `DBT_THREADS`) and
+connects as the `transformer` role, so run dbt from `transform/`:
+
+```sh
+cd transform
+dbt seed    # load the seeds
+dbt build   # seeds, models and tests
+```
+
+Seeds hold the dictionaries and rules that drive matching. They load into
+the `staging` schema:
+
+| Seed | Contents |
+| --- | --- |
+| `skills` | Skills with a stable `skill_id` and a category |
+| `skill_aliases` | Words that mark a skill, with a regex for ambiguous ones such as Go, R and C |
+| `city_aliases` | Greek and Latin place names mapped to a city and region |
+| `company_suffixes` | Legal forms stripped from company names, such as ΑΕ and Ltd |
+| `company_aliases` | Other names of a company mapped to one `company_key` |
+| `work_mode_rules`, `seniority_rules`, `role_family_rules` | Keyword rules with a priority; the highest match wins |
+
+Aliases and keywords are written the way `normalize_text` leaves text:
+lowercase, no accents, final sigma as σ, single spaces. The tests in
+`transform/seeds/_seeds.yml` check this, so a new row in the wrong form
+fails `dbt build`. To improve matching, edit the CSV and run `dbt build`.
 
 ## CI
 

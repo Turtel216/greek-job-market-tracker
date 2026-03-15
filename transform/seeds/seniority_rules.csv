@@ -1,0 +1,23 @@
+pattern,value,priority
+intern(ship)?s?,intern,100
+trainees?,intern,100
+πρακτικ[α-ω]* ασκησ[α-ω]*,intern,100
+lead(er)?s?,lead,80
+principal,lead,80
+staff,lead,80
+head of,lead,80
+director,lead,80
+chief,lead,80
+επικεφαλησ,lead,80
+senior,senior,60
+sr,senior,60
+snr,senior,60
+junior,junior,40
+jr,junior,40
+entry level,junior,40
+graduates?,junior,40
+new grads?,junior,40
+νε(οσ|α|οι|εσ) αποφοιτ[α-ω]*,junior,40
+mid,mid,20
+medior,mid,20
+intermediate,mid,20

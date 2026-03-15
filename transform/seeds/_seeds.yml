@@ -240,3 +240,40 @@ seeds:
           - maps_to_one:
               arguments:
                 column: value
+
+  - name: role_family_rules
+    description: >
+      Keywords that set role_family. Looks in the title, then the ATS
+      department. No match gives other. The match with the highest priority wins.
+    config:
+      column_types:
+        pattern: text
+        value: text
+        priority: integer
+    columns:
+      - name: pattern
+        description: >
+          A Postgres regular expression matched on normalized text. The model
+          wraps it as (^|[^a-z0-9α-ω])(pattern)($|[^a-z0-9α-ω]), so it
+          matches whole words only; use [α-ω]* to match a Greek stem.
+        data_tests:
+          - unique
+          - not_null
+          - valid_regex
+          - matches_pattern:
+              arguments:
+                pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
+      - name: value
+        description: The value a match gives.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [data, backend, frontend, fullstack, mobile, devops, qa]
+      - name: priority
+        description: Higher wins. Rules that share a priority give the same value, so ties cannot change the result.
+        data_tests:
+          - not_null
+          - maps_to_one:
+              arguments:
+                column: value

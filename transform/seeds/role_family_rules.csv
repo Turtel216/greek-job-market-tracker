@@ -1,0 +1,61 @@
+pattern,value,priority
+data engineer(ing|s)?,data,100
+data scien(ce|tists?),data,100
+data analy(sts?|tics),data,100
+data architects?,data,100
+data platform,data,100
+data warehouse,data,100
+analytics engineers?,data,100
+(bi|reporting) analysts?,data,100
+bi,data,100
+business intelligence,data,100
+etl,data,100
+big data,data,100
+scientists?,data,100
+ml,data,100
+mlops,data,100
+machine learning,data,100
+deep learning,data,100
+(ai|llm|genai) (engineer|developer|scientist)s?,data,100
+nlp,data,100
+computer vision,data,100
+μηχανικ[α-ω]* δεδομενων,data,100
+αναλυτ[α-ω]* δεδομενων,data,100
+επιστημον[α-ω]* δεδομενων,data,100
+devops,devops,80
+devsecops,devops,80
+sre,devops,80
+site reliability,devops,80
+platform engineer(ing|s)?,devops,80
+cloud,devops,80
+infrastructure,devops,80
+sys ?admins?,devops,80
+systems? administrators?,devops,80
+διαχειριστ[α-ω]* συστηματων,devops,80
+qa,qa,60
+quality assurance,qa,60
+test(er|ers|ing)?,qa,60
+sdet,qa,60
+ελεγκτ[α-ω]* λογισμικου,qa,60
+mobile,mobile,50
+android,mobile,50
+ios,mobile,50
+flutter,mobile,50
+react native,mobile,50
+xamarin,mobile,50
+full ?stack,fullstack,40
+front ?end,frontend,30
+react(js)?,frontend,30
+angular(js)?,frontend,30
+vue(js)?,frontend,30
+ui (engineer|developer)s?,frontend,30
+back ?end,backend,20
+java,backend,20
+\.net,backend,20
+asp\.net,backend,20
+c#,backend,20
+python,backend,20
+node(js)?,backend,20
+php,backend,20
+golang,backend,20
+ruby,backend,20

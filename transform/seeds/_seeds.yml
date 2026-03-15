@@ -138,3 +138,30 @@ seeds:
           - matches_pattern:
               arguments:
                 pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"
+
+  - name: company_aliases
+    description: >
+      Other names of the same company, mapped to one company_key so
+      deduplication can block on it. Applied after the name is normalized,
+      its dots removed and its legal suffixes stripped. Names not listed
+      here keep that cleaned name as their key.
+    config:
+      column_types:
+        alias: text
+        company_key: text
+    columns:
+      - name: alias
+        description: Another name of the company, cleaned the same way as company_key.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"
+      - name: company_key
+        description: The key every alias maps to, in the same cleaned form.
+        data_tests:
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"

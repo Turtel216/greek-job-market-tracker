@@ -18,3 +18,6 @@ seeds:
   jobtracker:
     +schema: staging
     +quote_columns: false
+
+flags:
+  send_anonymous_usage_stats: false

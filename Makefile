@@ -3,19 +3,27 @@
 
 UV ?= uv
 PRE_COMMIT ?= pre-commit
-DBT ?= dbt
+# dbt lives in its own venv, installed by `make dbt-setup` from the same
+# locked requirements as the Airflow image
+DBT_VENV ?= transform/.venv
+DBT ?= $(CURDIR)/$(DBT_VENV)/bin/dbt
 COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup up down db-tables lint test test-db test-dags dbt-build airflow-image dbt-lock backup restore
+.PHONY: help setup dbt-setup up down db-tables lint test test-db test-dags dbt-build airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
 
-setup: ## Install dev tools and git hooks
+setup: dbt-setup ## Install dev tools, dbt and git hooks
 	cd ingestion && $(UV) sync
 	$(PRE_COMMIT) install
+
+dbt-setup: ## Install dbt into transform/.venv
+	$(UV) venv --python 3.12 --allow-existing $(DBT_VENV)
+	$(UV) pip install --python $(DBT_VENV)/bin/python --no-deps \
+		-r infra/airflow/requirements-dbt.txt
 
 up: ## Start the whole stack
 	$(COMPOSE) up -d
@@ -51,12 +59,9 @@ test-dags: ## Run the DAG tests inside the Airflow image
 		"uv pip install --quiet --target /tmp/pytest pytest==9.1.1 \
 		&& PYTHONPATH=/tmp/pytest python -m pytest -p no:cacheprovider tests/dags"
 
-dbt-build: ## Build and test the dbt project
-	@if [ -f transform/dbt_project.yml ]; then \
-		cd transform && $(DBT) build; \
-	else \
-		echo "No dbt project yet, skipping"; \
-	fi
+# Uses the connection settings from the environment, see transform/profiles.yml
+dbt-build: ## Build and test the dbt project on a running stack
+	cd transform && $(DBT) build
 
 airflow-image: ## Build the Airflow image with the ingestion CLI and dbt
 	docker build -f infra/airflow/Dockerfile -t $(AIRFLOW_IMAGE) .

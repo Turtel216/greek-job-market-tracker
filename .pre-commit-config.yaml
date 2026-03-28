@@ -39,9 +39,9 @@ repos:
   - repo: https://github.com/sqlfluff/sqlfluff
     rev: 4.4.0
     hooks:
+      # Jinja templater, see .sqlfluff for why
       - id: sqlfluff-lint
         files: ^transform/(models|snapshots|macros|analyses|tests)/.*\.sql$
-        additional_dependencies: [dbt-postgres==1.11.0, sqlfluff-templater-dbt==4.4.0]
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0

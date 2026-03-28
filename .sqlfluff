@@ -1,0 +1,23 @@
+# sqlfluff only reads the templater from a .sqlfluff in the folder it runs
+# from, and pre-commit runs it from the repo root, so this file lives here.
+#
+# The dbt templater needs a live database before it can lint anything, so
+# we use the Jinja one with sqlfluff's stand-ins for ref, source, config and
+# the other dbt builtins, plus our own macros and generic tests.
+[sqlfluff]
+dialect = postgres
+templater = jinja
+max_line_length = 100
+
+[sqlfluff:templater:jinja]
+apply_dbt_builtins = True
+load_macros_from_path = transform/macros,transform/tests/generic
+
+[sqlfluff:rules:capitalisation.keywords]
+capitalisation_policy = lower
+
+[sqlfluff:rules:capitalisation.functions]
+extended_capitalisation_policy = lower
+
+[sqlfluff:rules:layout.commas]
+line_position = trailing

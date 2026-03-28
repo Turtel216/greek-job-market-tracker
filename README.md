@@ -40,7 +40,7 @@ next.
 
 ```sh
 cp .env.example .env    # then fill in real values
-make setup              # install dev dependencies and git hooks
+make setup              # install dev dependencies, dbt and git hooks
 make up                 # start Postgres, the object store and Airflow
 make help               # list every target
 ```
@@ -117,7 +117,7 @@ make test-db
 Before opening a pull request, run:
 
 ```sh
-make lint test test-db test-dags dbt-build
+make lint test test-db test-dags test-dbt
 ```
 
 `make test` also measures coverage and fails when `core/` and `sources/`
@@ -125,15 +125,25 @@ together drop below 85%.
 
 ## dbt
 
-The dbt project is in `transform/`. `transform/profiles.yml` reads the
-connection from the environment (`POSTGRES_HOST`, `POSTGRES_PORT`,
-`WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`, `DBT_TARGET`, `DBT_THREADS`) and
-connects as the `transformer` role, so run dbt from `transform/`:
+The dbt project is in `transform/`. `make setup` (or `make dbt-setup` on
+its own) installs dbt with uv into `transform/.venv`, from the same locked
+`infra/airflow/requirements-dbt.txt` as the Airflow image, so there is no
+need for a system-wide install.
+
+The quickest check is to build everything against a throwaway Postgres
+with the init scripts, like `make test-db` does:
 
 ```sh
-cd transform
-dbt seed    # load the seeds
-dbt build   # seeds, models and tests
+make test-dbt
+```
+
+To build against the running stack instead, `transform/profiles.yml` reads
+the connection from the environment (`POSTGRES_HOST`, `POSTGRES_PORT`,
+`WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`, `DBT_TARGET`, `DBT_THREADS`) and
+connects as the `transformer` role:
+
+```sh
+TRANSFORMER_PASSWORD=... make dbt-build
 ```
 
 Seeds hold the dictionaries and rules that drive matching. They load into
@@ -151,7 +161,8 @@ the `staging` schema:
 Aliases and keywords are written the way `normalize_text` leaves text:
 lowercase, no accents, final sigma as σ, single spaces. The tests in
 `transform/seeds/_seeds.yml` check this, so a new row in the wrong form
-fails `dbt build`. To improve matching, edit the CSV and run `dbt build`.
+fails `dbt build`. To improve matching, edit the CSV and run
+`make test-dbt`.
 
 ## CI
 
@@ -163,6 +174,7 @@ fails `dbt build`. To improve matching, edit the CSV and run `dbt build`.
 | `lint` | `make lint`, then a gitleaks scan of the whole git history |
 | `test` | `make test`, with the coverage check |
 | `test-db` | `make test-db`, using the Docker on the runner |
+| `dbt` | `make dbt-setup`, then `make test-dbt` |
 
 The gitleaks pre-commit hook only looks at staged changes, so CI skips it
 and scans every commit instead. When you bump gitleaks in
@@ -170,4 +182,4 @@ and scans every commit instead. When you bump gitleaks in
 too. CI sets `UV_LOCKED=1`, so it fails if `ingestion/uv.lock` is out of
 date; run `uv lock` in `ingestion/` and commit the result.
 
-The DAG tests and dbt are not in CI yet.
+The DAG tests are not in CI yet.

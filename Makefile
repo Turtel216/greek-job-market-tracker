@@ -59,9 +59,10 @@ test-dags: ## Run the DAG tests inside the Airflow image
 		"uv pip install --quiet --target /tmp/pytest pytest==9.1.1 \
 		&& PYTHONPATH=/tmp/pytest python -m pytest -p no:cacheprovider tests/dags"
 
-# Uses the connection settings from the environment, see transform/profiles.yml
+# dbt reads the rest of the connection from .env by itself. The host there
+# is the one Compose services use, so point it at the published port.
 dbt-build: ## Build and test the dbt project on a running stack
-	cd transform && $(DBT) build
+	cd transform && POSTGRES_HOST=localhost $(DBT) build
 
 test-dbt: ## Build and test the dbt project against a throwaway Postgres
 	DBT="$(DBT)" ./scripts/test-dbt.sh

@@ -137,14 +137,12 @@ with the init scripts, like `make test-db` does:
 make test-dbt
 ```
 
-To build against the running stack instead, `transform/profiles.yml` reads
-the connection from the environment (`POSTGRES_HOST`, `POSTGRES_PORT`,
-`WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`, `DBT_TARGET`, `DBT_THREADS`) and
-connects as the `transformer` role:
-
-```sh
-TRANSFORMER_PASSWORD=... make dbt-build
-```
+To build against the running stack instead, run `make dbt-build`.
+`transform/profiles.yml` reads the connection from the environment
+(`POSTGRES_HOST`, `POSTGRES_PORT`, `WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`,
+`DBT_TARGET`, `DBT_THREADS`) and connects as the `transformer` role. dbt
+also loads `.env` on its own, without overriding variables that are already
+set, so the target only sets `POSTGRES_HOST=localhost`.
 
 Seeds hold the dictionaries and rules that drive matching. They load into
 the `staging` schema:

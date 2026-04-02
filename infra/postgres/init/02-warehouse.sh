@@ -10,6 +10,8 @@ create extension if not exists unaccent;
 
 revoke all on database :"db" from public;
 grant connect on database :"db" to loader, transformer, bi_reader;
+-- dbt unit tests create temporary tables to learn the column types
+grant temporary on database :"db" to transformer;
 
 -- raw and ops are written by the loader. Their tables are created by the
 -- admin role, so the default privileges below apply to them.

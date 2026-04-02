@@ -12,6 +12,12 @@ test-paths: ["tests"]
 
 clean-targets: ["target", "dbt_packages"]
 
+models:
+  jobtracker:
+    staging:
+      +schema: staging
+      +materialized: view
+
 # Seeds are lookup tables for staging, so they live in the staging schema.
 # The transformer role cannot create schemas of its own.
 seeds:

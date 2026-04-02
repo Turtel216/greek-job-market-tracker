@@ -1,0 +1,55 @@
+# Tables written by the loader. See "Data model" in the design doc.
+
+sources:
+  - name: raw
+    schema: raw
+    description: Parsed rows as the loader wrote them. Never updated or deleted.
+    tables:
+      - name: raw_postings
+        description: One row per posting, source and run_date.
+        config:
+          loaded_at_field: scraped_at
+          # Warn only at 26 hours so one late source does not block the
+          # others (ADR-003). The volume test guards the marts instead.
+          freshness:
+            warn_after: {count: 26, period: hour}
+            error_after: {count: 50, period: hour}
+        columns:
+          - name: raw_posting_id
+            description: Surrogate key.
+          - name: source
+            description: Source name from config/sources.yml.
+          - name: source_job_id
+            description: The posting's id on its source.
+          - name: run_date
+            description: Europe/Athens date of the run.
+          - name: scraped_at
+            description: When the payload was fetched.
+          - name: url
+            description: Canonical posting URL.
+          - name: title_raw
+            description: Title as found, trimmed only.
+          - name: company_raw
+            description: Company name as found, trimmed only.
+          - name: location_raw
+            description: Structured ATS location or location text.
+          - name: workplace_raw
+            description: Structured ATS workplace value or text snippet.
+          - name: employment_type_raw
+            description: Employment type as found.
+          - name: salary_raw
+            description: Salary as found, such as "2000 - 2500 EUR per month".
+          - name: department_raw
+            description: ATS department or job board category.
+          - name: description_raw
+            description: Plain text description, PII scrubbed.
+          - name: posted_at_raw
+            description: Date as shown by the source.
+          - name: content_hash
+            description: sha256 of the parsed fields.
+          - name: object_key
+            description: Key of the source payload in the object store.
+          - name: parser_version
+            description: Adapter parser version.
+          - name: load_id
+            description: One per load task run.

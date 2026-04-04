@@ -12,6 +12,16 @@ test-paths: ["tests"]
 
 clean-targets: ["target", "dbt_packages"]
 
+vars:
+  # Salary parsing, see parse_salary. Greek pay runs over 14 payments
+  # (ADR-006), so an annual amount is divided by 14 to get a month.
+  salaries_per_year: 14
+  # With no period keyword, an amount at least this big is annual
+  salary_annual_threshold: 10000
+  # Monthly amounts outside these bounds are treated as parse failures
+  salary_monthly_min: 400
+  salary_monthly_max: 20000
+
 models:
   jobtracker:
     staging:

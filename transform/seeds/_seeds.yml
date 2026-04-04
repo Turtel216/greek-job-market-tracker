@@ -171,6 +171,10 @@ seeds:
       Keywords that set work_mode. Looks in the ATS workplace field, then
       location, title and description, and stops at the first field
       with a match. No match gives unknown. The match with the highest priority wins.
+      The kariera workplace field is DISABLED, PARTIALLY_REMOTE,
+      TEMPORARILY_REMOTE or FULLY_REMOTE, and ^disabled$ matches only
+      that whole value, not the word in a description. Greenhouse gives
+      yes/no fields as "Remote: Yes", so remote is not matched before "no".
     config:
       column_types:
         pattern: text

@@ -6,13 +6,16 @@ remote first,remote,100
 remote only,remote,100
 πληρησ τηλεργασι[α-ω]*,remote,100
 hybrid,hybrid,80
+partially remote,hybrid,80
 υβριδικ[α-ω]*,hybrid,80
-remote(ly)?,remote,60
+remote(ly)?(?! no($|[^a-z0-9α-ω])),remote,60
+telecommut(e|ing),remote,60
 work from home,remote,60
 wfh,remote,60
 τηλεργασι[α-ω]*,remote,60
 εξ αποστασεωσ,remote,60
 on site,onsite,40
+^disabled$,onsite,40
 onsite,onsite,40
 office based,onsite,40
 in office,onsite,40

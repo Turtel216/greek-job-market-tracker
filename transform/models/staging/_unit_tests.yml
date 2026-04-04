@@ -1,0 +1,39 @@
+# Unit tests for the staging models. They run in `dbt build` before the
+# model they test. A seed listed under given without rows uses the real
+# seed file, so the rule tests check the seeds as well as the SQL.
+
+unit_tests:
+  - name: stg_raw_postings_keys_and_text
+    description: posting_key is md5 of source and id; whitespace is tidied and empty text is null.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          - raw_posting_id: 1
+            source: kariera
+            source_job_id: "3412"
+            title_raw: "Backend   Developer\n(Java)"
+            company_raw: "  Aegean Payments Α.Ε. "
+            salary_raw: ""
+            description_raw: "  Line one\nLine two  "
+          - raw_posting_id: 2
+            source: greenhouse
+            source_job_id: "7001"
+            title_raw: Senior Data Engineer
+            company_raw: "   "
+            salary_raw: "Base salary: 56000 - 70000 EUR"
+            description_raw: ""
+    expect:
+      rows:
+        - posting_key: 707c7653f4aab6dfd16c51b85a899090  # gitleaks:allow (md5, not a secret)
+          raw_posting_id: 1
+          title: Backend Developer (Java)
+          company_name: Aegean Payments Α.Ε.
+          salary_text: null
+          description: "Line one\nLine two"
+        - posting_key: 8a0d45a0ec9859624322e620162bd5bb  # gitleaks:allow (md5, not a secret)
+          raw_posting_id: 2
+          title: Senior Data Engineer
+          company_name: null
+          salary_text: "Base salary: 56000 - 70000 EUR"
+          description: null

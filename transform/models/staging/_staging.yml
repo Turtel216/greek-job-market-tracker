@@ -1,0 +1,48 @@
+models:
+  - name: stg_raw_postings
+    description: >
+      Every row of raw.raw_postings with its posting_key, and display text
+      with whitespace tidied and empty values as null. One row per posting
+      and run_date.
+    columns:
+      - name: posting_key
+        description: md5 of source and source_job_id. One posting on one source.
+        data_tests:
+          - not_null
+      - name: raw_posting_id
+        description: Surrogate key of the raw row.
+        data_tests:
+          - unique
+          - not_null
+      - name: source
+        description: Source name from config/sources.yml.
+      - name: source_job_id
+        description: The posting's id on its source.
+      - name: run_date
+        description: Europe/Athens date of the run that saw this row.
+      - name: scraped_at
+        description: When the payload was fetched.
+      - name: url
+        description: Canonical posting URL.
+      - name: title
+        description: Display title.
+      - name: company_name
+        description: Display company name.
+      - name: location_text
+        description: Structured ATS location or location text.
+      - name: workplace_text
+        description: Structured ATS workplace value or text snippet.
+      - name: employment_type_text
+        description: Employment type as found.
+      - name: salary_text
+        description: Salary as found.
+      - name: department
+        description: ATS department or job board category.
+      - name: description
+        description: Plain text description, PII scrubbed.
+      - name: content_hash
+        description: sha256 of the parsed fields.
+      - name: parser_version
+        description: Adapter parser version.
+      - name: load_id
+        description: The load task run that wrote the row.

@@ -161,3 +161,119 @@ unit_tests:
         - {posting_key: g, city: Thessaloniki, region: Central Macedonia}
         - {posting_key: h, city: Patras, region: Western Greece}
         - {posting_key: i, city: Unknown, region: Unknown}
+
+  - name: stg_postings_work_mode
+    description: >
+      The workplace field is tried first, then location, title and
+      description; the first field with a match decides and the highest
+      priority wins within it. Covers the kariera and Greenhouse values.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, workplace_text: FULLY_REMOTE}
+          - {posting_key: b, workplace_text: PARTIALLY_REMOTE}
+          - {posting_key: c, workplace_text: DISABLED, description: "Hybrid work, two days at home."}
+          - {posting_key: d, workplace_text: TELECOMMUTE}
+          - {posting_key: e, workplace_text: "Remote: Yes"}
+          - {posting_key: f, workplace_text: "Remote: No", description: "Υβριδικό μοντέλο εργασίας."}
+          - {posting_key: g, workplace_text: "Hybrid, On-site"}
+          - {posting_key: h, location_text: "Remote - Greece"}
+          - {posting_key: i, title: "Java Developer", description: "Πλήρης τηλεργασία από όπου θέλεις."}
+          - {posting_key: j, title: "Java Developer", description: "Εργασία εξ αποστάσεως ή στο γραφείο."}
+          - {posting_key: k, description: "We welcome disabled applicants."}
+          - {posting_key: l, title: "Java Developer"}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, work_mode: remote}
+        - {posting_key: b, work_mode: hybrid}
+        - {posting_key: c, work_mode: onsite}
+        - {posting_key: d, work_mode: remote}
+        - {posting_key: e, work_mode: remote}
+        - {posting_key: f, work_mode: hybrid}
+        - {posting_key: g, work_mode: hybrid}
+        - {posting_key: h, work_mode: remote}
+        - {posting_key: i, work_mode: remote}
+        - {posting_key: j, work_mode: remote}
+        - {posting_key: k, work_mode: unknown}
+        - {posting_key: l, work_mode: unknown}
+
+  - name: stg_postings_seniority
+    description: Seniority comes from the title only, and a title with no signal is unknown, not mid.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, title: "Senior Backend Engineer"}
+          - {posting_key: b, title: "Sr. Data Engineer"}
+          - {posting_key: c, title: "Senior Team Lead"}
+          - {posting_key: d, title: "Staff Engineer"}
+          - {posting_key: e, title: "Πρακτική Άσκηση - Junior Developer"}
+          - {posting_key: f, title: "Νέος Απόφοιτος Μηχανικός Λογισμικού"}
+          - {posting_key: g, title: "Mid-level Frontend Developer"}
+          - {posting_key: h, title: "Internal Tools Developer"}
+          - {posting_key: i, title: "Software Engineer", description: "Senior role, 5+ years."}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, seniority: senior}
+        - {posting_key: b, seniority: senior}
+        - {posting_key: c, seniority: lead}
+        - {posting_key: d, seniority: lead}
+        - {posting_key: e, seniority: intern}
+        - {posting_key: f, seniority: junior}
+        - {posting_key: g, seniority: mid}
+        - {posting_key: h, seniority: unknown}
+        - {posting_key: i, seniority: unknown}
+
+  - name: stg_postings_role_family
+    description: Role family comes from the title, then the department; no match gives other.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, title: "Full-Stack Developer"}
+          - {posting_key: b, title: "React Native Developer"}
+          - {posting_key: c, title: "React Developer"}
+          - {posting_key: d, title: "Μηχανικός Δεδομένων"}
+          - {posting_key: e, title: "DevOps / SRE Engineer"}
+          - {posting_key: f, title: "QA Automation Engineer"}
+          - {posting_key: g, title: ".NET Developer"}
+          - {posting_key: h, title: "Java Developer"}
+          - {posting_key: i, title: "JavaScript Developer"}
+          - {posting_key: j, title: "Software Engineer", department: "Data Platform"}
+          - {posting_key: k, title: "Senior Engineer (Android)", department: "Data Platform"}
+          - {posting_key: l, title: "Software Engineer", department: "IT"}
+          - {posting_key: m, title: "Product Manager"}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, role_family: fullstack}
+        - {posting_key: b, role_family: mobile}
+        - {posting_key: c, role_family: frontend}
+        - {posting_key: d, role_family: data}
+        - {posting_key: e, role_family: devops}
+        - {posting_key: f, role_family: qa}
+        - {posting_key: g, role_family: backend}
+        - {posting_key: h, role_family: backend}
+        - {posting_key: i, role_family: other}
+        - {posting_key: j, role_family: data}
+        - {posting_key: k, role_family: mobile}
+        - {posting_key: l, role_family: other}
+        - {posting_key: m, role_family: other}

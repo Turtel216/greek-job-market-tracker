@@ -92,3 +92,72 @@ unit_tests:
       rows:
         - {posting_key: a, title: Senior Backend Developer, content_hash: new, last_run_date: "2026-10-25"}
         - {posting_key: b, title: QA Engineer, content_hash: only, last_run_date: "2026-10-21"}
+
+  - name: stg_postings_company_key
+    description: >
+      company_key drops dots and every legal suffix at the end of the name,
+      then maps aliases to one key.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, company_name: "Aegean Payments Α.Ε."}
+          - {posting_key: b, company_name: "ΟΤΕ Α.Ε."}
+          - {posting_key: c, company_name: "Skroutz.gr"}
+          - {posting_key: d, company_name: "Ionian Cloud Μονοπρόσωπη Ι.Κ.Ε."}
+          - {posting_key: e, company_name: "Workable Software Ltd"}
+          - {posting_key: f, company_name: "Netcompany-Intrasoft S.A."}
+          - {posting_key: g, company_name: "S.A."}
+          - {posting_key: h, company_name: null}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, company_key: aegean payments}
+        - {posting_key: b, company_key: ote}
+        - {posting_key: c, company_key: skroutz}
+        - {posting_key: d, company_key: ionian cloud}
+        - {posting_key: e, company_key: workable}
+        - {posting_key: f, company_key: netcompany intrasoft}
+        - {posting_key: g, company_key: sa}
+        - {posting_key: h, company_key: null}
+
+  - name: stg_postings_city
+    description: >
+      The location is tried before the title. The first place in the text
+      wins, and of places that start at the same spot the longest. No
+      match gives Unknown.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, location_text: "Αθήνα, Αττική, Ελλάδα; Θεσσαλονίκη, Ελλάδα"}
+          - {posting_key: b, location_text: "Athens, Attica, Greece"}
+          - {posting_key: c, location_text: "Μαρούσι"}
+          - {posting_key: d, location_text: "Ηράκλειο Αττικής"}
+          - {posting_key: e, location_text: "Νέο Ηράκλειο"}
+          - {posting_key: f, location_text: "Ηράκλειο, Κρήτη"}
+          - {posting_key: g, location_text: "Remote - Greece", title: "Backend Engineer (Thessaloniki)"}
+          - {posting_key: h, location_text: "Πάτρα", title: "Data Analyst, Athens office"}
+          - {posting_key: i, location_text: null, title: "Software Engineer"}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, city: Athens, region: Attica}
+        - {posting_key: b, city: Athens, region: Attica}
+        - {posting_key: c, city: Athens, region: Attica}
+        - {posting_key: d, city: Athens, region: Attica}
+        - {posting_key: e, city: Athens, region: Attica}
+        - {posting_key: f, city: Heraklion, region: Crete}
+        - {posting_key: g, city: Thessaloniki, region: Central Macedonia}
+        - {posting_key: h, city: Patras, region: Western Greece}
+        - {posting_key: i, city: Unknown, region: Unknown}

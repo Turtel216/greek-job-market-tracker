@@ -75,8 +75,9 @@ seeds:
     description: >
       Place names found in location text, mapped to a city and region. The
       city is the metropolitan area, so Attica suburbs and Piraeus map to
-      Athens. When several aliases match, the longest wins, so
-      "ηρακλειο αττικησ" beats "ηρακλειο". Values that match nothing
+      Athens. When several aliases match, the one that comes first in the
+      text wins, and of those the longest, so "ηρακλειο αττικησ" beats
+      "ηρακλειο" and the first of two listed cities is used. Values that match nothing
       become Unknown and show up in qa_unmapped_locations.
     config:
       column_types:

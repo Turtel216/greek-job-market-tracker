@@ -46,3 +46,104 @@ models:
         description: Adapter parser version.
       - name: load_id
         description: The load task run that wrote the row.
+
+  - name: stg_postings
+    description: >
+      The latest cleaned version of each posting, from its newest raw row.
+      Text is normalized with normalize_text, the city and company key come
+      from the alias seeds, work mode, seniority and role family from the
+      rule seeds, and the salary from parse_salary. See "Transformation
+      logic" in the design doc.
+    columns:
+      - name: posting_key
+        description: Primary key. md5 of source and source_job_id.
+        data_tests:
+          - unique
+          - not_null
+      - name: source
+        description: Source name from config/sources.yml.
+        data_tests:
+          - not_null
+      - name: source_job_id
+        description: The posting's id on its source.
+        data_tests:
+          - not_null
+      - name: url
+        description: Canonical posting URL.
+      - name: title
+        description: Display title.
+      - name: title_normalized
+        description: The title after normalize_text, used for matching and dedup.
+      - name: company_name
+        description: Display company name.
+      - name: company_key
+        description: >
+          Normalized company name without dots or legal suffixes, mapped
+          through company_aliases. The blocking key for deduplication.
+      - name: city
+        description: Canonical English city name from city_aliases, or Unknown.
+        data_tests:
+          - not_null
+      - name: region
+        description: Region of the city, or Unknown.
+        data_tests:
+          - not_null
+      - name: work_mode
+        description: From work_mode_rules on the workplace, location, title and description.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [remote, hybrid, onsite, unknown]
+      - name: seniority
+        description: From seniority_rules on the title. unknown when the title gives no signal.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [intern, junior, mid, senior, lead, unknown]
+      - name: role_family
+        description: From role_family_rules on the title, then the department.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+      - name: salary_min_monthly
+        description: >
+          Lower monthly amount. Null when no salary is given, the period is
+          not annual or monthly, or the amount looks wrong.
+      - name: salary_max_monthly
+        description: Upper monthly amount, null in the same cases.
+      - name: salary_currency
+        description: ISO currency code, EUR when the text names none. Null with no amount.
+        data_tests:
+          - matches_pattern:
+              arguments:
+                pattern: "^[A-Z]{3}$"
+      - name: salary_basis
+        description: gross, net or unknown. Null with no amount.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [gross, net, unknown]
+      - name: salary_period
+        description: >
+          The period the salary was stated in. Weekly, daily and hourly
+          amounts are not turned into monthly ones. Null with no amount.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [annual, monthly, weekly, daily, hourly]
+      - name: salary_text
+        description: The salary as the source gave it, for checking failed parses.
+      - name: description_text
+        description: The description after normalize_text, used for skill extraction.
+      - name: content_hash
+        description: sha256 of the parsed fields. Drives the snapshot.
+        data_tests:
+          - not_null
+      - name: last_run_date
+        description: Newest run that saw the posting.
+        data_tests:
+          - not_null

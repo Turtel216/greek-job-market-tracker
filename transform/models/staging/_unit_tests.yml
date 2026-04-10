@@ -37,3 +37,58 @@ unit_tests:
           company_name: null
           salary_text: "Base salary: 56000 - 70000 EUR"
           description: null
+
+  - name: stg_postings_normalize_text
+    description: >
+      normalize_text lowercases, strips Greek and Latin accents, writes the
+      final sigma as a normal one, keeps + # . and turns other punctuation
+      into single spaces.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - posting_key: a
+            title: "Προγραμματιστής C++/C# & .NET – Αθήνα"
+            description: "Γνώσεις Python,\nSQL & Docker."
+          - posting_key: b
+            title: "  ΥΠΕΥΘΥΝΟΣ   Ανάπτυξης_Λογισμικού (Node.js)!! "
+          - posting_key: c
+            title: "Προϊστάμενος Ομάδας Ποιοτικού Ελέγχου"
+          - posting_key: d
+            title: "Ingénieur Données, Zürich"
+          - posting_key: e
+            title: "---"
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, title_normalized: "προγραμματιστησ c++ c# .net αθηνα", description_text: "γνωσεισ python sql docker."}
+        - {posting_key: b, title_normalized: "υπευθυνοσ αναπτυξησ λογισμικου node.js", description_text: null}
+        - {posting_key: c, title_normalized: "προισταμενοσ ομαδασ ποιοτικου ελεγχου", description_text: null}
+        - {posting_key: d, title_normalized: "ingenieur donnees zurich", description_text: null}
+        - {posting_key: e, title_normalized: null, description_text: null}
+
+  - name: stg_postings_latest_row
+    description: Each posting keeps its newest raw row, and last_run_date is that row's run_date.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, run_date: "2026-10-20", title: Backend Developer, content_hash: old}
+          - {posting_key: a, run_date: "2026-10-25", title: Senior Backend Developer, content_hash: new}
+          - {posting_key: a, run_date: "2026-10-22", title: Backend Engineer, content_hash: middle}
+          - {posting_key: b, run_date: "2026-10-21", title: QA Engineer, content_hash: only}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, title: Senior Backend Developer, content_hash: new, last_run_date: "2026-10-25"}
+        - {posting_key: b, title: QA Engineer, content_hash: only, last_run_date: "2026-10-21"}

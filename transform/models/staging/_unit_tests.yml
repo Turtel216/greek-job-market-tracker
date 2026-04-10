@@ -277,3 +277,48 @@ unit_tests:
         - {posting_key: k, role_family: mobile}
         - {posting_key: l, role_family: other}
         - {posting_key: m, role_family: other}
+
+  - name: stg_postings_salary
+    description: >
+      parse_salary reads one or two amounts, the period, basis and currency.
+      Annual amounts are divided by salaries_per_year (14). Hourly pay and
+      monthly amounts outside 400 to 20000 keep their labels but get no
+      monthly amounts.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, salary_text: "2000 - 2500 EUR per month"}
+          - {posting_key: b, salary_text: "53000 - 72000 EUR per year"}
+          - {posting_key: c, salary_text: "Base salary: 56000 - 70000 EUR"}
+          - {posting_key: d, salary_text: "1.200€ - 1.500€ μικτά μηνιαίως"}
+          - {posting_key: e, salary_text: "Από 25.000 έως 30.000 € ετησίως καθαρά"}
+          - {posting_key: f, salary_text: "25-30k gross"}
+          - {posting_key: g, salary_text: "1800.50 EUR; 2500"}
+          - {posting_key: h, salary_text: "1.250,50 EUR"}
+          - {posting_key: i, salary_text: "£40,000 - £50,000"}
+          - {posting_key: j, salary_text: "12.5 - 18 EUR per hour"}
+          - {posting_key: k, salary_text: "300 EUR per month"}
+          - {posting_key: l, salary_text: "Ανταγωνιστικές αποδοχές"}
+          - {posting_key: m, salary_text: null}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, salary_min_monthly: "2000.00", salary_max_monthly: "2500.00", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: b, salary_min_monthly: "3785.71", salary_max_monthly: "5142.86", salary_currency: EUR, salary_basis: unknown, salary_period: annual}
+        - {posting_key: c, salary_min_monthly: "4000.00", salary_max_monthly: "5000.00", salary_currency: EUR, salary_basis: unknown, salary_period: annual}
+        - {posting_key: d, salary_min_monthly: "1200.00", salary_max_monthly: "1500.00", salary_currency: EUR, salary_basis: gross, salary_period: monthly}
+        - {posting_key: e, salary_min_monthly: "1785.71", salary_max_monthly: "2142.86", salary_currency: EUR, salary_basis: net, salary_period: annual}
+        - {posting_key: f, salary_min_monthly: "1785.71", salary_max_monthly: "2142.86", salary_currency: EUR, salary_basis: gross, salary_period: annual}
+        - {posting_key: g, salary_min_monthly: "1800.50", salary_max_monthly: "1800.50", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: h, salary_min_monthly: "1250.50", salary_max_monthly: "1250.50", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: i, salary_min_monthly: "2857.14", salary_max_monthly: "3571.43", salary_currency: GBP, salary_basis: unknown, salary_period: annual}
+        - {posting_key: j, salary_min_monthly: null, salary_max_monthly: null, salary_currency: EUR, salary_basis: unknown, salary_period: hourly}
+        - {posting_key: k, salary_min_monthly: null, salary_max_monthly: null, salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: l, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, salary_period: null}
+        - {posting_key: m, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, salary_period: null}

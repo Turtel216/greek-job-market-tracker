@@ -14,7 +14,8 @@ Phase 3, Modeling. Phases 1 and 2 are done: the repo skeleton, tooling,
 Postgres, the object store and the ingestion adapters are in place.
 Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
 the loader writes each run to `raw` and `ops`. CI runs lint and the Python
-tests on every pull request. The dbt project has its seeds; the models come
+tests on every pull request. The dbt project has its seeds and the staging
+models with their unit tests; snapshots, intermediate models and marts come
 next.
 
 ## Repository layout
@@ -161,6 +162,35 @@ lowercase, no accents, final sigma as σ, single spaces. The tests in
 `transform/seeds/_seeds.yml` check this, so a new row in the wrong form
 fails `dbt build`. To improve matching, edit the CSV and run
 `make test-dbt`.
+
+The staging models read `raw.raw_postings`:
+
+| Model | Grain | Contents |
+| --- | --- | --- |
+| `stg_raw_postings` (view) | posting and run_date | `posting_key` and tidy display text, nothing heavier |
+| `stg_postings` (table) | posting | The newest row of each posting with normalized text, `company_key`, city, work mode, seniority, role family and monthly salary |
+
+The logic lives in macros in `transform/macros/`:
+
+| Macro | Does |
+| --- | --- |
+| `normalize_text` | Lowercase, strip accents, final sigma to σ, punctuation other than `+ # .` to spaces |
+| `match_rules` | Picks the value of the best rule in a keyword rule seed |
+| `parse_salary` | Turns salary text into a monthly range with currency, basis and period |
+
+The salary settings are dbt vars in `transform/dbt_project.yml`:
+`salaries_per_year` (14), the annual threshold and the monthly bounds.
+
+Unit tests for these rules are in `transform/models/staging/_unit_tests.yml`,
+with real Greek and English examples. They run as part of `dbt build`
+against the real seed files, so a seed change that breaks a rule fails the
+build. dbt needs to create temporary tables for them; a database created
+before that grant was added needs it once:
+
+```sh
+docker compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+    -c "grant temporary on database $POSTGRES_DB to transformer"'
+```
 
 ## CI
 

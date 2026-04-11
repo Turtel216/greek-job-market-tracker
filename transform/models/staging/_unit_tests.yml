@@ -285,7 +285,8 @@ unit_tests:
       parse_salary reads one or two amounts, the period, basis and currency.
       Annual amounts are divided by salaries_per_year (14). Hourly pay and
       monthly amounts outside 400 to 20000 keep their labels but get no
-      monthly amounts.
+      monthly amounts. Gross or net comes from the salary text, or else
+      from a salary sentence in the description.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -303,6 +304,16 @@ unit_tests:
           - {posting_key: k, salary_text: "300 EUR per month"}
           - {posting_key: l, salary_text: "Ανταγωνιστικές αποδοχές"}
           - {posting_key: m, salary_text: null}
+          # Gross or net from a salary sentence in the description
+          - {posting_key: n, salary_text: "2000 - 2500 EUR per month", description: "Μικτές αποδοχές 2.000 - 2.500 € μηνιαίως."}
+          - {posting_key: o, salary_text: "53000 - 72000 EUR per year", description: "Gross annual salary 53,000 - 72,000 EUR."}
+          - {posting_key: p, salary_text: "1500 EUR per month", description: "Καθαρές αποδοχές από 1.500 €."}
+          - {posting_key: q, salary_text: "1500 EUR καθαρά", description: "Μικτές αποδοχές 2.000 €."}
+          - {posting_key: r, salary_text: "2000 EUR per month", description: ".NET developer, salary 2000 EUR."}
+          - {posting_key: s, salary_text: "2000 EUR per month", description: "Γράφεις καθαρό κώδικα. Μισθός 2000 €."}
+          - {posting_key: t, salary_text: null, description: "Μικτές αποδοχές 1.800 - 2.200 € μηνιαίως."}
+          # The Greenhouse format, with the blurb before the amounts
+          - {posting_key: u, salary_text: "Base salary (Gross per year, over 14 payments.): 56000 - 70000 EUR"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -324,3 +335,11 @@ unit_tests:
         - {posting_key: k, salary_min_monthly: null, salary_max_monthly: null, salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
         - {posting_key: l, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, salary_period: null}
         - {posting_key: m, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, salary_period: null}
+        - {posting_key: n, salary_min_monthly: "2000.00", salary_max_monthly: "2500.00", salary_currency: EUR, salary_basis: gross, salary_period: monthly}
+        - {posting_key: o, salary_min_monthly: "3785.71", salary_max_monthly: "5142.86", salary_currency: EUR, salary_basis: gross, salary_period: annual}
+        - {posting_key: p, salary_min_monthly: "1500.00", salary_max_monthly: "1500.00", salary_currency: EUR, salary_basis: net, salary_period: monthly}
+        - {posting_key: q, salary_min_monthly: "1500.00", salary_max_monthly: "1500.00", salary_currency: EUR, salary_basis: net, salary_period: monthly}
+        - {posting_key: r, salary_min_monthly: "2000.00", salary_max_monthly: "2000.00", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: s, salary_min_monthly: "2000.00", salary_max_monthly: "2000.00", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}
+        - {posting_key: t, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, salary_period: null}
+        - {posting_key: u, salary_min_monthly: "4000.00", salary_max_monthly: "5000.00", salary_currency: EUR, salary_basis: gross, salary_period: annual}

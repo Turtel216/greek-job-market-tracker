@@ -9,14 +9,36 @@
 -- hourly, since those cannot be turned into a month, and when either
 -- monthly amount is outside the salary_monthly_min and _max vars.
 --
+-- The salary text often leaves out gross or net while the description
+-- says it, as in "Miktes apodoxes 2.000 - 2.500 euro". So when a normalized
+-- description is passed, it is searched for gross or net within two words
+-- of a salary word or an amount, in the same sentence. Searching the whole
+-- description would be wrong: the Greek for net also means clearly or
+-- clean, and .NET is a skill.
+--
 -- Each step below is a lateral subquery that reads the ones before it.
-{% macro parse_salary(column) -%}
+{% macro parse_salary(column, description=none) -%}
 
     {%- set currencies = 'eur|usd|gbp|chf|pln|ron|bgn|czk|huf|sek|nok|dkk' -%}
     {#- One or more digits, with . or , between groups -#}
     {%- set amount = "'\\d+([.,]\\d+)*'" -%}
     {#- A dot or comma followed by exactly 3 digits separates thousands -#}
     {%- set thousands = "'[.,](?=\\d{3}(\\D|$))'" -%}
+    {#- Patterns for gross or net next to pay in a normalized description.
+        No dot may come before the word, so .net is skipped, and the words
+        in between may not end a sentence. -#}
+    {%- set before = '(^|[^a-z0-9α-ω.#+])' -%}
+    {%- set after = '($|[^a-z0-9α-ω])' -%}
+    {%- set gap = '( [^ ]*[^ .]){0,2} ' -%}
+    {%- set pay = '(αποδοχ[α-ω]*|μισθ[α-ω]*|salary|pay|eur|ευρω|\\d{3,}|\\d+(\\.\\d{3})+|\\d+k)' -%}
+    {%- set gross = '(μικτ[α-ω]*|gross|brutto)' -%}
+    {%- set net = '(καθαρ[α-ω]*|net|netto)' -%}
+    {%- set gross_near = before ~ gross ~ gap ~ pay ~ after
+        ~ '|' ~ before ~ pay ~ gap ~ gross ~ after -%}
+    {%- set net_near = before ~ net ~ gap ~ pay ~ after
+        ~ '|' ~ before ~ pay ~ gap ~ net ~ after -%}
+    {#- Without a description these checks see null, which never matches -#}
+    {%- set description = description or 'null::text' -%}
 
     select
         case when salary_bounds.in_bounds then salary_monthly.low end as salary_min_monthly,
@@ -56,8 +78,11 @@
                 'EUR'
             ) as currency,
             case
+                when salary_normalized.words is null then null
                 when salary_normalized.words ~ {{ whole_words("'μικτ[α-ω]*|gross|brutto'") }} then 'gross'
                 when salary_normalized.words ~ {{ whole_words("'καθαρ[α-ω]*|net|netto'") }} then 'net'
+                when {{ description }} ~ '{{ gross_near }}' then 'gross'
+                when {{ description }} ~ '{{ net_near }}' then 'net'
                 else 'unknown'
             end as basis
     ) as salary_labels

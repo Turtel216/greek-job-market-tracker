@@ -122,7 +122,9 @@ models:
               arguments:
                 pattern: "^[A-Z]{3}$"
       - name: salary_basis
-        description: gross, net or unknown. Null with no amount.
+        description: >
+          gross, net or unknown, from the salary text or else from a salary
+          sentence in the description. Null with no amount.
         data_tests:
           - accepted_values:
               arguments:

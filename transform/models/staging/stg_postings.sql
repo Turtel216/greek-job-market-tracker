@@ -209,7 +209,7 @@ final as (
     inner join classified on normalized.posting_key = classified.posting_key
     -- The macro is a lateral subquery, so it cannot be a CTE
     left join lateral (  -- noqa: ST05
-        {{ parse_salary('normalized.salary_text') }}
+        {{ parse_salary('normalized.salary_text', 'normalized.description_text') }}
     ) as salary on true
 )
 

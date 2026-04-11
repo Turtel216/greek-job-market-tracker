@@ -183,6 +183,7 @@ unit_tests:
           - {posting_key: j, title: "Java Developer", description: "Εργασία εξ αποστάσεως ή στο γραφείο."}
           - {posting_key: k, description: "We welcome disabled applicants."}
           - {posting_key: l, title: "Java Developer"}
+          - {posting_key: m, workplace_text: TEMPORARILY_REMOTE}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -203,6 +204,7 @@ unit_tests:
         - {posting_key: j, work_mode: remote}
         - {posting_key: k, work_mode: unknown}
         - {posting_key: l, work_mode: unknown}
+        - {posting_key: m, work_mode: remote}
 
   - name: stg_postings_seniority
     description: Seniority comes from the title only, and a title with no signal is unknown, not mid.

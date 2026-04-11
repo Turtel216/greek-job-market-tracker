@@ -9,11 +9,11 @@
   "location_raw": "Athens, Attica, Greece",
   "workplace_raw": "Hybrid",
   "employment_type_raw": "Full-time",
-  "salary_raw": "Base salary: 56000 - 70000 EUR",
+  "salary_raw": "Base salary (Gross per year, over 14 payments.): 56000 - 70000 EUR",
   "department_raw": "Data Platform",
   "description_raw": "About the role\nWe are looking for a Senior Data Engineer to build our batch & streaming pipelines on AWS.\nWhat you will do\nDesign and run pipelines with Python, Airflow and dbt\nModel data in PostgreSQL and Snowflake\nWhat we offer\nHybrid work, 2 days in our Marousi office\nPrivate health insurance",
   "posted_at_raw": "2026-10-01T09:15:00-04:00",
   "object_key": "raw/greenhouse/2026-10-25/run/detail/4012345008.json.gz",
-  "parser_version": "1",
-  "content_hash": "0f644d165ef54e50acbe4a02f251cac5d9d23f507418b165b052ebd2219af77c"
+  "parser_version": "2",
+  "content_hash": "4191c4ad14c9f927e66e4208ed27b3da49d49acfe7b93243046e855658d35818"
 }

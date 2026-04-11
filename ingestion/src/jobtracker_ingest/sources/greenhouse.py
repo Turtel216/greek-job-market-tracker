@@ -27,7 +27,7 @@ EMPLOYMENT_FIELDS = ("employment type", "job type", "contract type")
 
 class GreenhouseAdapter:
     name: ClassVar[str] = "greenhouse"
-    PARSER_VERSION: ClassVar[str] = "1"
+    PARSER_VERSION: ClassVar[str] = "2"
 
     def list_postings(self, ctx: RunContext) -> Iterator[ListingRef]:
         base = ctx.config.base_url.rstrip("/")
@@ -134,10 +134,11 @@ def names(items: Any) -> str | None:
 
 
 def salary_text(ranges: Any) -> str | None:
-    """Pay ranges as text, for example "Base salary: 40000 - 60000 EUR".
+    """Pay ranges as text, for example "Base salary (Gross): 40000 - 60000 EUR".
 
     Greenhouse gives amounts in cents and no period, so dbt decides whether
-    a range is monthly or annual.
+    a range is monthly or annual. The blurb often says gross or net and the
+    period, so it is kept next to the title.
     """
     parts = []
     for pay in ranges or []:
@@ -150,9 +151,13 @@ def salary_text(ranges: Any) -> str | None:
         currency = clean(pay.get("currency_type"))
         if currency:
             text = f"{text} {currency}"
+        # The label goes before the colon because dbt reads amounts only after
+        # the last one, and a blurb like "over 14 payments" has numbers too
         title = clean(pay.get("title"))
-        if title:
-            text = f"{title}: {text}"
+        blurb = blurb_text(pay.get("blurb"))
+        label = f"{title} ({blurb})" if title and blurb else title or blurb
+        if label:
+            text = f"{label}: {text}"
         parts.append(text)
     return "; ".join(parts) or None
 
@@ -162,6 +167,17 @@ def cents_to_text(cents: Any) -> str | None:
         return None
     whole, rest = divmod(round(cents), 100)
     return str(whole) if rest == 0 else f"{whole}.{rest:02d}"
+
+
+def blurb_text(blurb: Any) -> str | None:
+    """A pay range blurb on one line.
+
+    Semicolons separate pay ranges in salary_raw, so they become commas.
+    """
+    text = html_to_text(blurb)
+    if not text:
+        return None
+    return " ".join(text.split()).replace(";", ",")
 
 
 def html_to_text(content: Any) -> str | None:

@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from jobtracker_ingest.core.models import RawPayload
-from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
+from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter, salary_text
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "greenhouse"
 DETAILS = sorted(FIXTURES.glob("detail-*.json"))
@@ -50,3 +50,26 @@ def test_parse_matches_expected(path: Path) -> None:
 def test_parse_is_repeatable(path: Path) -> None:
     adapter = GreenhouseAdapter()
     assert adapter.parse(payload_for(path)) == adapter.parse(payload_for(path))
+
+
+@pytest.mark.parametrize(
+    ("ranges", "text"),
+    [
+        (
+            [{"min_cents": 4000000, "max_cents": 6000000, "currency_type": "EUR"}],
+            "40000 - 60000 EUR",
+        ),
+        (
+            [{"min_cents": 4000000, "currency_type": "EUR", "title": "Base", "blurb": "Gross"}],
+            "Base (Gross): 40000 EUR",
+        ),
+        # The blurb on its own, as HTML, with a semicolon that would split it
+        (
+            [{"min_cents": 180000, "blurb": "<p>Net per month;\n paid 14 times</p>"}],
+            "Net per month, paid 14 times: 1800",
+        ),
+        ([{"min_cents": 180000, "title": " ", "blurb": " "}], "1800"),
+    ],
+)
+def test_salary_text(ranges: object, text: str | None) -> None:
+    assert salary_text(ranges) == text

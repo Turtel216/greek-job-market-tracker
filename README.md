@@ -176,7 +176,7 @@ The logic lives in macros in `transform/macros/`:
 | --- | --- |
 | `normalize_text` | Lowercase, strip accents, final sigma to σ, punctuation other than `+ # .` to spaces |
 | `match_rules` | Picks the value of the best rule in a keyword rule seed |
-| `parse_salary` | Turns salary text into a monthly range with currency, basis and period |
+| `parse_salary` | Turns salary text into a monthly range with currency, basis and period; reads gross or net from a salary sentence in the description when the salary text says neither |
 
 The salary settings are dbt vars in `transform/dbt_project.yml`:
 `salaries_per_year` (14), the annual threshold and the monthly bounds.

@@ -53,3 +53,21 @@ sources:
             description: Adapter parser version.
           - name: load_id
             description: One per load task run.
+
+  - name: ops
+    schema: ops
+    description: Operational tables written by the loader.
+    tables:
+      - name: ingest_runs
+        description: >
+          One row per extract run that was loaded. A failed extract writes no
+          manifest, so it never gets a row here.
+        columns:
+          - name: source
+            description: Source name from config/sources.yml.
+          - name: run_id
+            description: The extract run. Unique with source.
+          - name: run_date
+            description: Europe/Athens date of the run.
+          - name: status
+            description: succeeded or failed. A load fails when it parses nothing from a non-empty listing.

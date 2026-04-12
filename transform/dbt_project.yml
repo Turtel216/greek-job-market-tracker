@@ -21,12 +21,28 @@ vars:
   # Monthly amounts outside these bounds are treated as parse failures
   salary_monthly_min: 400
   salary_monthly_max: 20000
+  # A posting closes once it is missing from this many successful runs of
+  # its source in a row (ADR-003)
+  missed_runs_to_close: 2
 
 models:
   jobtracker:
     staging:
       +schema: staging
       +materialized: view
+    intermediate:
+      +schema: intermediate
+      +materialized: table
+    # Marts are a contract with the dashboard, so their schemas are enforced
+    marts:
+      +schema: marts
+      +materialized: table
+      +contract:
+        enforced: true
+
+snapshots:
+  jobtracker:
+    +schema: snapshots
 
 # Seeds are lookup tables for staging, so they live in the staging schema.
 # The transformer role cannot create schemas of its own.

@@ -1,0 +1,36 @@
+# How postings change over time, such as an edited title or salary. A new
+# version starts whenever a posting's content_hash changes. It does not
+# decide when a posting closes; int_posting_lifecycle does that.
+
+snapshots:
+  - name: snap_postings
+    description: >
+      One row per version of each posting in stg_postings. The check
+      strategy compares content_hash, so a change to any parsed field starts
+      a new version. Postings never leave stg_postings, so no version is
+      ever closed by a delete.
+    relation: ref('stg_postings')
+    config:
+      unique_key: posting_key
+      strategy: check
+      check_cols: [content_hash]
+    columns:
+      - name: posting_key
+        description: The posting. One row per version.
+        data_tests:
+          - not_null
+      - name: content_hash
+        description: sha256 of the parsed fields in this version.
+        data_tests:
+          - not_null
+      - name: dbt_scd_id
+        description: Unique id of the version.
+        data_tests:
+          - unique
+          - not_null
+      - name: dbt_valid_from
+        description: When dbt first saw this version.
+        data_tests:
+          - not_null
+      - name: dbt_valid_to
+        description: When the next version replaced it. Null for the current version.

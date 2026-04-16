@@ -1,0 +1,50 @@
+# Unit tests for the intermediate models. They run in `dbt build` before the
+# model they test.
+
+unit_tests:
+  - name: int_posting_lifecycle_closing
+    description: >
+      A posting closes after it is missing from 2 successful runs of its
+      source, and closed_date is the first of them. Failed runs do not
+      count, and a day with one failed and one succeeded load does. A source
+      with no runs in ops.ingest_runs never closes anything.
+    model: int_posting_lifecycle
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          # Seen in the latest successful run
+          - {posting_key: a, source: kariera, run_date: "2026-10-01"}
+          - {posting_key: a, source: kariera, run_date: "2026-10-02"}
+          - {posting_key: a, source: kariera, run_date: "2026-10-05"}
+          # Missing from the run on the 5th only; the 4th failed
+          - {posting_key: b, source: kariera, run_date: "2026-10-01"}
+          - {posting_key: b, source: kariera, run_date: "2026-10-03"}
+          # Missing from the runs on the 2nd, 3rd and 5th
+          - {posting_key: c, source: kariera, run_date: "2026-10-01"}
+          # Missing from the runs on the 3rd and 4th
+          - {posting_key: d, source: greenhouse, run_date: "2026-10-01"}
+          - {posting_key: d, source: greenhouse, run_date: "2026-10-02"}
+          # Missing from the run on the 4th only
+          - {posting_key: e, source: greenhouse, run_date: "2026-10-03"}
+          # A source with no runs recorded
+          - {posting_key: f, source: lever, run_date: "2026-10-01"}
+      - input: source('ops', 'ingest_runs')
+        rows:
+          - {source: kariera, run_id: k1, run_date: "2026-10-01", status: succeeded}
+          - {source: kariera, run_id: k2, run_date: "2026-10-02", status: succeeded}
+          - {source: kariera, run_id: k3, run_date: "2026-10-03", status: succeeded}
+          - {source: kariera, run_id: k4, run_date: "2026-10-04", status: failed}
+          - {source: kariera, run_id: k5, run_date: "2026-10-05", status: succeeded}
+          - {source: greenhouse, run_id: g1, run_date: "2026-10-01", status: succeeded}
+          - {source: greenhouse, run_id: g2, run_date: "2026-10-02", status: succeeded}
+          - {source: greenhouse, run_id: g3, run_date: "2026-10-03", status: succeeded}
+          - {source: greenhouse, run_id: g4a, run_date: "2026-10-04", status: failed}
+          - {source: greenhouse, run_id: g4b, run_date: "2026-10-04", status: succeeded}
+    expect:
+      rows:
+        - {posting_key: a, source: kariera, first_seen: "2026-10-01", last_seen: "2026-10-05", missed_runs: 0, is_open: true, closed_date: null}
+        - {posting_key: b, source: kariera, first_seen: "2026-10-01", last_seen: "2026-10-03", missed_runs: 1, is_open: true, closed_date: null}
+        - {posting_key: c, source: kariera, first_seen: "2026-10-01", last_seen: "2026-10-01", missed_runs: 3, is_open: false, closed_date: "2026-10-02"}
+        - {posting_key: d, source: greenhouse, first_seen: "2026-10-01", last_seen: "2026-10-02", missed_runs: 2, is_open: false, closed_date: "2026-10-03"}
+        - {posting_key: e, source: greenhouse, first_seen: "2026-10-03", last_seen: "2026-10-03", missed_runs: 1, is_open: true, closed_date: null}
+        - {posting_key: f, source: lever, first_seen: "2026-10-01", last_seen: "2026-10-01", missed_runs: 0, is_open: true, closed_date: null}

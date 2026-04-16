@@ -1,0 +1,41 @@
+models:
+  - name: int_posting_lifecycle
+    description: >
+      When each posting was first and last seen, and whether it is still
+      open. A posting closes once it is missing from missed_runs_to_close
+      (2) successful runs of its source in a row; closed_date is the first
+      of those runs. Only runs with a succeeded row in ops.ingest_runs
+      count, so a failed run never closes anything (ADR-003). A posting
+      that comes back after closing is open again.
+    columns:
+      - name: posting_key
+        description: Primary key. md5 of source and source_job_id.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postings')
+                field: posting_key
+      - name: source
+        description: Source name from config/sources.yml.
+        data_tests:
+          - not_null
+      - name: first_seen
+        description: run_date of the first run that saw the posting.
+        data_tests:
+          - not_null
+      - name: last_seen
+        description: run_date of the newest run that saw the posting.
+        data_tests:
+          - not_null
+      - name: missed_runs
+        description: Successful runs of the source since the posting was last seen.
+        data_tests:
+          - not_null
+      - name: is_open
+        description: True while the posting has missed fewer than missed_runs_to_close runs.
+        data_tests:
+          - not_null
+      - name: closed_date
+        description: The first successful run the posting was missing from. Null while open.

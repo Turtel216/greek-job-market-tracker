@@ -48,3 +48,55 @@ unit_tests:
         - {posting_key: d, source: greenhouse, first_seen: "2026-10-01", last_seen: "2026-10-02", missed_runs: 2, is_open: false, closed_date: "2026-10-03"}
         - {posting_key: e, source: greenhouse, first_seen: "2026-10-03", last_seen: "2026-10-03", missed_runs: 1, is_open: true, closed_date: null}
         - {posting_key: f, source: lever, first_seen: "2026-10-01", last_seen: "2026-10-01", missed_runs: 0, is_open: true, closed_date: null}
+
+  - name: int_posting_skills_patterns
+    description: >
+      Aliases match whole words, so java stays out of javascript and c out
+      of c++ and c#, while c++, c#, .net and node.js count as words. Go, R,
+      C and React use their pattern_override: go needs golang or a word such
+      as developer next to it, r and c need context, objective c is not c,
+      and react native is not react. The title wins over the description.
+      Inputs are already normalized, as stg_postings gives them.
+    model: int_posting_skills
+    given:
+      - input: ref('stg_postings')
+        rows:
+          - {posting_key: a, title_normalized: "senior java developer", description_text: "spring boot and postgresql. javascript is a plus."}
+          - {posting_key: b, title_normalized: "c++ c# .net developer", description_text: null}
+          - {posting_key: c, title_normalized: "golang engineer", description_text: "we use go and react native. let s go"}
+          - {posting_key: d, title_normalized: "data analyst", description_text: "r and python sql. excel."}
+          - {posting_key: e, title_normalized: "backend engineer", description_text: "you will go to the office. we value clean code."}
+          - {posting_key: f, title_normalized: "full stack engineer node.js", description_text: "react typescript and aws. ci with github actions."}
+          - {posting_key: g, title_normalized: "μηχανικοσ λογισμικου java", description_text: "εμπειρια σε docker και kubernetes k8s."}
+          - {posting_key: h, title_normalized: "embedded c engineer", description_text: "c c++ and python"}
+          - {posting_key: i, title_normalized: "objective c developer", description_text: null}
+          - {posting_key: j, title_normalized: "javascript developer", description_text: null}
+      - input: ref('skill_aliases')
+    expect:
+      rows:
+        - {posting_key: a, skill_id: java, matched_in: title}
+        - {posting_key: a, skill_id: spring, matched_in: description}
+        - {posting_key: a, skill_id: postgresql, matched_in: description}
+        - {posting_key: a, skill_id: javascript, matched_in: description}
+        - {posting_key: b, skill_id: cpp, matched_in: title}
+        - {posting_key: b, skill_id: csharp, matched_in: title}
+        - {posting_key: b, skill_id: dotnet, matched_in: title}
+        - {posting_key: c, skill_id: go, matched_in: title}
+        - {posting_key: c, skill_id: react_native, matched_in: description}
+        - {posting_key: d, skill_id: r, matched_in: description}
+        - {posting_key: d, skill_id: python, matched_in: description}
+        - {posting_key: d, skill_id: sql, matched_in: description}
+        - {posting_key: d, skill_id: excel, matched_in: description}
+        - {posting_key: f, skill_id: nodejs, matched_in: title}
+        - {posting_key: f, skill_id: react, matched_in: description}
+        - {posting_key: f, skill_id: typescript, matched_in: description}
+        - {posting_key: f, skill_id: aws, matched_in: description}
+        - {posting_key: f, skill_id: github_actions, matched_in: description}
+        - {posting_key: g, skill_id: java, matched_in: title}
+        - {posting_key: g, skill_id: docker, matched_in: description}
+        - {posting_key: g, skill_id: kubernetes, matched_in: description}
+        - {posting_key: h, skill_id: c, matched_in: title}
+        - {posting_key: h, skill_id: cpp, matched_in: description}
+        - {posting_key: h, skill_id: python, matched_in: description}
+        - {posting_key: i, skill_id: objective_c, matched_in: title}
+        - {posting_key: j, skill_id: javascript, matched_in: title}

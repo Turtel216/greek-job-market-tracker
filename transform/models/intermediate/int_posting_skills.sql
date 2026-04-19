@@ -19,6 +19,9 @@ skill_aliases as (
 alias_patterns as (
     select
         skill_id,
+        -- Text a posting must contain for the regex to match. An override
+        -- has no single word to look for.
+        case when nullif(pattern_override, '') is null then alias end as hint,
         coalesce(
             nullif(pattern_override, ''),
             '(^|[^a-z0-9+#.])'
@@ -28,26 +31,28 @@ alias_patterns as (
     from skill_aliases
 ),
 
--- Each pattern is tried on every posting before the next one. Postgres
--- keeps only a few compiled regexes, so going pattern by pattern compiles
--- each one once. offset 0 stops the planner from turning the lateral
--- subquery into a plain join, which could go posting by posting instead.
+-- Postgres keeps only a few compiled regexes, so running every alias regex
+-- on every posting would compile them again and again. A cheap strpos
+-- check runs first, and the regex only where the hint is found, whatever
+-- order the planner picks. The case makes sure of that. Null means no match.
 found as (
     select
+        postings.posting_key,
         alias_patterns.skill_id,
-        alias_matches.posting_key,
-        alias_matches.in_title
-    from alias_patterns
-    cross join lateral (
-        select
-            postings.posting_key,
-            coalesce(postings.title_normalized ~ alias_patterns.pattern, false) as in_title
-        from postings
-        where
-            postings.title_normalized ~ alias_patterns.pattern
-            or postings.description_text ~ alias_patterns.pattern
-        offset 0  -- noqa: AM09
-    ) as alias_matches
+        case
+            when
+                alias_patterns.hint is null
+                or strpos(postings.title_normalized, alias_patterns.hint) > 0
+                then postings.title_normalized ~ alias_patterns.pattern
+        end as in_title,
+        case
+            when
+                alias_patterns.hint is null
+                or strpos(postings.description_text, alias_patterns.hint) > 0
+                then postings.description_text ~ alias_patterns.pattern
+        end as in_description
+    from postings
+    cross join alias_patterns
 ),
 
 -- A skill can have several aliases in one posting. The title wins.
@@ -57,6 +62,7 @@ final as (
         skill_id,
         case when bool_or(in_title) then 'title' else 'description' end as matched_in
     from found
+    where in_title or in_description
     group by posting_key, skill_id
 )
 

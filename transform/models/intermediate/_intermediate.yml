@@ -39,3 +39,38 @@ models:
           - not_null
       - name: closed_date
         description: The first successful run the posting was missing from. Null while open.
+
+  - name: int_posting_skills
+    description: >
+      Skills found in each posting. An alias from skill_aliases matches the
+      normalized title or description when it stands alone, using the
+      boundary (^|[^a-z0-9+#.])alias($|[^a-z0-9+#]), or its pattern_override
+      when it has one. One row per posting and skill.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [posting_key, skill_id]
+    columns:
+      - name: posting_key
+        description: The posting.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postings')
+                field: posting_key
+      - name: skill_id
+        description: The skill found.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('skills')
+                field: skill_id
+      - name: matched_in
+        description: title when an alias is in the title, else description.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [title, description]

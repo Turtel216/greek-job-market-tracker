@@ -74,3 +74,28 @@ models:
           - accepted_values:
               arguments:
                 values: [title, description]
+
+  - name: int_job_matches
+    description: >
+      The real-world job each posting belongs to, one row per posting.
+      job_id is the posting_key of the earliest posting in its cluster
+      (ADR-004). Until deduplication lands in Phase 4 every posting is its
+      own cluster, so job_id equals posting_key.
+    columns:
+      - name: posting_key
+        description: Primary key. The posting.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_postings')
+                field: posting_key
+      - name: job_id
+        description: The job, as the posting_key of the earliest posting in its cluster.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('int_job_matches')
+                field: posting_key

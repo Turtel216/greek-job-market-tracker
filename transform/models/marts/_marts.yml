@@ -1,0 +1,33 @@
+# The marts are a contract with the dashboard: their schemas are enforced,
+# so a renamed column or a changed type fails the build. Changing one means
+# updating the design doc and the dashboard too. Metabase reads only these.
+
+models:
+  - name: dim_skills
+    description: One row per skill that skill extraction can find.
+    columns:
+      - name: skill_id
+        description: Primary key. Stable slug, such as postgresql.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+          - not_null
+      - name: name
+        description: Display name, such as PostgreSQL.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: category
+        description: Kind of skill.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [language, framework, database, cloud, tool]

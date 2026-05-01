@@ -24,6 +24,9 @@ vars:
   # A posting closes once it is missing from this many successful runs of
   # its source in a row (ADR-003)
   missed_runs_to_close: 2
+  # Sources with kind ats_api in config/sources.yml. Their postings are
+  # preferred over job board ones when dim_jobs picks a job's primary posting.
+  ats_sources: [greenhouse, lever, workable]
 
 models:
   jobtracker:

@@ -31,3 +31,127 @@ models:
           - accepted_values:
               arguments:
                 values: [language, framework, database, cloud, tool]
+
+  - name: dim_jobs
+    description: >
+      One row per real-world job, across sources and reposts. The title and
+      attributes come from the primary posting: an ATS posting over a job
+      board one (see the ats_sources var), then the posting that knows the
+      most attributes, then the earliest seen. The salary comes from the
+      first posting in the job that states one. Dates cover every posting
+      of the job.
+    columns:
+      - name: job_id
+        description: Primary key. The posting_key of the earliest posting in the job.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - unique
+          - not_null
+      - name: title
+        description: Display title of the primary posting.
+        data_type: text
+      - name: company_name
+        description: Display company name of the primary posting.
+        data_type: text
+      - name: role_family
+        description: Role family of the primary posting.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+      - name: seniority
+        description: Seniority of the primary posting. unknown when its title gives no signal.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [intern, junior, mid, senior, lead, unknown]
+      - name: work_mode
+        description: Work mode of the primary posting.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [remote, hybrid, onsite, unknown]
+      - name: city
+        description: City of the primary posting, or Unknown.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: region
+        description: Region of the primary posting, or Unknown.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: salary_min_monthly
+        description: Lower monthly amount from the first posting that states a salary.
+        data_type: numeric
+      - name: salary_max_monthly
+        description: Upper monthly amount from the same posting.
+        data_type: numeric
+      - name: salary_currency
+        description: ISO currency code of that salary. Only EUR is shown on the dashboard.
+        data_type: text
+      - name: salary_basis
+        description: gross, net or unknown for that salary. Net amounts are not turned into gross.
+        data_type: text
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [gross, net, unknown]
+      - name: source_count
+        description: Number of sources that list the job.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: first_seen
+        description: First run_date any posting of the job was seen.
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: last_seen
+        description: Newest run_date any posting of the job was seen.
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: closed_date
+        description: >
+          The day the job closed: the newest closed_date of its postings once
+          all of them are closed. Null while the job is open.
+        data_type: date
+      - name: is_open
+        description: True if any posting of the job is open.
+        data_type: boolean
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: days_open
+        description: last_seen - first_seen + 1.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null

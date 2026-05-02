@@ -47,3 +47,29 @@ unit_tests:
         - {job_id: p1, title: Senior Backend Engineer, company_name: Acme S.A., role_family: backend, seniority: senior, work_mode: hybrid, city: Athens, region: Attica, salary_min_monthly: 1800, salary_max_monthly: 2000, salary_currency: EUR, salary_basis: net, source_count: 2, first_seen: "2026-10-01", last_seen: "2026-10-20", closed_date: null, is_open: true, days_open: 20}
         - {job_id: p5, title: Data Engineer, company_name: Beta, role_family: data, seniority: unknown, work_mode: remote, city: Thessaloniki, region: Central Macedonia, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, source_count: 1, first_seen: "2026-10-02", last_seen: "2026-10-10", closed_date: "2026-10-12", is_open: false, days_open: 9}
         - {job_id: p7, title: QA Tester, company_name: Gamma, role_family: qa, seniority: junior, work_mode: onsite, city: Patras, region: Western Greece, salary_min_monthly: null, salary_max_monthly: null, salary_currency: null, salary_basis: null, source_count: 1, first_seen: "2026-10-03", last_seen: "2026-10-20", closed_date: null, is_open: true, days_open: 18}
+
+  - name: bridge_job_skills_union
+    description: >
+      A job has every skill of its postings once, with title when any of
+      them has the skill in the title.
+    model: bridge_job_skills
+    given:
+      - input: ref('int_job_matches')
+        rows:
+          - {posting_key: p1, job_id: p1}
+          - {posting_key: p2, job_id: p1}
+          - {posting_key: p3, job_id: p3}
+      - input: ref('int_posting_skills')
+        rows:
+          - {posting_key: p1, skill_id: python, matched_in: description}
+          - {posting_key: p2, skill_id: python, matched_in: title}
+          - {posting_key: p1, skill_id: sql, matched_in: description}
+          - {posting_key: p2, skill_id: sql, matched_in: description}
+          - {posting_key: p2, skill_id: docker, matched_in: description}
+          - {posting_key: p3, skill_id: python, matched_in: description}
+    expect:
+      rows:
+        - {job_id: p1, skill_id: python, matched_in: title}
+        - {job_id: p1, skill_id: sql, matched_in: description}
+        - {job_id: p1, skill_id: docker, matched_in: description}
+        - {job_id: p3, skill_id: python, matched_in: description}

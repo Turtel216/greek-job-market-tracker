@@ -155,3 +155,45 @@ models:
           - type: not_null
         data_tests:
           - not_null
+
+  - name: bridge_job_skills
+    description: >
+      The skills of each job, as the union of the skills found in its
+      postings. One row per job and skill.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [job_id, skill_id]
+    columns:
+      - name: job_id
+        description: The job.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_jobs')
+                field: job_id
+      - name: skill_id
+        description: The skill.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_skills')
+                field: skill_id
+      - name: matched_in
+        description: title when any posting of the job has the skill in its title, else description.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [title, description]

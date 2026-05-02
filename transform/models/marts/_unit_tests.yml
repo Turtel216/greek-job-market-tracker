@@ -73,3 +73,31 @@ unit_tests:
         - {job_id: p1, skill_id: sql, matched_in: description}
         - {job_id: p1, skill_id: docker, matched_in: description}
         - {job_id: p3, skill_id: python, matched_in: description}
+
+  - name: fct_daily_postings_spine
+    description: >
+      Every role family and city gets a row for every day, with zeros on
+      quiet days. A job is open from first_seen until the day before its
+      closed_date. Remote jobs count under Remote, whatever their city.
+    model: fct_daily_postings
+    given:
+      - input: ref('dim_jobs')
+        rows:
+          - {job_id: j1, role_family: backend, work_mode: onsite, city: Athens, first_seen: "2026-10-01", last_seen: "2026-10-02", closed_date: "2026-10-03"}
+          - {job_id: j2, role_family: backend, work_mode: remote, city: Athens, first_seen: "2026-10-02", last_seen: "2026-10-04", closed_date: null}
+          - {job_id: j3, role_family: data, work_mode: hybrid, city: Unknown, first_seen: "2026-10-01", last_seen: "2026-10-04", closed_date: null}
+          - {job_id: j4, role_family: backend, work_mode: onsite, city: Athens, first_seen: "2026-10-03", last_seen: "2026-10-04", closed_date: null}
+    expect:
+      rows:
+        - {date: "2026-10-01", role_family: backend, city: Athens, new_postings: 1, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-02", role_family: backend, city: Athens, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-03", role_family: backend, city: Athens, new_postings: 1, open_postings: 1, closed_postings: 1}
+        - {date: "2026-10-04", role_family: backend, city: Athens, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-01", role_family: backend, city: Remote, new_postings: 0, open_postings: 0, closed_postings: 0}
+        - {date: "2026-10-02", role_family: backend, city: Remote, new_postings: 1, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-03", role_family: backend, city: Remote, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-04", role_family: backend, city: Remote, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-01", role_family: data, city: Unknown, new_postings: 1, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-02", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-03", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}
+        - {date: "2026-10-04", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}

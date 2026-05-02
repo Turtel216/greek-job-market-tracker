@@ -197,3 +197,62 @@ models:
           - accepted_values:
               arguments:
                 values: [title, description]
+
+  - name: fct_daily_postings
+    description: >
+      New, open and closed jobs per day, role family and city, on a date
+      spine from the first day a job was seen to the newest run, so days
+      with no activity show zero. Every role family and city that ever had
+      a job has a row for every day. Fully remote jobs count under the city
+      Remote, jobs without a city under Unknown. The counts are of jobs, so
+      a job listed on two sources counts once.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [date, role_family, city]
+    columns:
+      - name: date
+        description: The day.
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: role_family
+        description: Role family of the jobs.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+      - name: city
+        description: City of the jobs, Remote for fully remote jobs, or Unknown.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: new_postings
+        description: Jobs first seen on this day.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: open_postings
+        description: Jobs open on this day, from the day first seen until the day before closing.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: closed_postings
+        description: Jobs that closed on this day, the first day they were missing.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null

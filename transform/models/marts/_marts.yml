@@ -101,10 +101,10 @@ models:
           - not_null
       - name: salary_min_monthly
         description: Lower monthly amount from the first posting that states a salary.
-        data_type: numeric
+        data_type: numeric(10, 2)
       - name: salary_max_monthly
         description: Upper monthly amount from the same posting.
-        data_type: numeric
+        data_type: numeric(10, 2)
       - name: salary_currency
         description: ISO currency code of that salary. Only EUR is shown on the dashboard.
         data_type: text

@@ -14,9 +14,10 @@ Phase 3, Modeling. Phases 1 and 2 are done: the repo skeleton, tooling,
 Postgres, the object store and the ingestion adapters are in place.
 Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
 the loader writes each run to `raw` and `ops`. CI runs lint and the Python
-tests on every pull request. The dbt project has its seeds and the staging
-models with their unit tests; snapshots, intermediate models and marts come
-next.
+tests on every pull request. The dbt project builds every layer: seeds,
+staging, the posting snapshot, lifecycle and skill extraction, and the marts
+with enforced contracts. Deduplication comes in Phase 4; until then every
+posting is a job of its own.
 
 ## Repository layout
 
@@ -180,9 +181,39 @@ The logic lives in macros in `transform/macros/`:
 
 The salary settings are dbt vars in `transform/dbt_project.yml`:
 `salaries_per_year` (14), the annual threshold and the monthly bounds.
+Two more vars drive the later layers: `missed_runs_to_close` (2) and
+`ats_sources`, the sources with `kind: ats_api` in `config/sources.yml`.
+Keep that list in step with the registry.
+
+The snapshot `snap_postings` (in the `snapshots` schema) keeps one row per
+version of each posting, with a new version whenever its `content_hash`
+changes.
+
+The intermediate models are tables in the `intermediate` schema:
+
+| Model | Grain | Contents |
+| --- | --- | --- |
+| `int_posting_lifecycle` | posting | `first_seen`, `last_seen`, `is_open` and `closed_date`. A posting closes after it is missing from `missed_runs_to_close` successful runs of its source in a row; failed runs in `ops.ingest_runs` do not count |
+| `int_posting_skills` | posting and skill | Skills found by matching `skill_aliases` on the normalized title and description, with `matched_in` |
+| `int_job_matches` | posting | The `job_id` of each posting. For now `job_id` is the `posting_key`; deduplication replaces this model in Phase 4 |
+
+The marts are tables in the `marts` schema, the only one Metabase reads.
+Their contracts are enforced, so a renamed column or a changed type fails
+the build:
+
+| Model | Grain | Contents |
+| --- | --- | --- |
+| `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` |
+| `dim_skills` | skill | `skill_id`, `name`, `category` |
+| `bridge_job_skills` | job and skill | Every skill of the job's postings, with `matched_in` |
+| `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. Fully remote jobs count under `Remote` |
+| `fct_monthly_skill_demand` | month, skill, role family | Jobs with the skill, all open jobs and the share. A job counts in every month it was open |
 
 Unit tests for these rules are in `transform/models/staging/_unit_tests.yml`,
-with real Greek and English examples. They run as part of `dbt build`
+with real Greek and English examples. The intermediate models and marts
+have their own `_unit_tests.yml` next to them, covering when postings
+close, the skill patterns, how postings merge into jobs and the date
+spines. They run as part of `dbt build`
 against the real seed files, so a seed change that breaks a rule fails the
 build. dbt needs to create temporary tables for them; a database created
 before that grant was added needs it once:

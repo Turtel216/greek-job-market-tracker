@@ -256,3 +256,66 @@ models:
           - type: not_null
         data_tests:
           - not_null
+
+  - name: fct_monthly_skill_demand
+    description: >
+      Jobs that ask for each skill per month and role family, out of all
+      jobs open in that month and role family. A job counts in every month
+      it was open, from first_seen until the day before closed_date. Every
+      skill has a row for every month and role family with open jobs, so a
+      skill nobody asked for shows zero. Sum jobs_with_skill over role
+      families for a skill's total in a month.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [month, skill_id, role_family]
+    columns:
+      - name: month
+        description: First day of the month.
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: skill_id
+        description: The skill.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_skills')
+                field: skill_id
+      - name: role_family
+        description: Role family of the jobs.
+        data_type: text
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+      - name: jobs_with_skill
+        description: Jobs open in the month that ask for the skill.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: jobs_total
+        description: All jobs open in the month in this role family. Always above zero.
+        data_type: integer
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
+      - name: share_of_jobs
+        description: jobs_with_skill / jobs_total, rounded to 4 decimals.
+        data_type: numeric(5, 4)
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null

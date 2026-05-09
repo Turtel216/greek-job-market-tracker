@@ -101,3 +101,42 @@ unit_tests:
         - {date: "2026-10-02", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}
         - {date: "2026-10-03", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}
         - {date: "2026-10-04", role_family: data, city: Unknown, new_postings: 0, open_postings: 1, closed_postings: 0}
+
+  - name: fct_monthly_skill_demand_open_months
+    description: >
+      A job counts in every month from the one it was first seen in to the
+      one before it closed, so a job that closed on the 1st does not count
+      in that month. Every skill gets a row for each month and role family
+      with open jobs, with zero when no job asks for it.
+    model: fct_monthly_skill_demand
+    given:
+      - input: ref('dim_jobs')
+        rows:
+          # September only: closed on the first day of October
+          - {job_id: j1, role_family: backend, first_seen: "2026-09-20", last_seen: "2026-09-30", closed_date: "2026-10-01"}
+          # September to November, still open
+          - {job_id: j2, role_family: backend, first_seen: "2026-09-25", last_seen: "2026-11-05", closed_date: null}
+          # October only
+          - {job_id: j3, role_family: data, first_seen: "2026-10-15", last_seen: "2026-10-31", closed_date: "2026-11-01"}
+          # November, with no skills
+          - {job_id: j4, role_family: backend, first_seen: "2026-11-02", last_seen: "2026-11-05", closed_date: null}
+      - input: ref('bridge_job_skills')
+        rows:
+          - {job_id: j1, skill_id: python}
+          - {job_id: j1, skill_id: sql}
+          - {job_id: j2, skill_id: python}
+          - {job_id: j3, skill_id: sql}
+      - input: ref('dim_skills')
+        rows:
+          - {skill_id: python}
+          - {skill_id: sql}
+    expect:
+      rows:
+        - {month: "2026-09-01", skill_id: python, role_family: backend, jobs_with_skill: 2, jobs_total: 2, share_of_jobs: "1.0000"}
+        - {month: "2026-09-01", skill_id: sql, role_family: backend, jobs_with_skill: 1, jobs_total: 2, share_of_jobs: "0.5000"}
+        - {month: "2026-10-01", skill_id: python, role_family: backend, jobs_with_skill: 1, jobs_total: 1, share_of_jobs: "1.0000"}
+        - {month: "2026-10-01", skill_id: sql, role_family: backend, jobs_with_skill: 0, jobs_total: 1, share_of_jobs: "0.0000"}
+        - {month: "2026-10-01", skill_id: python, role_family: data, jobs_with_skill: 0, jobs_total: 1, share_of_jobs: "0.0000"}
+        - {month: "2026-10-01", skill_id: sql, role_family: data, jobs_with_skill: 1, jobs_total: 1, share_of_jobs: "1.0000"}
+        - {month: "2026-11-01", skill_id: python, role_family: backend, jobs_with_skill: 1, jobs_total: 2, share_of_jobs: "0.5000"}
+        - {month: "2026-11-01", skill_id: sql, role_family: backend, jobs_with_skill: 0, jobs_total: 2, share_of_jobs: "0.0000"}

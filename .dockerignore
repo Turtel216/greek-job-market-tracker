@@ -1,5 +1,5 @@
-# Keep the build context small. Images only need ingestion/, config/
-# and infra/.
+# Keep the build context small. Images only need ingestion/, transform/,
+# config/ and infra/.
 .git/
 docs/
 backups/

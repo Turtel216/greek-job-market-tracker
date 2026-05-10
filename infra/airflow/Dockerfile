@@ -1,4 +1,5 @@
-# Airflow image for the pipeline: Airflow, the ingestion CLI and dbt.
+# Airflow image for the pipeline: Airflow, the ingestion CLI, dbt and the
+# dbt project.
 # Build from the repo root:
 #   docker build -f infra/airflow/Dockerfile -t jobtracker-airflow .
 #
@@ -47,7 +48,16 @@ RUN ln -s /opt/venvs/dbt/bin/dbt /usr/local/bin/dbt \
 
 # The source registry. The CLI reads it from JOBTRACKER_SOURCES.
 COPY config/sources.yml /opt/jobtracker/config/sources.yml
-ENV JOBTRACKER_SOURCES=/opt/jobtracker/config/sources.yml \
+ENV JOBTRACKER_SOURCES=/opt/jobtracker/config/sources.yml
+
+# The dbt project, with its profile, which reads the connection from the
+# environment. The airflow user cannot write to it, so dbt keeps target/
+# and logs/ under AIRFLOW_HOME. The DAG gives each step a folder of its own.
+COPY transform /opt/jobtracker/transform
+ENV DBT_PROJECT_DIR=/opt/jobtracker/transform \
+    DBT_PROFILES_DIR=/opt/jobtracker/transform \
+    DBT_TARGET_PATH=/opt/airflow/dbt/target \
+    DBT_LOG_PATH=/opt/airflow/dbt/logs \
     DBT_SEND_ANONYMOUS_USAGE_STATS=false
 
 WORKDIR /opt/airflow

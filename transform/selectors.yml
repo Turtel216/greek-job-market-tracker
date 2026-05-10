@@ -1,0 +1,41 @@
+# One selector per dbt step of the jobtracker_daily DAG, run in this order:
+# staging, snapshots, intermediate, marts. Each step builds one layer and
+# runs its tests, so a failed test stops the later layers.
+#
+# indirect_selection: buildable picks a test only when every model it reads
+# is in the step or built by an earlier one. A test that reads two layers,
+# such as a relationship from intermediate to staging, so runs once, in the
+# later step, and never before the model it tests exists.
+
+selectors:
+  - name: staging
+    description: Seeds and staging models.
+    definition:
+      union:
+        - method: resource_type
+          value: seed
+          indirect_selection: buildable
+        - method: path
+          value: models/staging
+          indirect_selection: buildable
+
+  - name: snapshots
+    description: Snapshots of the staging models.
+    definition:
+      method: resource_type
+      value: snapshot
+      indirect_selection: buildable
+
+  - name: intermediate
+    description: Lifecycle, skills and job matches.
+    definition:
+      method: path
+      value: models/intermediate
+      indirect_selection: buildable
+
+  - name: marts
+    description: The marts Metabase reads.
+    definition:
+      method: path
+      value: models/marts
+      indirect_selection: buildable

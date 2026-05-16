@@ -71,9 +71,11 @@ make airflow-image
 docker run --rm --entrypoint bash jobtracker-airflow:dev -c "jobtracker --help && dbt --version"
 ```
 
-The image also contains `config/sources.yml`, so rebuild it after changing
-the registry or the ingestion package. To change the dbt version, edit
-`infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
+The image also contains `config/sources.yml` and the dbt project from
+`transform/`, so rebuild it after changing the registry, the ingestion
+package or any dbt model, seed or macro. `DBT_PROJECT_DIR` and
+`DBT_PROFILES_DIR` point dbt at the project. To change the dbt version,
+edit `infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
 
 ## DAGs
 
@@ -83,6 +85,24 @@ group per enabled source in `config/sources.yml`, each running
 Extract tasks share the `http_sources` pool, so at most 3 sources are
 fetched at once. A source that blocks us fails without a retry.
 
+Once every load is done, the dbt steps run one after the other:
+
+| Task | Command | Retries |
+| --- | --- | --- |
+| `dbt_freshness` | `dbt source freshness` | 0 |
+| `dbt_staging` | `dbt build --selector staging` (seeds and staging) | 0 |
+| `dbt_snapshot` | `dbt build --selector snapshots` | 1 |
+| `dbt_intermediate` | `dbt build --selector intermediate` | 0 |
+| `dbt_marts` | `dbt build --selector marts` | 0 |
+
+The selectors are in `transform/selectors.yml`. Each step runs its layer's
+tests, so a failed test stops the later steps and the marts keep the last
+good data. `dbt_freshness` waits for every load and runs when at least one
+of them succeeded, so one broken source never blocks the others; when none
+did, no dbt step runs. dbt unit tests run in CI, not in the DAG. Each step
+keeps its artifacts and `dbt.log` in `logs/dbt/<run_date>/<step>/` on the
+Airflow logs volume.
+
 Shared code lives in `dags/common/`:
 
 | Module | Contents |
@@ -91,6 +111,7 @@ Shared code lives in `dags/common/`:
 | `rundate.py` | `run_date`, the Europe/Athens date of the run |
 | `cli.py` | `CliOperator`, which runs a CLI command and keeps its last lines |
 | `alerts.py` | Failure and retry alerts |
+| `dbt.py` | The commands for the dbt steps |
 
 Every task alerts on failure and on retry. Alerts go to the Discord webhook
 in `ALERT_DISCORD_WEBHOOK_URL`, and by email to `ALERT_EMAIL` through the
@@ -102,7 +123,8 @@ DAGs are paused when first created. Unpause `jobtracker_daily` in the UI
 once at least one source is enabled.
 
 The DAG tests in `tests/dags/` need Airflow, so they run inside the Airflow
-image:
+image. They also check with `dbt ls` that the dbt steps build every model,
+seed, snapshot and test exactly once:
 
 ```sh
 make airflow-image   # after changing the image

@@ -1,18 +1,24 @@
-"""Daily pipeline: extract and load every enabled source.
+"""Daily pipeline: extract and load every enabled source, then build dbt.
 
 There is one task group per enabled source in config/sources.yml, so adding
 a source needs no change here. Sources run in parallel, and the extract
 tasks share the http_sources pool, which caps how many are fetched at once.
 
-Each task calls the jobtracker CLI with an explicit run_date. The dbt steps
-come with the dbt project in Phase 3.
+Once every load is done, dbt checks source freshness and then builds one
+layer at a time: staging, snapshots, intermediate and marts. Each step runs
+its layer's tests, so a failed test keeps the marts on the last good state.
+dbt starts when at least one source loaded, so one broken source never
+blocks the others. When none did, the dbt steps do not run at all.
+
+Each task calls a CLI command with an explicit run_date.
 """
 
 from datetime import datetime, timedelta
 
-from airflow.sdk import DAG, CronTriggerTimetable, TaskGroup
+from airflow.sdk import DAG, CronTriggerTimetable, TaskGroup, TriggerRule
 
 from common.cli import CliOperator
+from common.dbt import dbt_build, dbt_freshness
 from common.defaults import DEFAULT_ARGS, HTTP_POOL, enabled_sources
 from common.rundate import RUN_DATE, TIMEZONE, athens_date
 
@@ -28,6 +34,7 @@ with DAG(
     doc_md=__doc__,
     tags=["jobtracker"],
 ):
+    loads = []
     for source in enabled_sources():
         with TaskGroup(group_id=source):
             extract = CliOperator(
@@ -43,3 +50,17 @@ with DAG(
                 retries=1,
             )
             extract >> load
+            loads.append(load)
+
+    # With no source enabled there is nothing new to transform
+    if loads:
+        freshness = CliOperator(
+            task_id="dbt_freshness",
+            command=dbt_freshness(),
+            trigger_rule=TriggerRule.ALL_DONE_MIN_ONE_SUCCESS,
+        )
+        staging = CliOperator(task_id="dbt_staging", command=dbt_build("staging"))
+        snapshot = CliOperator(task_id="dbt_snapshot", command=dbt_build("snapshots"), retries=1)
+        intermediate = CliOperator(task_id="dbt_intermediate", command=dbt_build("intermediate"))
+        marts = CliOperator(task_id="dbt_marts", command=dbt_build("marts"))
+        loads >> freshness >> staging >> snapshot >> intermediate >> marts

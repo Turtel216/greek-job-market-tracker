@@ -1,6 +1,6 @@
 # Unit tests for the marts. They run in `dbt build` before the model they
-# test. The jobs here have several postings each, as they will once
-# deduplication lands, so the rules for merging postings are covered now.
+# test. The jobs here have several postings each, as deduplication gives
+# them, so the rules for merging postings are covered.
 
 unit_tests:
   - name: dim_jobs_primary_posting

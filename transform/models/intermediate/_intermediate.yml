@@ -116,9 +116,11 @@ models:
   - name: int_job_matches
     description: >
       The real-world job each posting belongs to, one row per posting.
-      job_id is the posting_key of the earliest posting in its cluster
-      (ADR-004). Until deduplication lands in Phase 4 every posting is its
-      own cluster, so job_id equals posting_key.
+      Postings joined by int_job_candidate_pairs, directly or through other
+      postings, form one cluster. job_id is the posting_key of the member
+      with the earliest first_seen, ties broken by posting_key (ADR-004). A
+      posting with no pair is its own cluster, so its job_id is its
+      posting_key.
     columns:
       - name: posting_key
         description: Primary key. The posting.

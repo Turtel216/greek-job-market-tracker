@@ -11,7 +11,7 @@ COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dbt-setup up down db-tables lint test test-db test-dags dbt-build test-dbt airflow-image dbt-lock backup restore
+.PHONY: help setup dbt-setup up down db-tables lint test test-db test-dags dbt-build test-dbt dedup-label-sample airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -66,6 +66,9 @@ dbt-build: ## Build and test the dbt project on a running stack
 
 test-dbt: ## Build and test the dbt project against a throwaway Postgres
 	DBT="$(DBT)" ./scripts/test-dbt.sh
+
+dedup-label-sample: ## Write pairs of postings to label for dedup on a running stack
+	POSTGRES_HOST=localhost DBT="$(DBT)" ./scripts/dedup-label-sample.sh
 
 airflow-image: ## Build the Airflow image with the ingestion CLI and dbt
 	docker build -f infra/airflow/Dockerfile -t $(AIRFLOW_IMAGE) .

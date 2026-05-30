@@ -282,3 +282,42 @@ seeds:
           - maps_to_one:
               arguments:
                 column: value
+
+  - name: dedup_labels
+    description: >
+      Hand-labeled pairs of postings, for the dedup_precision analysis. Each
+      row says whether two postings are the same real-world job. Pairs to
+      label come from the dedup_label_sample analysis. Pairs whose postings
+      are not in stg_postings are left out of the scores.
+    config:
+      column_types:
+        source_a: text
+        source_job_id_a: text
+        source_b: text
+        source_job_id_b: text
+        is_duplicate: boolean
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [source_a, source_job_id_a, source_b, source_job_id_b]
+    columns:
+      - name: source_a
+        description: Source of the first posting.
+        data_tests:
+          - not_null
+      - name: source_job_id_a
+        description: The first posting's id on its source.
+        data_tests:
+          - not_null
+      - name: source_b
+        description: Source of the second posting.
+        data_tests:
+          - not_null
+      - name: source_job_id_b
+        description: The second posting's id on its source.
+        data_tests:
+          - not_null
+      - name: is_duplicate
+        description: True when the two postings are the same real-world job.
+        data_tests:
+          - not_null

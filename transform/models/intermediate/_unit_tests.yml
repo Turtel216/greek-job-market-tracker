@@ -170,3 +170,51 @@ unit_tests:
         - {posting_key_a: c3, posting_key_b: c4, company_key: gamma}
         - {posting_key_a: d1, posting_key_b: d3, company_key: delta}
         - {posting_key_a: d2, posting_key_b: d3, company_key: delta}
+
+  - name: int_job_matches_clusters
+    description: >
+      Pairs join into clusters, also through a chain or a cycle. The job_id
+      is the posting_key of the member first seen, with the smaller key
+      winning a tie. A posting with no pair is a job of its own.
+    model: int_job_matches
+    given:
+      - input: ref('stg_postings')
+        rows:
+          - {posting_key: a}
+          - {posting_key: b}
+          - {posting_key: c}
+          - {posting_key: d}
+          - {posting_key: e}
+          - {posting_key: f}
+          - {posting_key: g}
+          - {posting_key: h}
+      - input: ref('int_posting_lifecycle')
+        rows:
+          # A chain where the middle posting was first seen first
+          - {posting_key: a, first_seen: "2026-10-05"}
+          - {posting_key: b, first_seen: "2026-10-01"}
+          - {posting_key: c, first_seen: "2026-10-09"}
+          # A cycle where two postings were first seen the same day
+          - {posting_key: d, first_seen: "2026-10-03"}
+          - {posting_key: e, first_seen: "2026-10-02"}
+          - {posting_key: f, first_seen: "2026-10-02"}
+          # No pairs
+          - {posting_key: g, first_seen: "2026-10-01"}
+          - {posting_key: h, first_seen: "2026-10-01"}
+      - input: ref('int_job_candidate_pairs')
+        rows:
+          - {posting_key_a: a, posting_key_b: b}
+          - {posting_key_a: b, posting_key_b: c}
+          - {posting_key_a: d, posting_key_b: e}
+          - {posting_key_a: e, posting_key_b: f}
+          - {posting_key_a: d, posting_key_b: f}
+    expect:
+      rows:
+        - {posting_key: a, job_id: b}
+        - {posting_key: b, job_id: b}
+        - {posting_key: c, job_id: b}
+        - {posting_key: d, job_id: e}
+        - {posting_key: e, job_id: e}
+        - {posting_key: f, job_id: e}
+        - {posting_key: g, job_id: g}
+        - {posting_key: h, job_id: h}

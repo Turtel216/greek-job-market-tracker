@@ -42,18 +42,7 @@ pairs as (
             posting_a.company_key = posting_b.company_key
             -- Each pair once, with the smaller key first
             and posting_a.posting_key < posting_b.posting_key
-    where
-        abs(posting_a.first_seen - posting_b.first_seen) <= {{ var('dedup_window_days') }}
-        -- The same city, unless one does not say or is remote
-        and (
-            posting_a.city = posting_b.city
-            or 'Unknown' in (posting_a.city, posting_b.city)
-            or 'remote' in (posting_a.work_mode, posting_b.work_mode)
-        )
-        and (
-            posting_a.seniority = posting_b.seniority
-            or 'unknown' in (posting_a.seniority, posting_b.seniority)
-        )
+    where {{ dedup_pair_rules('posting_a', 'posting_b') }}
 ),
 
 final as (

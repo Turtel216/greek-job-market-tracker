@@ -321,3 +321,33 @@ seeds:
         description: True when the two postings are the same real-world job.
         data_tests:
           - not_null
+
+  - name: title_word_map
+    description: >
+      Words to drop or replace when building title_key, the form of the
+      title that deduplication compares. Dropped words, such as gender tags
+      from "(m/f)" and work mode words, say nothing about the job. Replaced
+      words are synonyms that one source writes differently from another,
+      such as developer and engineer. City names are dropped too, using
+      city_aliases.
+    config:
+      column_types:
+        word: text
+        key_word: text
+    columns:
+      - name: word
+        description: >
+          One word of a title after normalize_text, with punctuation other
+          than + and # turned into spaces.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω+#]+$"
+      - name: key_word
+        description: The word to use instead. Empty drops the word.
+        data_tests:
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω+#]+$"

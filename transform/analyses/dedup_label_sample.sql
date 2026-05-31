@@ -38,7 +38,7 @@ described as (
         postings.company_key,
         postings.company_name,
         postings.title,
-        postings.title_normalized,
+        postings.title_key,
         postings.city,
         postings.work_mode,
         postings.seniority,
@@ -59,10 +59,12 @@ pairs as (
         posting_b.source_job_id as source_job_id_b,
         posting_a.job_id = posting_b.job_id as is_merged,
         round(
-            similarity(posting_a.title_normalized, posting_b.title_normalized)::numeric, 3
+            similarity(posting_a.title_key, posting_b.title_key)::numeric, 3
         ) as title_similarity,
         posting_a.title as title_a,
         posting_b.title as title_b,
+        posting_a.title_key as title_key_a,
+        posting_b.title_key as title_key_b,
         posting_a.company_name as company_a,
         posting_b.company_name as company_b,
         posting_a.city as city_a,
@@ -122,6 +124,8 @@ final as (
         title_similarity,
         title_a,
         title_b,
+        title_key_a,
+        title_key_b,
         company_a,
         company_b,
         city_a,

@@ -103,39 +103,44 @@ unit_tests:
 
   - name: int_job_candidate_pairs_rules
     description: >
-      Postings pair up within one company when their titles are similar,
-      they were first seen at most 30 days apart, their cities agree unless
-      one is Unknown or remote, and their seniorities agree unless one is
-      unknown. Postings of other companies, or with no company, never pair.
+      Postings pair up within one company when their title keys are
+      similar and one has all the words of the other, they were first seen
+      at most 30 days apart, their cities agree unless one is Unknown or
+      remote, and their seniorities agree unless one is unknown. Postings
+      of other companies, or with no company, never pair.
     model: int_job_candidate_pairs
     given:
       - input: ref('stg_postings')
         rows:
           # Similar titles, in English and in Greek
-          - {posting_key: a1, company_key: acme, title_normalized: "senior backend engineer", city: Athens, work_mode: onsite, seniority: senior}
-          - {posting_key: a2, company_key: acme, title_normalized: "senior backend engineer java", city: Athens, work_mode: onsite, seniority: senior}
-          - {posting_key: a3, company_key: acme, title_normalized: "μηχανικοσ λογισμικου", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: a4, company_key: acme, title_normalized: "μηχανικοσ λογισμικου java", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: a1, company_key: acme, title_key: "senior backend engineer", city: Athens, work_mode: onsite, seniority: senior}
+          - {posting_key: a2, company_key: acme, title_key: "senior backend engineer java", city: Athens, work_mode: onsite, seniority: senior}
+          - {posting_key: a3, company_key: acme, title_key: "μηχανικοσ λογισμικου", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: a4, company_key: acme, title_key: "μηχανικοσ λογισμικου java", city: Athens, work_mode: onsite, seniority: unknown}
           # 30 days apart pair, 31 days apart do not
-          - {posting_key: b1, company_key: beta, title_normalized: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: b2, company_key: beta, title_normalized: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: b3, company_key: beta, title_normalized: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: b1, company_key: beta, title_key: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: b2, company_key: beta, title_key: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: b3, company_key: beta, title_key: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
           # Two cities do not pair, unless one is Unknown or remote
-          - {posting_key: c1, company_key: gamma, title_normalized: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: c2, company_key: gamma, title_normalized: "data engineer", city: Thessaloniki, work_mode: hybrid, seniority: unknown}
-          - {posting_key: c3, company_key: gamma, title_normalized: "data engineer", city: Thessaloniki, work_mode: remote, seniority: unknown}
-          - {posting_key: c4, company_key: gamma, title_normalized: "data engineer", city: Unknown, work_mode: onsite, seniority: unknown}
+          - {posting_key: c1, company_key: gamma, title_key: "data engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: c2, company_key: gamma, title_key: "data engineer", city: Thessaloniki, work_mode: hybrid, seniority: unknown}
+          - {posting_key: c3, company_key: gamma, title_key: "data engineer", city: Thessaloniki, work_mode: remote, seniority: unknown}
+          - {posting_key: c4, company_key: gamma, title_key: "data engineer", city: Unknown, work_mode: onsite, seniority: unknown}
           # Two seniorities do not pair, unless one is unknown
-          - {posting_key: d1, company_key: delta, title_normalized: "qa engineer", city: Patras, work_mode: onsite, seniority: senior}
-          - {posting_key: d2, company_key: delta, title_normalized: "qa engineer", city: Patras, work_mode: onsite, seniority: junior}
-          - {posting_key: d3, company_key: delta, title_normalized: "qa engineer", city: Patras, work_mode: onsite, seniority: unknown}
+          - {posting_key: d1, company_key: delta, title_key: "qa engineer", city: Patras, work_mode: onsite, seniority: senior}
+          - {posting_key: d2, company_key: delta, title_key: "qa engineer", city: Patras, work_mode: onsite, seniority: junior}
+          - {posting_key: d3, company_key: delta, title_key: "qa engineer", city: Patras, work_mode: onsite, seniority: unknown}
           # Titles below the threshold, and the same title at another company
-          - {posting_key: e1, company_key: epsilon, title_normalized: "backend engineer python", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: e2, company_key: epsilon, title_normalized: "frontend engineer", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: e3, company_key: zeta, title_normalized: "backend engineer python", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: e1, company_key: epsilon, title_key: "backend engineer python", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: e2, company_key: epsilon, title_key: "frontend engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: e3, company_key: zeta, title_key: "backend engineer python", city: Athens, work_mode: onsite, seniority: unknown}
+          # Each title has a word the other lacks
+          - {posting_key: f1, company_key: phi, title_key: "senior backend engineer payments", city: Athens, work_mode: onsite, seniority: senior}
+          - {posting_key: f2, company_key: phi, title_key: "senior backend engineer risk", city: Athens, work_mode: onsite, seniority: senior}
+          - {posting_key: f3, company_key: phi, title_key: "senior backend engineer", city: Athens, work_mode: onsite, seniority: senior}
           # No company
-          - {posting_key: n1, company_key: null, title_normalized: "devops engineer", city: Athens, work_mode: onsite, seniority: unknown}
-          - {posting_key: n2, company_key: null, title_normalized: "devops engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: n1, company_key: null, title_key: "devops engineer", city: Athens, work_mode: onsite, seniority: unknown}
+          - {posting_key: n2, company_key: null, title_key: "devops engineer", city: Athens, work_mode: onsite, seniority: unknown}
       - input: ref('int_posting_lifecycle')
         rows:
           - {posting_key: a1, first_seen: "2026-10-01"}
@@ -155,6 +160,9 @@ unit_tests:
           - {posting_key: e1, first_seen: "2026-10-01"}
           - {posting_key: e2, first_seen: "2026-10-01"}
           - {posting_key: e3, first_seen: "2026-10-01"}
+          - {posting_key: f1, first_seen: "2026-10-01"}
+          - {posting_key: f2, first_seen: "2026-10-01"}
+          - {posting_key: f3, first_seen: "2026-10-01"}
           - {posting_key: n1, first_seen: "2026-10-01"}
           - {posting_key: n2, first_seen: "2026-10-01"}
     expect:
@@ -170,6 +178,8 @@ unit_tests:
         - {posting_key_a: c3, posting_key_b: c4, company_key: gamma}
         - {posting_key_a: d1, posting_key_b: d3, company_key: delta}
         - {posting_key_a: d2, posting_key_b: d3, company_key: delta}
+        - {posting_key_a: f1, posting_key_b: f3, company_key: phi}
+        - {posting_key_a: f2, posting_key_b: f3, company_key: phi}
 
   - name: int_job_matches_clusters
     description: >

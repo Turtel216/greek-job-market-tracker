@@ -1,6 +1,7 @@
 -- The latest cleaned version of each posting: normalized text, company
--- key, city, work mode, seniority, role family and monthly salary. The
--- rules are in "Transformation logic" in the design doc and in the seeds.
+-- and title keys for dedup, city, work mode, seniority, role family and
+-- monthly salary. The rules are in "Transformation logic" in the design
+-- doc and in the seeds.
 
 {{ config(materialized='table') }}
 
@@ -20,6 +21,10 @@ company_suffixes as (
 
 company_aliases as (
     select * from {{ ref('company_aliases') }}
+),
+
+title_word_map as (
+    select * from {{ ref('title_word_map') }}
 ),
 
 -- The rule seeds with their patterns joined into one per value and
@@ -153,6 +158,54 @@ cities as (
     ) as city_match on true
 ),
 
+-- One pattern for every city alias as a whole word, longest first
+city_pattern as (
+    select
+        '(?<![^ ])(' || string_agg(alias, '|' order by length(alias) desc, alias) || ')(?![^ ])'
+            as pattern
+    from city_aliases
+),
+
+-- The title as dedup compares it: punctuation other than + and # and city
+-- names removed, then each word mapped through title_word_map
+cleaned_titles as (
+    select
+        normalized.posting_key,
+        regexp_replace(
+            regexp_replace(normalized.title_normalized, '[^[:alnum:]+#]+', ' ', 'g'),
+            city_pattern.pattern, ' ', 'g'
+        ) as cleaned_title
+    from normalized
+    cross join city_pattern
+),
+
+title_words as (
+    select
+        cleaned_titles.posting_key,
+        words.word,
+        words.position
+    from cleaned_titles
+    cross join
+        lateral unnest(string_to_array(cleaned_titles.cleaned_title, ' '))
+        with ordinality as words (word, position)
+    where words.word != ''
+),
+
+title_keys as (
+    select
+        title_words.posting_key,
+        string_agg(
+            coalesce(title_word_map.key_word, title_words.word), ' '
+            order by title_words.position
+        ) as title_key
+    from title_words
+    left join title_word_map on title_words.word = title_word_map.word
+    -- A word mapped to nothing is dropped. Unit tests read the empty
+    -- key_word as an empty string, not null, so this checks for both.
+    where title_word_map.word is null or title_word_map.key_word != ''
+    group by title_words.posting_key
+),
+
 classified as (
     select
         posting_key,
@@ -187,6 +240,7 @@ final as (
         normalized.url,
         normalized.title,
         normalized.title_normalized,
+        title_keys.title_key,
         normalized.company_name,
         companies.company_key,
         cities.city,
@@ -207,6 +261,7 @@ final as (
     inner join companies on normalized.posting_key = companies.posting_key
     inner join cities on normalized.posting_key = cities.posting_key
     inner join classified on normalized.posting_key = classified.posting_key
+    left join title_keys on normalized.posting_key = title_keys.posting_key
     -- The macro is a lateral subquery, so it cannot be a CTE
     left join lateral (  -- noqa: ST05
         {{ parse_salary('normalized.salary_text', 'normalized.description_text') }}

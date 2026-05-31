@@ -74,6 +74,11 @@ models:
         description: Display title.
       - name: title_normalized
         description: The title after normalize_text, used for matching and dedup.
+      - name: title_key
+        description: >
+          The title as deduplication compares it: title_normalized without
+          punctuation other than + and #, without city names, and with each
+          word mapped through title_word_map. Null when no word is left.
       - name: company_name
         description: Display company name.
       - name: company_key

@@ -61,6 +61,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -85,6 +86,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -92,6 +94,37 @@ unit_tests:
       rows:
         - {posting_key: a, title: Senior Backend Developer, content_hash: new, last_run_date: "2026-10-25"}
         - {posting_key: b, title: QA Engineer, content_hash: only, last_run_date: "2026-10-21"}
+
+  - name: stg_postings_title_key
+    description: >
+      title_key drops punctuation other than + and #, city names (also ones
+      of two words) and the words title_word_map drops, and replaces the
+      synonyms it lists. A title with nothing left has no key.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, title: "Sr. Backend Developer (Java) - Αθήνα (m/f)"}
+          - {posting_key: b, title: "Senior Java Backend Engineer | Hybrid"}
+          - {posting_key: c, title: "Προγραμματιστής C++/C# .NET, Αγία Παρασκευή"}
+          - {posting_key: d, title: "Site Reliability Engineer, Thessaloniki"}
+          - {posting_key: e, title: "Remote (M/F)"}
+          - {posting_key: f, title: null}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('title_word_map')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {posting_key: a, title_key: "senior backend engineer java"}
+        - {posting_key: b, title_key: "senior java backend engineer"}
+        - {posting_key: c, title_key: "engineer c++ c# net"}
+        - {posting_key: d, title_key: "site reliability engineer"}
+        - {posting_key: e, title_key: null}
+        - {posting_key: f, title_key: null}
 
   - name: stg_postings_company_key
     description: >
@@ -112,6 +145,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -147,6 +181,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -187,6 +222,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -224,6 +260,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -261,6 +298,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
@@ -317,6 +355,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')

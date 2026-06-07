@@ -1,10 +1,13 @@
--- Pairs of postings to label by hand for dedup_labels. Most are pairs that
--- deduplication merged, so dedup_precision has enough merges to score.
--- The rest are near misses: pairs that meet the rules in dedup_pair_rules
--- with a title similarity under the threshold but at least
--- similarity_floor, so the threshold can be tuned both ways. Pairs that
--- are already labeled are left out. The order is random but stable, so the
--- same data gives the same sample.
+-- Pairs of postings to label by hand for dedup_labels. Up to
+-- sample_size - near_misses of them are pairs that deduplication merged,
+-- so dedup_precision has merges to score. The rest are near misses: pairs
+-- that meet the rules in dedup_pair_rules and have similar titles, with a
+-- pg_trgm similarity of their title keys of at least similarity_floor, but
+-- were not merged, such as "backend engineer" and "backend engineer
+-- payments". They show whether the title rule misses real duplicates. When
+-- one kind runs short, the other fills the sample. Pairs that are already
+-- labeled are left out. The order is random but stable, so the same data
+-- gives the same sample.
 --
 -- Run it with: scripts/dedup-label-sample.sh, which writes a CSV to label.
 
@@ -114,6 +117,19 @@ ranked as (
     where is_merged or (meets_rules and title_similarity >= {{ similarity_floor }})
 ),
 
+-- Each kind's share first, then whatever is left
+picked as (
+    select *
+    from ranked
+    order by
+        case
+            when is_merged then sample_rank > {{ sample_size - near_misses }}
+            else sample_rank > {{ near_misses }}
+        end asc,
+        sample_order asc
+    limit {{ sample_size }}
+),
+
 final as (
     select
         source_a,
@@ -138,10 +154,7 @@ final as (
         first_seen_b,
         url_a,
         url_b
-    from ranked
-    where
-        (is_merged and sample_rank <= {{ sample_size - near_misses }})
-        or (not is_merged and sample_rank <= {{ near_misses }})
+    from picked
     order by is_merged desc, sample_order asc
 )
 

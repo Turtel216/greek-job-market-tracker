@@ -28,10 +28,7 @@ vars:
   # preferred over job board ones when dim_jobs picks a job's primary posting.
   ats_sources: [greenhouse, lever, workable]
   # Deduplication, see int_job_candidate_pairs. Two postings of one company
-  # can be the same job when their titles are at least this similar (pg_trgm
-  # similarity, 0 to 1) and they were first seen at most this many days apart.
-  # Tune the threshold with the dedup_precision analysis.
-  dedup_title_threshold: 0.6
+  # can be the same job when they were first seen at most this many days apart.
   dedup_window_days: 30
 
 models:

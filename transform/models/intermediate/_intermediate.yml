@@ -79,9 +79,7 @@ models:
     description: >
       Pairs of postings that look like the same job. Both postings have the
       same company_key, were first seen at most dedup_window_days (30) days
-      apart, and have a title_key similarity from pg_trgm of at least
-      dedup_title_threshold. One title_key has all the words of the other,
-      so titles that differ by a team or a stack on both sides do not pair.
+      apart, and have title keys with the same set of words, in any order.
       Their cities match unless one is Unknown or either posting is remote,
       and their seniorities match unless one is unknown. One row per pair,
       with the smaller posting_key first.
@@ -110,8 +108,8 @@ models:
         description: The company both postings belong to.
         data_tests:
           - not_null
-      - name: title_similarity
-        description: pg_trgm similarity of the two title keys, from 0 to 1.
+      - name: title_words
+        description: The words both title keys have, sorted and joined by spaces.
         data_tests:
           - not_null
 

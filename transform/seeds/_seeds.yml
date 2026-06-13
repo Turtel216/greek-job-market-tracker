@@ -353,3 +353,22 @@ seeds:
           - matches_pattern:
               arguments:
                 pattern: "^[a-z0-9α-ρσ-ω+#]+$"
+
+  - name: company_placeholders
+    description: >
+      Company names that hide the employer, such as "confidential" on
+      kariera. Postings with one of these names get no company_key, so
+      deduplication never puts the jobs of different hidden employers
+      together.
+    config:
+      column_types:
+        name: text
+    columns:
+      - name: name
+        description: The name, cleaned the same way as company_key, before aliases.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[a-z0-9α-ρσ-ω]+( [a-z0-9α-ρσ-ω]+)*$"

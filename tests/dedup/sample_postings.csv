@@ -1,0 +1,258 @@
+source,source_job_id,first_seen,last_seen,title,company,location,workplace,department
+greenhouse,sample-g101,2026-09-01,2026-09-30,Junior Backend Engineer (Python),Nimbus Labs,"Athens, Attica, Greece",On-site,Engineering
+kariera,sample-k501,2026-09-07,2026-09-18,Junior Backend Engineer (Python),NIMBUS LABS Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g102,2026-08-14,2026-09-07,Junior Frontend Engineer (React),Nimbus Labs,"Thessaloniki, Greece",Remote: Yes,Engineering
+kariera,sample-k502,2026-08-15,2026-08-31,Junior Frontend Engineer (React) | Hybrid,NIMBUS LABS Α.Ε.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g103,2026-08-06,2026-08-14,Full Stack Developer,Nimbus Labs,"Athens, Greece",Remote: Yes,Engineering
+kariera,sample-k503,2026-08-06,2026-09-06,Προγραμματιστής Full Stack,NIMBUS LABS Α.Ε.,"Μαρούσι, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g104,2026-08-13,2026-09-07,BI Developer,Nimbus Labs,Athens,Hybrid,Data
+kariera,sample-k504,2026-08-14,2026-09-09,BI Developer (m/f),NIMBUS LABS Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k505,2026-08-27,2026-09-10,Senior Site Reliability Engineer,Thalassa Tech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g105,2026-08-13,2026-08-24,Senior Embedded Software Engineer,Thalassa Tech,"Thessaloniki, Greece",On-site,Engineering
+greenhouse,sample-g106,2026-08-09,2026-08-25,Security Engineer,Thalassa Tech,"Athens, Attica, Greece",Hybrid,Security
+kariera,sample-k506,2026-08-13,2026-08-29,Security Developer,Thalassa Tech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g107,2026-08-06,2026-09-03,Security Engineer - Search,Thalassa Tech,"Athens, Attica, Greece",Hybrid,Security
+kariera,sample-k507,2026-08-08,2026-08-30,Μηχανικός Ασφάλειας Πληροφοριών - Search,Thalassa Tech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k508,2026-09-20,2026-09-30,Security Engineer - Risk (m/f),Thalassa Tech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g108,2026-08-31,2026-09-10,Senior iOS Developer,Ergon Analytics,"Athens, Attica, Greece",Hybrid,Mobile
+greenhouse,sample-g109,2026-08-05,2026-09-14,Senior Security Engineer,Ergon Analytics,"Thessaloniki, Greece",On-site,Security
+kariera,sample-k509,2026-08-06,2026-09-03,SENIOR SECURITY ENGINEER,Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+greenhouse,sample-g110,2026-09-11,2026-09-30,Senior Embedded Software Engineer,Ergon Analytics,"Thessaloniki, Greece",On-site,Engineering
+kariera,sample-k510,2026-09-17,2026-09-30,Senior Embedded Software Engineer (Θεσσαλονίκη),Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+greenhouse,sample-g111,2026-08-22,2026-09-25,Senior Backend Engineer (Java),Ergon Analytics,"Patras, Greece",On-site,Engineering
+kariera,sample-k511,2026-08-26,2026-09-05,Senior Backend Engineer (Java) (Πάτρα),Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+greenhouse,sample-g112,2026-09-03,2026-09-11,Backend Developer (Node.js),Ergon Analytics,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k512,2026-09-03,2026-09-30,Backend Developer (Node.js),Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g113,2026-08-21,2026-09-06,Senior Backend Developer (Node.js),Ergon Analytics,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k513,2026-08-23,2026-09-07,Senior Προγραμματιστής Backend (Node.js),Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g114,2026-08-04,2026-08-28,Senior Backend Engineer (Python),Ergon Analytics,"Athens, Greece",On-site,Engineering
+kariera,sample-k514,2026-08-09,2026-08-24,Senior Backend Engineer (Python) | Hybrid,Ergon Analytics Μονοπρόσωπη Ι.Κ.Ε.,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k515,2026-08-25,2026-09-04,Frontend Developer (Angular),Ostria Software,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g115,2026-08-18,2026-08-31,Frontend Developer (Angular) - Payments,Ostria Software,"Thessaloniki, Greece",Remote: Yes,Engineering
+kariera,sample-k516,2026-08-18,2026-09-07,Frontend Developer (Angular) - Payments (m/f),Ostria Software,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k517,2026-09-13,2026-09-30,Frontend Developer (Angular) - Payments - Θεσσαλονίκη,Ostria Software,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g116,2026-08-13,2026-09-10,Frontend Developer (Angular) - Search,Ostria Software,"Thessaloniki, Greece",Remote: Yes,Engineering
+kariera,sample-k518,2026-08-19,2026-09-01,Frontend Developer (Angular) - Search | Hybrid,Ostria Software,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k519,2026-08-07,2026-08-19,Junior Frontend Engineer (React),Ostria Software,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g117,2026-08-12,2026-09-16,Junior Frontend Engineer (React) - Payments,Ostria Software,"Athens, Attica, Greece",Remote: Yes,Engineering
+kariera,sample-k520,2026-08-14,2026-09-18,JUNIOR FRONTEND ENGINEER (REACT) - PAYMENTS,Ostria Software,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g118,2026-09-17,2026-09-30,Junior Frontend Engineer (React) - Platform,Ostria Software,"Athens, Attica, Greece",Remote: Yes,Engineering
+kariera,sample-k521,2026-09-21,2026-09-30,JUNIOR FRONTEND ENGINEER (REACT) - PLATFORM,Ostria Software,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g119,2026-08-03,2026-09-05,Site Reliability Engineer,Ostria Software,"Patras, Greece",On-site,Platform
+kariera,sample-k522,2026-08-07,2026-09-11,Site Reliability Developer,Ostria Software,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+greenhouse,sample-g120,2026-09-13,2026-09-30,Junior Security Engineer,Ostria Software,"Patras, Greece",Remote: Yes,Security
+kariera,sample-k523,2026-09-17,2026-09-30,Junior Μηχανικός Ασφάλειας Πληροφοριών,Ostria Software,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g121,2026-09-06,2026-09-30,Security Engineer,Meltemi Labs,"Athens, Attica, Greece",On-site,Security
+kariera,sample-k524,2026-09-06,2026-09-20,Security Engineer,MELTEMI LABS ΙΚΕ,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g122,2026-08-02,2026-08-15,Junior .NET Developer,Meltemi Labs,"Thessaloniki, Greece",Hybrid,Engineering
+kariera,sample-k525,2026-08-02,2026-09-03,Junior .NET Developer,MELTEMI LABS ΙΚΕ,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g123,2026-09-05,2026-09-30,Full Stack Developer,Meltemi Labs,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k526,2026-09-08,2026-09-30,Full Stack Developer (m/f),MELTEMI LABS ΙΚΕ,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g124,2026-09-04,2026-09-30,Backend Engineer (Java),Meltemi Labs,"Patras, Greece",Hybrid,Engineering
+kariera,sample-k527,2026-09-05,2026-09-30,BACKEND ENGINEER (JAVA),MELTEMI LABS ΙΚΕ,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g125,2026-08-30,2026-09-30,QA Automation Engineer,Meltemi Labs,"Heraklion, Crete, Greece",Remote: Yes,Quality
+kariera,sample-k528,2026-09-01,2026-09-30,QA Automation Engineer (Ηράκλειο),MELTEMI LABS ΙΚΕ,"Ηράκλειο, Κρήτη, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g126,2026-09-06,2026-09-29,Backend Developer (Node.js),Meltemi Labs,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k529,2026-09-12,2026-09-28,Backend Developer (Node.js),MELTEMI LABS ΙΚΕ,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k530,2026-09-14,2026-09-30,.NET Developer,Kerkis Systems Α.Ε.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g127,2026-09-13,2026-09-30,Senior Frontend Developer (Angular),Kerkis Systems,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k531,2026-09-18,2026-09-30,Senior Frontend Developer (Angular) (m/f),Kerkis Systems Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g128,2026-08-28,2026-09-10,Frontend Developer (Angular),Kerkis Systems,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k532,2026-08-31,2026-09-30,Frontend Developer (Angular) | Hybrid,Kerkis Systems Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k533,2026-09-13,2026-09-28,Senior QA Automation Engineer,Kerkis Systems Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g129,2026-08-13,2026-09-16,Senior QA Automation Engineer,Kerkis Systems,"Patras, Greece",Hybrid,Quality
+kariera,sample-k534,2026-09-04,2026-09-27,Lead Backend Engineer (Python) (Αθήνα),Kerkis Systems Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k535,2026-09-14,2026-09-30,Lead Machine Learning Developer,Asteri Cloud Single Member P.C.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k536,2026-08-18,2026-09-06,Lead Site Reliability Engineer (m/f),Asteri Cloud Single Member P.C.,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g130,2026-09-15,2026-09-30,Senior Cloud Engineer (AWS),Asteri Cloud,"Thessaloniki, Greece",Hybrid,Platform
+kariera,sample-k537,2026-09-18,2026-09-30,Senior Cloud Engineer (AWS) (Θεσσαλονίκη),Asteri Cloud Single Member P.C.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k538,2026-09-02,2026-09-28,Senior Backend Developer (Node.js),Ydor Fintech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+greenhouse,sample-g131,2026-08-29,2026-09-22,Backend Developer (Node.js),Ydor Fintech,"Thessaloniki, Greece",On-site,Engineering
+kariera,sample-k539,2026-09-03,2026-09-18,Backend Developer (Node.js) (m/f),Ydor Fintech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+greenhouse,sample-g132,2026-08-11,2026-09-11,Senior Frontend Developer (Angular),Ydor Fintech,"Patras, Greece",Hybrid,Engineering
+kariera,sample-k540,2026-08-12,2026-08-24,Senior Προγραμματιστής Frontend (Angular),Ydor Fintech S.A.,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k541,2026-09-06,2026-09-18,Senior Frontend Developer (Angular) - Αθήνα,Ydor Fintech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g133,2026-08-15,2026-09-15,Backend Engineer (Java),Ydor Fintech,"Thessaloniki, Greece",Hybrid,Engineering
+kariera,sample-k542,2026-08-18,2026-09-12,Backend Engineer (Java),Ydor Fintech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g134,2026-09-01,2026-09-09,Senior .NET Developer,Ydor Fintech,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k543,2026-09-01,2026-09-30,Senior .NET Developer,Ydor Fintech S.A.,,PARTIALLY_REMOTE,IT
+greenhouse,sample-g135,2026-08-13,2026-09-01,Junior QA Automation Engineer,Ydor Fintech,"Thessaloniki, Greece",Remote: Yes,Quality
+kariera,sample-k544,2026-08-13,2026-08-29,Junior Μηχανικός Αυτοματοποιημένων Ελέγχων (QA),Ydor Fintech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k545,2026-08-12,2026-09-03,SENIOR FRONTEND DEVELOPER (ANGULAR),Kipos Digital,,FULLY_REMOTE,IT
+greenhouse,sample-g136,2026-09-18,2026-09-30,Senior Frontend Developer (Angular) - Core Banking,Kipos Digital,Athens,Remote: Yes,Engineering
+kariera,sample-k546,2026-09-20,2026-09-30,SENIOR FRONTEND DEVELOPER (ANGULAR) - CORE BANKING,Kipos Digital,"Χαλάνδρι, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g137,2026-08-20,2026-08-28,Senior Frontend Developer (Angular) - Risk,Kipos Digital,Athens,Remote: Yes,Engineering
+kariera,sample-k547,2026-08-24,2026-09-28,SENIOR FRONTEND DEVELOPER (ANGULAR) - RISK,Kipos Digital,"Χαλάνδρι, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g138,2026-09-18,2026-09-30,Senior Backend Engineer (Java),Kipos Digital,Athens,Remote: Yes,Engineering
+kariera,sample-k548,2026-09-22,2026-09-30,Senior Backend Engineer (Java) (Χαλάνδρι),Kipos Digital,"Χαλάνδρι, Αττική, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k549,2026-09-05,2026-09-30,Lead Machine Learning Engineer (Αθήνα),Kipos Digital,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k550,2026-09-07,2026-09-30,DATA ENGINEER,Kipos Digital,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g139,2026-08-20,2026-09-28,Data Engineer - Core Banking,Kipos Digital,"Athens, Attica, Greece",Hybrid,Data
+kariera,sample-k551,2026-08-20,2026-09-19,DATA ENGINEER - CORE BANKING,Kipos Digital,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g140,2026-08-28,2026-09-27,Data Engineer - Search,Kipos Digital,"Athens, Attica, Greece",Hybrid,Data
+kariera,sample-k552,2026-08-29,2026-09-30,Data Engineer - Search,Kipos Digital,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g141,2026-09-01,2026-09-20,Senior .NET Developer,Kipos Digital,"Athens, Greece",On-site,Engineering
+kariera,sample-k553,2026-09-03,2026-09-30,SENIOR .NET DEVELOPER,Kipos Digital,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g142,2026-09-04,2026-09-17,Senior .NET Developer - Payments,Kipos Digital,"Athens, Greece",On-site,Engineering
+kariera,sample-k554,2026-09-06,2026-09-30,SENIOR .NET DEVELOPER - PAYMENTS,Kipos Digital,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g143,2026-08-31,2026-09-11,Senior .NET Developer - Mobile App,Kipos Digital,"Athens, Greece",On-site,Engineering
+kariera,sample-k555,2026-08-31,2026-09-19,SENIOR .NET DEVELOPER - MOBILE APP,Kipos Digital,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k556,2026-09-06,2026-09-17,Lead Frontend Developer (React),Argo Payments Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g144,2026-08-16,2026-09-05,Senior Frontend Engineer (React),Argo Payments,"Athens, Attica, Greece",Hybrid,Engineering
+greenhouse,sample-g145,2026-08-09,2026-09-07,Frontend Developer (Angular),Argo Payments,"Patras, Greece",On-site,Engineering
+kariera,sample-k557,2026-08-11,2026-09-01,Frontend Developer (Angular),Argo Payments Α.Ε.,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+greenhouse,sample-g146,2026-08-01,2026-08-28,Senior Machine Learning Engineer,Argo Payments,"Athens, Attica, Greece",On-site,Data
+kariera,sample-k558,2026-08-02,2026-08-14,Senior Machine Learning Engineer - Αθήνα,Argo Payments Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g147,2026-09-10,2026-09-30,Machine Learning Engineer,Argo Payments,"Athens, Attica, Greece",On-site,Data
+greenhouse,sample-g148,2026-09-18,2026-09-30,Senior iOS Developer,Argo Payments,"Athens, Attica, Greece",Hybrid,Mobile
+kariera,sample-k559,2026-09-20,2026-09-30,Senior iOS Developer,Argo Payments Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k560,2026-08-26,2026-09-27,iOS Developer,Argo Payments Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g149,2026-08-02,2026-08-20,Lead Data Analyst,Fengari Games,"Athens, Greece",Hybrid,Data
+kariera,sample-k561,2026-08-08,2026-08-25,Lead Αναλυτής Δεδομένων,Fengari Games Ltd,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k562,2026-09-09,2026-09-30,Junior Backend Engineer (Python) - Αθήνα,Fengari Games Ltd,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g150,2026-08-16,2026-09-11,.NET Developer,Fengari Games,"Athens, Greece",Hybrid,Engineering
+greenhouse,sample-g151,2026-09-03,2026-09-30,Senior Android Developer,Lithos Security,"Thessaloniki, Greece",On-site,Mobile
+greenhouse,sample-g152,2026-09-08,2026-09-30,Senior Frontend Engineer (React),Lithos Security,"Athens, Attica, Greece",On-site,Engineering
+kariera,sample-k563,2026-09-13,2026-09-30,Senior Frontend Engineer (React),Lithos Security Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g153,2026-08-21,2026-09-22,Senior QA Automation Engineer,Lithos Security,"Athens, Attica, Greece",On-site,Quality
+kariera,sample-k564,2026-08-24,2026-09-18,Sr. QA Automation Engineer,Lithos Security Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g154,2026-08-07,2026-08-23,Senior .NET Developer,Lithos Security,"Athens, Greece",Hybrid,Engineering
+greenhouse,sample-g155,2026-08-22,2026-09-11,Data Engineer,Lithos Security,"Athens, Attica, Greece",Hybrid,Data
+kariera,sample-k565,2026-08-22,2026-09-23,Data Engineer,Lithos Security Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g156,2026-08-10,2026-09-05,Junior Backend Engineer (Java),Lithos Security,"Athens, Attica, Greece",On-site,Engineering
+kariera,sample-k566,2026-08-15,2026-09-09,Junior Backend Developer (Java),Lithos Security Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g157,2026-08-03,2026-08-29,Senior Backend Engineer (Java),Lithos Security,"Athens, Attica, Greece",On-site,Engineering
+kariera,sample-k567,2026-08-06,2026-08-19,Senior Backend Engineer (Java) (Αθήνα),Lithos Security Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g158,2026-08-09,2026-08-22,Senior Data Engineer,Palmos Health,"Athens, Greece",On-site,Data
+kariera,sample-k568,2026-08-10,2026-08-23,SENIOR DATA ENGINEER,Palmos Health ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g159,2026-08-07,2026-08-16,Backend Engineer (Python),Palmos Health,"Athens, Greece",Hybrid,Engineering
+kariera,sample-k569,2026-08-11,2026-09-02,BACKEND ENGINEER (PYTHON),Palmos Health ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g160,2026-08-02,2026-08-17,Data Analyst,Palmos Health,"Athens, Attica, Greece",Hybrid,Data
+kariera,sample-k570,2026-08-02,2026-08-20,Data Analyst,Palmos Health ΙΚΕ,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k571,2026-09-02,2026-09-13,Machine Learning Engineer,Palmos Health ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g161,2026-08-04,2026-09-08,Senior Machine Learning Engineer,Palmos Health,"Athens, Greece",Hybrid,Data
+kariera,sample-k572,2026-08-04,2026-08-29,SENIOR MACHINE LEARNING ENGINEER,Palmos Health ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g162,2026-09-04,2026-09-30,Embedded Software Engineer,Palmos Health,"Athens, Greece",On-site,Engineering
+kariera,sample-k573,2026-09-04,2026-09-18,Embedded Software Engineer (Μαρούσι),Palmos Health ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g163,2026-09-14,2026-09-28,Embedded Software Engineer,Palmos Health,"Patras, Greece",On-site,Engineering
+kariera,sample-k574,2026-09-16,2026-09-30,Μηχανικός Ενσωματωμένου Λογισμικού,Palmos Health ΙΚΕ,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+greenhouse,sample-g164,2026-08-26,2026-09-26,BI Developer,Oikos Proptech,Athens,Hybrid,Data
+kariera,sample-k575,2026-08-29,2026-09-20,BI Developer,Oikos Proptech,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g165,2026-09-03,2026-09-19,Senior BI Developer,Oikos Proptech,Athens,Hybrid,Data
+kariera,sample-k576,2026-09-04,2026-09-26,Senior BI Developer (Χαλάνδρι),Oikos Proptech,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k577,2026-08-21,2026-09-15,Backend Developer (Node.js) (m/f),Oikos Proptech,,FULLY_REMOTE,IT
+kariera,sample-k578,2026-09-20,2026-09-30,Backend Developer (Node.js) (m/f),Oikos Proptech,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g166,2026-08-25,2026-09-19,Senior Cloud Engineer (AWS),Oikos Proptech,"Athens, Greece",Hybrid,Platform
+kariera,sample-k579,2026-08-27,2026-09-07,Senior Cloud Engineer (AWS) | Hybrid,Oikos Proptech,,PARTIALLY_REMOTE,IT
+kariera,sample-k580,2026-08-09,2026-09-05,Senior Backend Developer (Python),Oikos Proptech,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g167,2026-09-03,2026-09-30,QA Automation Engineer,Neraida AI,"Athens, Attica, Greece",Hybrid,Quality
+kariera,sample-k581,2026-09-04,2026-09-30,QA Automation Engineer,Neraida AI S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g168,2026-08-07,2026-08-15,Machine Learning Engineer,Neraida AI,"Athens, Attica, Greece",Remote: Yes,Data
+kariera,sample-k582,2026-08-13,2026-08-28,Μηχανικός Μηχανικής Μάθησης,Neraida AI S.A.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g169,2026-08-30,2026-09-28,Frontend Developer (Angular),Neraida AI,"Thessaloniki, Greece",Hybrid,Engineering
+kariera,sample-k583,2026-08-30,2026-09-23,Frontend Developer (Angular),Neraida AI S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g170,2026-08-31,2026-09-28,Frontend Developer (Angular),Neraida AI,"Heraklion, Crete, Greece",Hybrid,Engineering
+kariera,sample-k584,2026-09-04,2026-09-30,Προγραμματιστής Frontend (Angular),Neraida AI S.A.,"Ηράκλειο, Κρήτη, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g171,2026-08-30,2026-09-15,Senior Frontend Engineer (React),Ammos Retail Tech,"Heraklion, Crete, Greece",On-site,Engineering
+greenhouse,sample-g172,2026-09-18,2026-09-30,Senior Security Engineer,Ammos Retail Tech,"Heraklion, Crete, Greece",On-site,Security
+kariera,sample-k585,2026-09-22,2026-09-30,Sr. Security Engineer,Ammos Retail Tech Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",DISABLED,IT
+greenhouse,sample-g173,2026-08-04,2026-09-08,Security Engineer,Ammos Retail Tech,"Heraklion, Crete, Greece",On-site,Security
+kariera,sample-k586,2026-08-07,2026-08-23,Security Engineer,Ammos Retail Tech Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",DISABLED,IT
+greenhouse,sample-g174,2026-09-05,2026-09-30,Senior QA Automation Engineer,Ammos Retail Tech,Athens,Hybrid,Quality
+kariera,sample-k587,2026-09-06,2026-09-17,SENIOR QA AUTOMATION ENGINEER,Ammos Retail Tech Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k588,2026-08-29,2026-09-12,Senior QA Automation Engineer - Core Banking,Ammos Retail Tech Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g175,2026-08-22,2026-09-12,Senior QA Automation Engineer - Growth,Ammos Retail Tech,Athens,Hybrid,Quality
+kariera,sample-k589,2026-08-23,2026-09-12,Senior QA Automation Engineer - Growth (m/f),Ammos Retail Tech Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k590,2026-09-21,2026-09-30,SENIOR QA AUTOMATION ENGINEER - GROWTH,Ammos Retail Tech Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g176,2026-08-06,2026-09-03,Senior Frontend Developer (Angular),Ammos Retail Tech,Athens,On-site,Engineering
+kariera,sample-k591,2026-08-08,2026-09-10,Senior Προγραμματιστής Frontend (Angular),Ammos Retail Tech Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k592,2026-09-08,2026-09-30,Junior Embedded Software Engineer | Hybrid,Kastro Insurtech S.A.,,PARTIALLY_REMOTE,IT
+greenhouse,sample-g177,2026-09-01,2026-09-30,Junior Embedded Software Engineer,Kastro Insurtech,"Heraklion, Crete, Greece",Hybrid,Engineering
+kariera,sample-k593,2026-09-02,2026-09-27,Junior Μηχανικός Ενσωματωμένου Λογισμικού,Kastro Insurtech S.A.,,PARTIALLY_REMOTE,IT
+greenhouse,sample-g178,2026-08-05,2026-08-28,Site Reliability Engineer,Kastro Insurtech,"Thessaloniki, Greece",Hybrid,Platform
+kariera,sample-k594,2026-08-10,2026-09-05,Μηχανικός Αξιοπιστίας Συστημάτων (SRE),Kastro Insurtech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g179,2026-08-09,2026-08-27,Site Reliability Engineer,Kastro Insurtech,Athens,Hybrid,Platform
+kariera,sample-k595,2026-08-10,2026-09-01,Μηχανικός Αξιοπιστίας Συστημάτων (SRE),Kastro Insurtech S.A.,,PARTIALLY_REMOTE,IT
+kariera,sample-k596,2026-09-08,2026-09-22,Cloud Engineer (AWS) | Hybrid,Kastro Insurtech S.A.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+kariera,sample-k597,2026-08-03,2026-08-15,Lead Frontend Engineer (React),Kastro Insurtech S.A.,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g180,2026-08-17,2026-09-19,DevOps Engineer,Kastro Insurtech,"Athens, Attica, Greece",Hybrid,Platform
+kariera,sample-k598,2026-08-20,2026-09-19,DevOps Engineer (Αθήνα),Kastro Insurtech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g181,2026-08-04,2026-08-28,DevOps Engineer - Risk,Kastro Insurtech,"Athens, Attica, Greece",Hybrid,Platform
+kariera,sample-k599,2026-08-09,2026-09-06,Μηχανικός DevOps - Risk,Kastro Insurtech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g182,2026-08-05,2026-08-31,DevOps Engineer - Mobile App,Kastro Insurtech,"Athens, Attica, Greece",Hybrid,Platform
+kariera,sample-k600,2026-08-06,2026-09-05,DevOps Engineer - Mobile App,Kastro Insurtech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k601,2026-09-14,2026-09-30,DevOps Engineer - Mobile App (m/f),Kastro Insurtech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g183,2026-08-20,2026-09-20,Senior Security Engineer,Kastro Insurtech,"Athens, Attica, Greece",Hybrid,Security
+kariera,sample-k602,2026-08-23,2026-09-25,Senior Security Engineer,Kastro Insurtech S.A.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g184,2026-08-06,2026-08-24,Senior Security Engineer,Pyrgos Robotics,"Athens, Attica, Greece",On-site,Security
+kariera,sample-k603,2026-08-07,2026-09-06,Senior Security Engineer,Pyrgos Robotics ΕΠΕ,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k604,2026-08-11,2026-09-10,Senior Backend Engineer (Java) | Hybrid,Pyrgos Robotics ΕΠΕ,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g185,2026-08-29,2026-09-17,Senior Backend Engineer (Java) - Core Banking,Pyrgos Robotics,"Athens, Greece",On-site,Engineering
+kariera,sample-k605,2026-09-03,2026-09-26,Sr. Backend Engineer (Java) - Core Banking,Pyrgos Robotics ΕΠΕ,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g186,2026-09-02,2026-09-30,Senior Backend Engineer (Java) - Risk,Pyrgos Robotics,"Athens, Greece",On-site,Engineering
+kariera,sample-k606,2026-09-05,2026-09-15,Senior Backend Engineer (Java) - Risk,Pyrgos Robotics ΕΠΕ,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g187,2026-08-17,2026-09-14,Frontend Developer (Angular),Pyrgos Robotics,"Thessaloniki, Greece",On-site,Engineering
+kariera,sample-k607,2026-08-17,2026-08-31,Frontend Developer (Angular),Pyrgos Robotics ΕΠΕ,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",DISABLED,IT
+greenhouse,sample-g188,2026-08-16,2026-08-26,Frontend Developer (Angular),Pyrgos Robotics,"Athens, Greece",On-site,Engineering
+kariera,sample-k608,2026-09-17,2026-09-30,Senior Cloud Engineer (AWS) - Θεσσαλονίκη,Velos Telecom Α.Ε.,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g189,2026-09-16,2026-09-28,Senior Cloud Engineer (AWS),Velos Telecom,"Patras, Greece",Remote: Yes,Platform
+kariera,sample-k609,2026-09-19,2026-09-30,Senior Cloud Engineer (AWS) (Πάτρα),Velos Telecom Α.Ε.,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g190,2026-08-16,2026-09-17,Android Developer,Velos Telecom,"Athens, Greece",On-site,Mobile
+kariera,sample-k610,2026-08-22,2026-09-21,Android Developer - Μαρούσι,Velos Telecom Α.Ε.,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g191,2026-08-28,2026-09-30,Senior iOS Developer,Velos Telecom,"Athens, Attica, Greece",Hybrid,Mobile
+greenhouse,sample-g192,2026-08-26,2026-09-09,Frontend Engineer (React),Zefyros Logistics,"Athens, Attica, Greece",On-site,Engineering
+kariera,sample-k611,2026-08-28,2026-09-24,Frontend Developer (React),Zefyros Logistics Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g193,2026-08-09,2026-08-23,Site Reliability Engineer,Zefyros Logistics,"Athens, Greece",On-site,Platform
+kariera,sample-k612,2026-08-11,2026-09-08,Μηχανικός Αξιοπιστίας Συστημάτων (SRE),Zefyros Logistics Α.Ε.,,DISABLED,IT
+greenhouse,sample-g194,2026-08-16,2026-09-04,Senior Site Reliability Engineer,Zefyros Logistics,"Athens, Greece",On-site,Platform
+greenhouse,sample-g195,2026-08-27,2026-09-06,Junior Full Stack Developer,Zefyros Logistics,"Athens, Attica, Greece",Hybrid,Engineering
+kariera,sample-k613,2026-08-28,2026-09-14,Junior Full Stack Developer,Zefyros Logistics Α.Ε.,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g196,2026-08-17,2026-09-10,Security Engineer,Selini Media,"Athens, Attica, Greece",On-site,Security
+kariera,sample-k614,2026-08-23,2026-09-16,Μηχανικός Ασφάλειας Πληροφοριών,Selini Media Α.Ε.,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g197,2026-09-09,2026-09-30,Senior Data Scientist,Selini Media,"Athens, Greece",On-site,Data
+kariera,sample-k615,2026-09-12,2026-09-30,Sr. Data Scientist,Selini Media Α.Ε.,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g198,2026-09-10,2026-09-30,Senior Data Scientist,Selini Media,"Patras, Greece",On-site,Data
+kariera,sample-k616,2026-09-12,2026-09-30,Senior Data Scientist (Πάτρα),Selini Media Α.Ε.,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+greenhouse,sample-g199,2026-08-11,2026-09-10,Android Developer,Selini Media,Athens,Hybrid,Mobile
+kariera,sample-k617,2026-08-13,2026-09-16,Android Developer,Selini Media Α.Ε.,"Χαλάνδρι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g200,2026-09-01,2026-09-30,Lead Full Stack Developer,Selini Media,"Athens, Attica, Greece",On-site,Engineering
+greenhouse,sample-g201,2026-08-15,2026-09-13,Lead QA Automation Engineer,Selini Media,"Heraklion, Crete, Greece",On-site,Quality
+kariera,sample-k618,2026-08-21,2026-09-17,Lead Μηχανικός Αυτοματοποιημένων Ελέγχων (QA),Selini Media Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",DISABLED,IT
+greenhouse,sample-g202,2026-08-31,2026-09-24,Senior BI Developer,Ilios Energy Tech,"Athens, Greece",On-site,Data
+kariera,sample-k619,2026-08-31,2026-09-22,Senior BI Developer - Μαρούσι,Ilios Energy Tech S.A.,"Μαρούσι, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g203,2026-09-07,2026-09-24,Senior Backend Engineer (Java),Ilios Energy Tech,"Athens, Attica, Greece",Remote: Yes,Engineering
+kariera,sample-k620,2026-09-10,2026-09-30,Senior Backend Engineer (Java) | Hybrid,Ilios Energy Tech S.A.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g204,2026-09-13,2026-09-30,Lead Data Engineer,Ilios Energy Tech,"Athens, Attica, Greece",Remote: Yes,Data
+kariera,sample-k621,2026-09-19,2026-09-30,Lead Data Developer,Ilios Energy Tech S.A.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g205,2026-08-14,2026-09-18,QA Automation Engineer,Ilios Energy Tech,"Athens, Attica, Greece",Remote: Yes,Quality
+kariera,sample-k622,2026-08-16,2026-09-08,QA Automation Engineer (Αθήνα),Ilios Energy Tech S.A.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k623,2026-09-10,2026-09-30,SITE RELIABILITY ENGINEER,Taxidi Travel Tech ΙΚΕ,"Πάτρα, Δυτική Ελλάδα, Ελλάδα",DISABLED,IT
+kariera,sample-k624,2026-08-23,2026-09-07,Senior Frontend Engineer (React) - Μαρούσι,Taxidi Travel Tech ΙΚΕ,"Μαρούσι, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k625,2026-09-10,2026-09-30,Lead BI Developer,Taxidi Travel Tech ΙΚΕ,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g206,2026-08-14,2026-09-12,Data Scientist,Polis Mobility,"Thessaloniki, Greece",On-site,Data
+kariera,sample-k626,2026-08-28,2026-09-12,Full Stack Developer (m/f),Polis Mobility,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+kariera,sample-k627,2026-09-07,2026-09-30,Senior Embedded Software Engineer - Αθήνα,Polis Mobility,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+greenhouse,sample-g207,2026-09-14,2026-09-28,Junior Android Developer,Polis Mobility,"Thessaloniki, Greece",On-site,Mobile
+greenhouse,sample-g208,2026-08-16,2026-08-24,Senior QA Automation Engineer,Polis Mobility,"Athens, Attica, Greece",Hybrid,Quality
+kariera,sample-k628,2026-08-18,2026-09-03,Senior QA Automation Engineer | Hybrid,Polis Mobility,"Αθήνα, Αττική, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g209,2026-09-18,2026-09-30,Machine Learning Engineer,Polis Mobility,"Thessaloniki, Greece",Hybrid,Data
+kariera,sample-k629,2026-09-21,2026-09-30,Machine Learning Developer,Polis Mobility,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g210,2026-08-22,2026-09-10,Senior Android Developer,Kyma Software,"Thessaloniki, Greece",Hybrid,Mobile
+kariera,sample-k630,2026-08-22,2026-09-25,Sr. Android Developer,Kyma Software Engineering,"Θεσσαλονίκη, Κεντρική Μακεδονία, Ελλάδα",PARTIALLY_REMOTE,IT
+greenhouse,sample-g211,2026-08-17,2026-09-25,Senior Security Engineer,Kyma Software,"Athens, Greece",Hybrid,Security
+greenhouse,sample-g212,2026-08-09,2026-08-31,Frontend Developer (Angular),Kyma Software,"Thessaloniki, Greece",Remote: Yes,Engineering
+greenhouse,sample-g213,2026-08-11,2026-09-16,Senior Backend Engineer (Python),Delta Pi Solutions,"Athens, Attica, Greece",Remote: Yes,Engineering
+kariera,sample-k631,2026-08-14,2026-09-04,Senior Backend Engineer (Python),ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g214,2026-08-31,2026-09-14,Junior Frontend Developer (Angular),Delta Pi Solutions,"Heraklion, Crete, Greece",Remote: Yes,Engineering
+kariera,sample-k632,2026-09-01,2026-09-24,Junior Frontend Developer (Angular),ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k633,2026-08-21,2026-09-11,.NET Developer,ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",FULLY_REMOTE,IT
+kariera,sample-k634,2026-09-19,2026-09-30,.NET Developer (m/f),ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,"Ηράκλειο, Κρήτη, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g215,2026-08-31,2026-09-18,Data Scientist,Delta Pi Solutions,"Athens, Attica, Greece",Remote: Yes,Data
+kariera,sample-k635,2026-09-05,2026-09-30,Data Scientist | Hybrid,ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,"Αθήνα, Αττική, Ελλάδα",FULLY_REMOTE,IT
+greenhouse,sample-g216,2026-08-22,2026-09-13,Senior Android Developer,Delta Pi Solutions,"Athens, Attica, Greece",Hybrid,Mobile
+kariera,sample-k636,2026-08-24,2026-09-16,Senior Android Developer,ΔΕΛΤΑ ΠΙ ΛΥΣΕΙΣ ΠΛΗΡΟΦΟΡΙΚΗΣ Α.Ε.,,PARTIALLY_REMOTE,IT
+kariera,sample-k637,2026-09-09,2026-09-19,Frontend Engineer (React),,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k638,2026-08-23,2026-09-26,Cloud Engineer (AWS),,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k639,2026-08-12,2026-09-01,DevOps Engineer,,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k640,2026-09-14,2026-09-30,Full Stack Developer,,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT
+kariera,sample-k641,2026-08-30,2026-09-25,DevOps Engineer,,"Αθήνα, Αττική, Ελλάδα",DISABLED,IT

@@ -288,7 +288,9 @@ seeds:
       Hand-labeled pairs of postings, for the dedup_precision analysis. Each
       row says whether two postings are the same real-world job. Pairs to
       label come from the dedup_label_sample analysis. Pairs whose postings
-      are not in stg_postings are left out of the scores.
+      are not in stg_postings are left out of the scores. For now these are
+      draft labels for the made-up postings in tests/dedup, taken from the
+      true job of each posting, until real postings are labeled.
     config:
       column_types:
         source_a: text

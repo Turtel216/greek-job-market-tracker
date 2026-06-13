@@ -30,3 +30,6 @@ backups/
 .vscode/
 *.swp
 .DS_Store
+
+# Pairs exported for labeling by `make dedup-label-sample`
+dedup-label-sample.csv

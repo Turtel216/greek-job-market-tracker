@@ -23,6 +23,10 @@ company_aliases as (
     select * from {{ ref('company_aliases') }}
 ),
 
+company_placeholders as (
+    select * from {{ ref('company_placeholders') }}
+),
+
 title_word_map as (
     select * from {{ ref('title_word_map') }}
 ),
@@ -101,10 +105,14 @@ suffix_pattern as (
     from company_suffixes
 ),
 
+-- A name that hides the employer gets no key
 companies as (
     select
         stripped.posting_key,
-        coalesce(company_aliases.company_key, stripped.company_stripped) as company_key
+        case
+            when company_placeholders.name is null
+                then coalesce(company_aliases.company_key, stripped.company_stripped)
+        end as company_key
     from (
         select
             normalized.posting_key,
@@ -117,6 +125,8 @@ companies as (
     ) as stripped
     left join company_aliases
         on stripped.company_stripped = company_aliases.alias
+    left join company_placeholders
+        on stripped.company_stripped = company_placeholders.name
 ),
 
 -- Location and title with everything but letters and digits turned into

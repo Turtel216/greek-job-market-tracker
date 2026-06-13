@@ -61,6 +61,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -86,6 +87,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -113,6 +115,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -129,7 +132,8 @@ unit_tests:
   - name: stg_postings_company_key
     description: >
       company_key drops dots and every legal suffix at the end of the name,
-      then maps aliases to one key.
+      then maps aliases to one key. A name that hides the employer, such as
+      confidential, gets no key.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -142,9 +146,12 @@ unit_tests:
           - {posting_key: f, company_name: "Netcompany-Intrasoft S.A."}
           - {posting_key: g, company_name: "S.A."}
           - {posting_key: h, company_name: null}
+          - {posting_key: i, company_name: "Confidential"}
+          - {posting_key: j, company_name: "Εμπιστευτικό Α.Ε."}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -159,6 +166,8 @@ unit_tests:
         - {posting_key: f, company_key: netcompany intrasoft}
         - {posting_key: g, company_key: sa}
         - {posting_key: h, company_key: null}
+        - {posting_key: i, company_key: null}
+        - {posting_key: j, company_key: null}
 
   - name: stg_postings_city
     description: >
@@ -181,6 +190,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -222,6 +232,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -260,6 +271,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -298,6 +310,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
@@ -355,6 +368,7 @@ unit_tests:
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
+      - input: ref('company_placeholders')
       - input: ref('title_word_map')
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')

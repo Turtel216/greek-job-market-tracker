@@ -84,7 +84,8 @@ models:
       - name: company_key
         description: >
           Normalized company name without dots or legal suffixes, mapped
-          through company_aliases. The blocking key for deduplication.
+          through company_aliases. The blocking key for deduplication. Null
+          for names in company_placeholders, such as confidential.
       - name: city
         description: Canonical English city name from city_aliases, or Unknown.
         data_tests:

@@ -4,11 +4,20 @@ models:
       Every row of raw.raw_postings with its posting_key, and display text
       with whitespace tidied and empty values as null. One row per posting
       and run_date.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [source, source_job_id, run_date]
     columns:
       - name: posting_key
         description: md5 of source and source_job_id. One posting on one source.
         data_tests:
           - not_null
+          # Every raw posting reaches stg_postings
+          - relationships:
+              arguments:
+                to: ref('stg_postings')
+                field: posting_key
       - name: raw_posting_id
         description: Surrogate key of the raw row.
         data_tests:
@@ -16,10 +25,16 @@ models:
           - not_null
       - name: source
         description: Source name from config/sources.yml.
+        data_tests:
+          - not_null
       - name: source_job_id
         description: The posting's id on its source.
+        data_tests:
+          - not_null
       - name: run_date
         description: Europe/Athens date of the run that saw this row.
+        data_tests:
+          - not_null
       - name: scraped_at
         description: When the payload was fetched.
       - name: url

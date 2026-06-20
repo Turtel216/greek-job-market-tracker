@@ -108,6 +108,10 @@ models:
       - name: salary_currency
         description: ISO currency code of that salary. Only EUR is shown on the dashboard.
         data_type: text
+        data_tests:
+          - matches_pattern:
+              arguments:
+                pattern: "^[A-Z]{3}$"
       - name: salary_basis
         description: gross, net or unknown for that salary. Net amounts are not turned into gross.
         data_type: text

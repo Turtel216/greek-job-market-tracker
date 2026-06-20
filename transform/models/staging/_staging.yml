@@ -35,6 +35,11 @@ models:
         description: Europe/Athens date of the run that saw this row.
         data_tests:
           - not_null
+          # Each source's newest run must have at least half the rows of its
+          # average over the 7 days before. Stops the build on partial data.
+          - volume_vs_7d_avg:
+              arguments:
+                group_by: source
       - name: scraped_at
         description: When the payload was fetched.
       - name: url

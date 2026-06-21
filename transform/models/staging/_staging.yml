@@ -106,6 +106,8 @@ models:
           Normalized company name without dots or legal suffixes, mapped
           through company_aliases. The blocking key for deduplication. Null
           for names in company_placeholders, such as confidential.
+      - name: location_text
+        description: Structured ATS location or location text, as the source gave it.
       - name: city
         description: Canonical English city name from city_aliases, or Unknown.
         data_tests:

@@ -1,6 +1,7 @@
 # One selector per dbt step of the jobtracker_daily DAG, run in this order:
 # staging, snapshots, intermediate, marts. Each step builds one layer and
-# runs its tests, so a failed test stops the later layers.
+# runs its tests, so a failed test stops the later layers. The qa views
+# are built with the marts, since Metabase reads both.
 #
 # indirect_selection: buildable picks a test only when every model it reads
 # is in the step or built by an earlier one. A test that reads two layers,
@@ -34,8 +35,12 @@ selectors:
       indirect_selection: buildable
 
   - name: marts
-    description: The marts Metabase reads.
+    description: The marts and qa views Metabase reads.
     definition:
-      method: path
-      value: models/marts
-      indirect_selection: buildable
+      union:
+        - method: path
+          value: models/marts
+          indirect_selection: buildable
+        - method: path
+          value: models/qa
+          indirect_selection: buildable

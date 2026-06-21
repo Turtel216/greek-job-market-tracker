@@ -45,6 +45,10 @@ models:
       +materialized: table
       +contract:
         enforced: true
+    # Values the seeds do not cover yet, for the internal health dashboard
+    qa:
+      +schema: qa
+      +materialized: view
 
 snapshots:
   jobtracker:

@@ -1,0 +1,31 @@
+# Values the seeds do not cover yet. Each view counts the postings with a
+# value, so the seeds grow from real data, most common value first. The
+# internal health dashboard reads them. A view whose postings from the
+# newest run add up to more than 10% of that run warns, without stopping
+# the build.
+
+models:
+  - name: qa_unmapped_locations
+    description: >
+      Location text that matched no alias in city_aliases, so the city is
+      Unknown. Remote postings are left out. One row per normalized
+      location. Add the common ones to city_aliases.
+    columns:
+      - name: location_normalized
+        description: The location after normalize_text, the form the seed uses.
+        data_tests:
+          - unique
+          - not_null
+      - name: example_location
+        description: One location text as a source gave it.
+      - name: postings
+        description: Postings with this location.
+        data_tests:
+          - not_null
+      - name: postings_today
+        description: Postings with this location seen in the newest run.
+        data_tests:
+          - not_null
+          - share_of_todays_postings:
+              config:
+                severity: warn

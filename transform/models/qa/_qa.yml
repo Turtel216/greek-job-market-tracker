@@ -88,3 +88,33 @@ models:
           - share_of_todays_postings:
               config:
                 severity: warn
+
+  - name: qa_source_status
+    description: >
+      One row per source, as of its newest successful run in
+      ops.ingest_runs: the postings seen for the first time in that run,
+      the postings open now, and the postings that run closed. A posting
+      closes in the run where its missed runs reach missed_runs_to_close,
+      so each closing counts once. Read by the daily summary.
+    columns:
+      - name: source
+        description: Source name from config/sources.yml.
+        data_tests:
+          - unique
+          - not_null
+      - name: last_run_date
+        description: The newest run_date with a succeeded load.
+        data_tests:
+          - not_null
+      - name: new_postings
+        description: Postings first seen in that run.
+        data_tests:
+          - not_null
+      - name: open_postings
+        description: Postings open now.
+        data_tests:
+          - not_null
+      - name: closed_postings
+        description: Postings closed by that run.
+        data_tests:
+          - not_null

@@ -29,3 +29,28 @@ models:
           - share_of_todays_postings:
               config:
                 severity: warn
+
+  - name: qa_unclassified_titles
+    description: >
+      Titles that matched no rule in role_family_rules, in the title or the
+      department, so the role family is other. One row per normalized
+      title. Add rules for the common tech roles among them.
+    columns:
+      - name: title_normalized
+        description: The title after normalize_text, the form the rules match.
+        data_tests:
+          - unique
+          - not_null
+      - name: example_title
+        description: One title as a source gave it.
+      - name: postings
+        description: Postings with this title.
+        data_tests:
+          - not_null
+      - name: postings_today
+        description: Postings with this title seen in the newest run.
+        data_tests:
+          - not_null
+          - share_of_todays_postings:
+              config:
+                severity: warn

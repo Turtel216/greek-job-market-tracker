@@ -54,3 +54,37 @@ models:
           - share_of_todays_postings:
               config:
                 severity: warn
+
+  - name: qa_salary_parse_failures
+    description: >
+      Salary text that gave no monthly amount, with the reason: no amount,
+      period not converted (weekly, daily or hourly), or out of bounds (the
+      monthly amount was outside salary_monthly_min and salary_monthly_max).
+      One row per salary text and reason.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [salary_text, reason]
+    columns:
+      - name: salary_text
+        description: The salary as the source gave it.
+        data_tests:
+          - not_null
+      - name: reason
+        description: Why no monthly amount came out.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [no amount, period not converted, out of bounds]
+      - name: postings
+        description: Postings with this salary text.
+        data_tests:
+          - not_null
+      - name: postings_today
+        description: Postings with this salary text seen in the newest run.
+        data_tests:
+          - not_null
+          - share_of_todays_postings:
+              config:
+                severity: warn

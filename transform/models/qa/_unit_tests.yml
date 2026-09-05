@@ -1,0 +1,34 @@
+# Unit tests for the qa views. They run in `dbt build` before the model
+# they test.
+
+unit_tests:
+  - name: qa_source_status_counts
+    description: >
+      Each source is counted as of its newest succeeded run, so a failed run
+      after it changes nothing. A posting closed by an earlier run is not
+      counted again. A source with a run but no postings has zeros, and one
+      with only failed runs has no row.
+    model: qa_source_status
+    given:
+      - input: ref('int_posting_lifecycle')
+        rows:
+          # First seen in the newest run
+          - {posting_key: p1, source: greenhouse, first_seen: "2026-10-02", missed_runs: 0, is_open: true}
+          # Missed the newest run once, still open
+          - {posting_key: p2, source: greenhouse, first_seen: "2026-10-01", missed_runs: 1, is_open: true}
+          # Closed by the newest run
+          - {posting_key: p3, source: greenhouse, first_seen: "2026-09-20", missed_runs: 2, is_open: false}
+          # Closed by an earlier run
+          - {posting_key: p4, source: greenhouse, first_seen: "2026-09-10", missed_runs: 3, is_open: false}
+          - {posting_key: p5, source: kariera, first_seen: "2026-10-01", missed_runs: 0, is_open: true}
+      - input: source('ops', 'ingest_runs')
+        rows:
+          - {source: greenhouse, run_date: "2026-10-01", status: succeeded}
+          - {source: greenhouse, run_date: "2026-10-02", status: succeeded}
+          - {source: greenhouse, run_date: "2026-10-03", status: failed}
+          - {source: kariera, run_date: "2026-10-02", status: failed}
+          - {source: lever, run_date: "2026-10-02", status: succeeded}
+    expect:
+      rows:
+        - {source: greenhouse, last_run_date: "2026-10-02", new_postings: 1, open_postings: 2, closed_postings: 1}
+        - {source: lever, last_run_date: "2026-10-02", new_postings: 0, open_postings: 0, closed_postings: 0}

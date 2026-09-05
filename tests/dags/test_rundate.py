@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from common.rundate import athens_date
+from common.rundate import athens_date, athens_time
 
 
 @pytest.mark.parametrize(
@@ -19,3 +19,18 @@ from common.rundate import athens_date
 )
 def test_athens_date(when: datetime, expected: str) -> None:
     assert athens_date(when) == expected
+
+
+@pytest.mark.parametrize(
+    ("run_date", "expected"),
+    [
+        # Summer time, Athens is UTC+3
+        ("2026-10-24", datetime(2026, 10, 24, 3, 0, tzinfo=UTC)),
+        # The day summer time ends: 06:00 comes after the change
+        ("2026-10-25", datetime(2026, 10, 25, 4, 0, tzinfo=UTC)),
+        ("2027-01-01", datetime(2027, 1, 1, 4, 0, tzinfo=UTC)),
+    ],
+)
+def test_athens_time(run_date: str, expected: datetime) -> None:
+    assert athens_time(run_date, 6) == expected
+    assert athens_date(athens_time(run_date, 6)) == run_date

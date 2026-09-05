@@ -12,6 +12,10 @@ from common import alerts
 # Caps how many sources are extracted at the same time
 HTTP_POOL = "http_sources"
 
+# jobtracker_daily runs at this hour, Europe/Athens. The watchdog looks for
+# the run scheduled then.
+DAILY_RUN_HOUR = 6
+
 # config/sources.yml in the repo. The Airflow image sets JOBTRACKER_SOURCES,
 # the same variable the ingestion CLI reads, so both see the same registry.
 REPO_REGISTRY = Path(__file__).resolve().parents[2] / "config" / "sources.yml"

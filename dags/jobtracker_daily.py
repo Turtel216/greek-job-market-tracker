@@ -19,13 +19,13 @@ from airflow.sdk import DAG, CronTriggerTimetable, TaskGroup, TriggerRule
 
 from common.cli import CliOperator
 from common.dbt import dbt_build, dbt_freshness
-from common.defaults import DEFAULT_ARGS, HTTP_POOL, enabled_sources
+from common.defaults import DAILY_RUN_HOUR, DEFAULT_ARGS, HTTP_POOL, enabled_sources
 from common.rundate import RUN_DATE, TIMEZONE, athens_date
 
 with DAG(
     dag_id="jobtracker_daily",
     description="Extract, load, transform, test, publish",
-    schedule=CronTriggerTimetable("0 6 * * *", timezone=TIMEZONE),
+    schedule=CronTriggerTimetable(f"0 {DAILY_RUN_HOUR} * * *", timezone=TIMEZONE),
     start_date=datetime(2026, 10, 1),
     catchup=False,
     max_active_runs=1,

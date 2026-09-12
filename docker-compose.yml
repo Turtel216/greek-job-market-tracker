@@ -36,6 +36,8 @@ x-airflow-common: &airflow-common
     LOADER_PASSWORD: ${LOADER_PASSWORD}
     TRANSFORMER_PASSWORD: ${TRANSFORMER_PASSWORD}
     DBT_TARGET: ${DBT_TARGET:-dev}
+    # The daily summary reads qa.qa_source_status as the read-only role
+    AIRFLOW_CONN_WAREHOUSE_READER: postgresql://bi_reader:${BI_READER_PASSWORD}@postgres:5432/${WAREHOUSE_DB}
     DBT_THREADS: ${DBT_THREADS:-4}
     S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
     S3_REGION: ${S3_REGION}

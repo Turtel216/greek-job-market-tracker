@@ -78,6 +78,7 @@ def test_one_task_group_per_enabled_source(dagbag: DagBag) -> None:
             "lever.extract",
             "lever.load",
             *DBT_TASKS,
+            "notify_summary",
         ]
     )
 
@@ -102,7 +103,25 @@ def test_dbt_steps_run_in_order_after_every_load(dagbag: DagBag) -> None:
     assert dag.get_task("dbt_freshness").upstream_task_ids == {"greenhouse.load", "lever.load"}
     for before, after in pairwise(DBT_TASKS):
         assert dag.get_task(before).downstream_task_ids == {after}
-    assert dag.get_task("dbt_marts").downstream_task_ids == set()
+    assert dag.get_task("dbt_marts").downstream_task_ids == {"notify_summary"}
+
+
+def test_summary_runs_last_without_deciding_the_run(dagbag: DagBag) -> None:
+    dag = dagbag.dags["jobtracker_daily"]
+    summary = dag.get_task("notify_summary")
+    assert summary.downstream_task_ids == set()
+    # A teardown runs after a failure too, and does not count toward the
+    # run's state, so a failed dbt step still fails the run
+    assert summary.is_teardown
+    assert summary.retries == 1
+
+
+def test_summary_gets_the_athens_run_date(dagbag: DagBag) -> None:
+    dag = dagbag.dags["jobtracker_daily"]
+    task = dag.get_task("notify_summary")
+    context = {"dag_run": SimpleNamespace(run_after=datetime(2026, 10, 24, 3, 0, tzinfo=UTC))}
+    rendered = task.render_template(task.op_kwargs, context, dag.get_template_env())
+    assert rendered == {"run_date": "2026-10-24"}
 
 
 def test_dbt_starts_when_one_source_loaded(dagbag: DagBag) -> None:

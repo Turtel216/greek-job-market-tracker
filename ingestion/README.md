@@ -78,6 +78,31 @@ It connects with `POSTGRES_HOST`, `POSTGRES_PORT`, `WAREHOUSE_DB` and
 tables are in `infra/postgres/init/03-raw-and-ops-tables.sql`; on a
 database that already exists, create them with `make db-tables`.
 
+## Reparse
+
+`jobtracker reparse` loads the stored runs of a date range again with the
+current parser, so a parser fix reaches days that were already loaded
+without scraping again:
+
+```sh
+jobtracker reparse --source greenhouse --start-date 2026-10-20 --end-date 2026-10-25
+```
+
+Bump the adapter's `PARSER_VERSION` with the fix. Raw rows are never
+updated, so the reparse adds rows with the new version next to the old ones,
+and `stg_raw_postings` keeps the newest load of each posting and day. Without
+a bump nothing new is inserted, which the command logs as a warning.
+
+Each day loads its newest complete run as `jobtracker load` would. A posting
+whose detail was not fetched that day reuses the newest detail fetched
+before it, found in the manifests of up to 30 days before, so the result is
+the same however late the reparse runs. Days with no complete run, such as
+a failed extract or payloads past the 30 day retention, are skipped. A load
+that fails never replaces a run that succeeded in `ops.ingest_runs`.
+
+It exits with 1 when any day failed to load or no day in the range had a
+complete run, after loading every other day. Running it again is safe.
+
 The warehouse tests in `tests/loader/test_postgres.py` need a real
 Postgres and are skipped by `make test`. `make test-db` starts a throwaway
 one with the init scripts and runs them.

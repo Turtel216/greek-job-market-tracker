@@ -2,6 +2,7 @@
 
     jobtracker extract --source greenhouse --run-date 2026-10-25
     jobtracker load --source greenhouse --run-date 2026-10-25
+    jobtracker reparse --source greenhouse --start-date 2026-10-20 --end-date 2026-10-25
 
 Exit codes: 0 on success, 1 on a failure worth retrying later, and 3 when
 the source blocked us. Airflow does not retry a block, since the source is
@@ -24,6 +25,7 @@ from jobtracker_ingest.core.registry import load_registry
 from jobtracker_ingest.core.storage import S3ObjectStore
 from jobtracker_ingest.extract import ExtractError, detail_needed, run_extract
 from jobtracker_ingest.loader.load import LoadError, run_load
+from jobtracker_ingest.loader.reparse import run_reparse
 from jobtracker_ingest.loader.runs import NoCompleteRun
 from jobtracker_ingest.loader.warehouse import PostgresWarehouse
 from jobtracker_ingest.sources import get_adapter
@@ -47,6 +49,16 @@ def build_parser() -> argparse.ArgumentParser:
     load.add_argument("--source", required=True)
     load.add_argument("--run-date", required=True, type=date.fromisoformat)
     load.add_argument(
+        "--registry", type=Path, help="path to sources.yml (default: JOBTRACKER_SOURCES)"
+    )
+
+    reparse = commands.add_parser(
+        "reparse", help="load the stored runs of a date range again after a parser fix"
+    )
+    reparse.add_argument("--source", required=True)
+    reparse.add_argument("--start-date", required=True, type=date.fromisoformat)
+    reparse.add_argument("--end-date", required=True, type=date.fromisoformat)
+    reparse.add_argument(
         "--registry", type=Path, help="path to sources.yml (default: JOBTRACKER_SOURCES)"
     )
     return parser
@@ -117,6 +129,45 @@ def load(args: argparse.Namespace) -> int:
     return 0
 
 
+def reparse(args: argparse.Namespace) -> int:
+    log = structlog.get_logger("jobtracker_ingest.cli")
+    # Like load, it also works for a source that is not enabled
+    config = load_registry(args.registry).get(args.source)
+    try:
+        with PostgresWarehouse.connect() as warehouse:
+            result = run_reparse(
+                get_adapter(config.name),
+                config.name,
+                args.start_date,
+                args.end_date,
+                S3ObjectStore.from_env(),
+                warehouse,
+            )
+    except ValueError as err:
+        log.error("reparse_failed", source=config.name, error=str(err))
+        return EXIT_FAILED
+    except (psycopg.Error, BotoCoreError, ClientError) as err:
+        log.error("reparse_failed", source=config.name, error=f"{type(err).__name__}: {err}")
+        return EXIT_FAILED
+
+    if result.failed:
+        log.error(
+            "reparse_failed",
+            source=config.name,
+            error=f"{len(result.failed)} days failed to load",
+            failed={day.isoformat(): error for day, error in result.failed.items()},
+        )
+        return EXIT_FAILED
+    if not result.loaded:
+        log.error("reparse_failed", source=config.name, error="no complete run in the date range")
+        return EXIT_FAILED
+    if result.rows_inserted == 0:
+        # Fine when the same reparse runs again, but a parser fix that left
+        # PARSER_VERSION as it was also ends up here
+        log.warning("reparse_inserted_nothing", source=config.name)
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     configure_logging()
     args = build_parser().parse_args(argv)
@@ -124,6 +175,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return extract(args)
     if args.command == "load":
         return load(args)
+    if args.command == "reparse":
+        return reparse(args)
     return 2
 
 

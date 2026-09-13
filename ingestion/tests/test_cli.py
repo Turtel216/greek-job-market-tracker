@@ -10,9 +10,11 @@ import responses
 import structlog
 
 from jobtracker_ingest import cli
+from jobtracker_ingest.core.models import RawPayload, RawPosting
 from jobtracker_ingest.core.ratelimit import HostRateLimiter
 from jobtracker_ingest.core.storage import MemoryObjectStore, gzip_bytes
 from jobtracker_ingest.loader.warehouse import MemoryWarehouse
+from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
 
 FIXTURES = Path(__file__).parent / "fixtures" / "greenhouse"
 API = "https://boards-api.greenhouse.io/v1/boards"
@@ -213,3 +215,92 @@ def test_extract_when_the_database_is_down_sends_no_requests(
     with responses.RequestsMock() as mock:
         assert extract(tmp_path) == cli.EXIT_FAILED
         assert len(mock.calls) == 0
+
+
+class OldGreenhouse(GreenhouseAdapter):
+    """The parser before a fix: it lost every title."""
+
+    PARSER_VERSION = "old"
+
+    def parse(self, payload: RawPayload) -> RawPosting:
+        row = super().parse(payload)
+        return row.model_copy(update={"title_raw": None, "parser_version": self.PARSER_VERSION})
+
+
+def reparse(tmp_path: Path, start: str = "2026-10-25", end: str = "2026-10-25") -> int:
+    path = registry(tmp_path, enabled=True)
+    return cli.main(
+        [
+            "reparse",
+            "--source",
+            "greenhouse",
+            "--start-date",
+            start,
+            "--end-date",
+            end,
+            "--registry",
+            path,
+        ]
+    )
+
+
+def test_reparse_after_a_parser_fix(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+    with monkeypatch.context() as patch:
+        patch.setattr(cli, "get_adapter", lambda name: OldGreenhouse())
+        assert load(tmp_path) == 0
+
+    assert reparse(tmp_path, start="2026-10-20") == 0
+
+    versions = sorted(key[3] for key in warehouse.raw_postings)
+    assert versions == ["2", "2", "2", "old", "old", "old"]
+    [run] = warehouse.ingest_runs.values()
+    assert (run.parser_version, run.rows_inserted) == ("2", 3)
+
+
+def test_reparse_again_inserts_nothing_and_succeeds(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+    assert load(tmp_path) == 0
+
+    assert reparse(tmp_path) == 0
+    assert len(warehouse.raw_postings) == 3
+
+
+def test_reparse_without_a_complete_run_returns_1(
+    tmp_path: Path, store: MemoryObjectStore, warehouse: MemoryWarehouse
+) -> None:
+    assert reparse(tmp_path) == cli.EXIT_FAILED
+    assert warehouse.ingest_runs == {}
+
+
+def test_reparse_with_the_dates_swapped_returns_1(
+    tmp_path: Path, store: MemoryObjectStore, warehouse: MemoryWarehouse
+) -> None:
+    assert reparse(tmp_path, start="2026-10-25", end="2026-10-24") == cli.EXIT_FAILED
+
+
+def test_reparse_with_a_failed_day_returns_1(
+    tmp_path: Path,
+    store: MemoryObjectStore,
+    warehouse: MemoryWarehouse,
+    rsps: responses.RequestsMock,
+) -> None:
+    mock_board(rsps)
+    assert extract(tmp_path) == 0
+    for key in [k for k in store.objects if "/detail/" in k]:
+        store.objects[key] = gzip_bytes(b"not json")
+
+    assert reparse(tmp_path) == cli.EXIT_FAILED

@@ -10,6 +10,7 @@ Follows the load step in the design doc:
 
 A posting whose detail was not fetched this run reuses the last stored
 detail from ops.posting_fingerprints, so it still gets a row for the day.
+A reparse passes the details to reuse instead, see loader.reparse.
 One posting that fails to parse is logged and skipped; the volume test in
 dbt catches a parser that breaks on many of them.
 
@@ -19,14 +20,14 @@ row, so a retried or repeated load leaves the same end state.
 
 import uuid
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from datetime import UTC, date, datetime
 from uuid import UUID
 
 import structlog
 from structlog.contextvars import bound_contextvars
 
-from jobtracker_ingest.core.manifest import PostingEntry, RunManifest
+from jobtracker_ingest.core.manifest import DetailEntry, PostingEntry, RunManifest
 from jobtracker_ingest.core.models import RawPayload, RawPosting
 from jobtracker_ingest.core.storage import ObjectNotFound, ObjectStore
 from jobtracker_ingest.loader.models import Fingerprint, IngestRun
@@ -55,12 +56,47 @@ def run_load(
     load_id: UUID | None = None,
     now: Clock = utc_now,
 ) -> IngestRun:
+    with bound_contextvars(source=source, run_date=run_date.isoformat()):
+        manifest = latest_manifest(store, source, run_date)
+    return load_manifest(adapter, manifest, store, warehouse, load_id=load_id, now=now)
+
+
+def load_manifest(
+    adapter: SourceAdapter,
+    manifest: RunManifest,
+    store: ObjectStore,
+    warehouse: Warehouse,
+    load_id: UUID | None = None,
+    now: Clock = utc_now,
+    last_details: Mapping[str, DetailEntry] | None = None,
+) -> IngestRun:
+    """Load one complete extract run.
+
+    last_details maps a source_job_id to the detail to reuse when this run
+    did not fetch it. By default it comes from ops.posting_fingerprints.
+    """
     load_id = load_id or uuid.uuid4()
     started_at = now()
-    with bound_contextvars(source=source, run_date=run_date.isoformat(), load_id=str(load_id)):
-        manifest = latest_manifest(store, source, run_date)
-        with bound_contextvars(run_id=manifest.run_id):
-            return _load(adapter, manifest, store, warehouse, load_id, started_at, now)
+    with bound_contextvars(
+        source=manifest.source,
+        run_date=manifest.run_date.isoformat(),
+        load_id=str(load_id),
+        run_id=manifest.run_id,
+    ):
+        return _load(adapter, manifest, store, warehouse, load_id, started_at, now, last_details)
+
+
+def stored_details(warehouse: Warehouse, source: str) -> dict[str, DetailEntry]:
+    """The last stored detail of each posting, from ops.posting_fingerprints."""
+    return {
+        job_id: DetailEntry(
+            key=fp.detail_object_key,
+            url=fp.detail_url,
+            content_type=fp.detail_content_type,
+            fetched_at=fp.detail_fetched_at,
+        )
+        for job_id, fp in warehouse.fingerprints(source).items()
+    }
 
 
 def _load(
@@ -71,31 +107,31 @@ def _load(
     load_id: UUID,
     started_at: datetime,
     now: Clock,
+    last_details: Mapping[str, DetailEntry] | None,
 ) -> IngestRun:
     log = structlog.get_logger(__name__)
     log.info("load_started", postings=len(manifest.postings))
     counts: Counter[str] = Counter()
     rows: list[RawPosting] = []
     fingerprints: list[Fingerprint] = []
-    # Only read when some posting needs its last detail
-    known: dict[str, Fingerprint] | None = None
 
     for posting in manifest.postings:
         reused = posting.detail is None
         try:
             if posting.detail is not None:
-                payload = fetched_payload(store, manifest, posting, posting.detail)
-                detail = (posting.detail.key, posting.detail.fetched_at)
+                detail = posting.detail
+                payload = fetched_payload(store, manifest, posting, detail)
             else:
-                if known is None:
-                    known = warehouse.fingerprints(manifest.source)
-                last = known.get(posting.source_job_id)
+                # Only read when some posting needs its last detail
+                if last_details is None:
+                    last_details = stored_details(warehouse, manifest.source)
+                last = last_details.get(posting.source_job_id)
                 if last is None:
                     raise ObjectNotFound(f"no stored detail for {posting.source_job_id}")
                 payload = reused_payload(store, manifest, posting, last)
                 # Keeps its first fetch time, so extract still fetches it
                 # again once it is 14 days old
-                detail = (last.detail_object_key, last.detail_fetched_at)
+                detail = last
         except ObjectNotFound as err:
             counts["details_missing"] += 1
             log.warning("detail_missing", source_job_id=posting.source_job_id, error=str(err))
@@ -118,7 +154,7 @@ def _load(
         if reused:
             counts["details_reused"] += 1
         rows.append(row)
-        fingerprints.append(fingerprint_for(posting, payload, row, manifest.run_date, *detail))
+        fingerprints.append(fingerprint_for(posting, payload, row, manifest.run_date, detail))
 
     run = IngestRun(
         source=manifest.source,
@@ -175,8 +211,7 @@ def fingerprint_for(
     payload: RawPayload,
     row: RawPosting,
     run_date: date,
-    detail_key: str,
-    detail_fetched_at: datetime,
+    detail: DetailEntry,
 ) -> Fingerprint:
     """The fingerprint row after this load."""
     return Fingerprint(
@@ -186,9 +221,9 @@ def fingerprint_for(
         account=posting.account,
         url=posting.url,
         last_seen_run_date=run_date,
-        detail_object_key=detail_key,
+        detail_object_key=detail.key,
         detail_url=payload.url,
         detail_content_type=payload.content_type,
-        detail_fetched_at=detail_fetched_at,
+        detail_fetched_at=detail.fetched_at,
         content_hash=row.content_hash,
     )

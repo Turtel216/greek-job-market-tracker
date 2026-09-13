@@ -10,7 +10,6 @@ from datetime import date
 from jobtracker_ingest.core.manifest import DetailEntry, PostingEntry, RunManifest
 from jobtracker_ingest.core.models import RawPayload
 from jobtracker_ingest.core.storage import MANIFEST_NAME, ObjectStore
-from jobtracker_ingest.loader.models import Fingerprint
 
 
 class NoCompleteRun(Exception):
@@ -62,7 +61,7 @@ def fetched_payload(
 
 
 def reused_payload(
-    store: ObjectStore, manifest: RunManifest, posting: PostingEntry, last: Fingerprint
+    store: ObjectStore, manifest: RunManifest, posting: PostingEntry, last: DetailEntry
 ) -> RawPayload:
     """The last stored detail, for a posting whose detail was not fetched this run.
 
@@ -72,11 +71,11 @@ def reused_payload(
     return RawPayload(
         source=manifest.source,
         source_job_id=posting.source_job_id,
-        url=last.detail_url,
+        url=last.url,
         run_date=manifest.run_date,
         fetched_at=manifest.started_at,
-        content=gzip.decompress(store.get(last.detail_object_key)),
-        content_type=last.detail_content_type,
+        content=gzip.decompress(store.get(last.key)),
+        content_type=last.content_type,
         account=posting.account,
-        object_key=last.detail_object_key,
+        object_key=last.key,
     )

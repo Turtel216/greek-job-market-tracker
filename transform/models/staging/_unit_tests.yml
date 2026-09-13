@@ -38,6 +38,53 @@ unit_tests:
           salary_text: "Base salary: 56000 - 70000 EUR"
           description: null
 
+  - name: stg_raw_postings_newest_parse
+    description: >
+      After a reparse, each posting and day keeps only the row from the
+      newest load. Days the reparse did not cover keep their only row.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          - raw_posting_id: 1
+            source: kariera
+            source_job_id: "3412"
+            run_date: 2026-10-25
+            title_raw: Broken
+            parser_version: "1"
+          - raw_posting_id: 2
+            source: kariera
+            source_job_id: "3412"
+            run_date: 2026-10-26
+            title_raw: Broken
+            parser_version: "1"
+          - raw_posting_id: 3
+            source: greenhouse
+            source_job_id: "3412"
+            run_date: 2026-10-25
+            title_raw: Other source
+            parser_version: "1"
+          - raw_posting_id: 4
+            source: kariera
+            source_job_id: "3412"
+            run_date: 2026-10-25
+            title_raw: Fixed
+            parser_version: "2"
+    expect:
+      rows:
+        - raw_posting_id: 2
+          run_date: 2026-10-26
+          title: Broken
+          parser_version: "1"
+        - raw_posting_id: 3
+          run_date: 2026-10-25
+          title: Other source
+          parser_version: "1"
+        - raw_posting_id: 4
+          run_date: 2026-10-25
+          title: Fixed
+          parser_version: "2"
+
   - name: stg_postings_normalize_text
     description: >
       normalize_text lowercases, strips Greek and Latin accents, writes the

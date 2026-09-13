@@ -8,6 +8,14 @@ raw_postings as (
     select * from {{ source('raw', 'raw_postings') }}
 ),
 
+-- A reparse after a parser fix adds rows with a new parser_version next to
+-- the old ones. Only the newest load of each posting and day is kept.
+newest_parse as (
+    select distinct on (source, source_job_id, run_date) *
+    from raw_postings
+    order by source asc, source_job_id asc, run_date asc, raw_posting_id desc
+),
+
 cleaned as (
     select
         md5(source || ':' || source_job_id) as posting_key,
@@ -29,7 +37,7 @@ cleaned as (
         content_hash,
         parser_version,
         load_id
-    from raw_postings
+    from newest_parse
 )
 
 select * from cleaned

@@ -6,7 +6,9 @@ sources:
     description: Parsed rows as the loader wrote them. Never updated or deleted.
     tables:
       - name: raw_postings
-        description: One row per posting, source and run_date.
+        description: >
+          One row per posting, source, run_date and parser version. A
+          reparse after a parser fix adds rows with the new version.
         config:
           loaded_at_field: scraped_at
           # Warn only at 26 hours so one late source does not block the

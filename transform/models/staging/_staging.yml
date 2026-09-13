@@ -3,7 +3,8 @@ models:
     description: >
       Every row of raw.raw_postings with its posting_key, and display text
       with whitespace tidied and empty values as null. One row per posting
-      and run_date.
+      and run_date. When a reparse loaded a day again with a new parser
+      version, only the row from the newest load is kept.
     data_tests:
       - unique_combination:
           arguments:

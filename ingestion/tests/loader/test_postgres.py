@@ -13,12 +13,13 @@ from uuid import UUID
 
 import psycopg
 import pytest
-from loader_helpers import DAY_1, DAY_2, WriteRun, fixture_posting
+from loader_helpers import DAY_1, DAY_2, OldGreenhouse, WriteRun, fixture_posting
 
 from jobtracker_ingest.core.models import RawPosting
 from jobtracker_ingest.core.storage import MemoryObjectStore
 from jobtracker_ingest.loader.load import run_load
 from jobtracker_ingest.loader.models import Fingerprint, IngestRun
+from jobtracker_ingest.loader.reparse import run_reparse
 from jobtracker_ingest.loader.warehouse import PostgresWarehouse
 from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
 
@@ -250,3 +251,39 @@ def test_a_full_load(
     ).fetchall()
     # The second load of day 2 found nothing new
     assert runs == [(DAY_1, 2, 2, 0), (DAY_2, 2, 0, 1)]
+
+
+def test_a_reparse_after_a_parser_fix(
+    warehouse: PostgresWarehouse,
+    admin: psycopg.Connection[tuple[object, ...]],
+    store: MemoryObjectStore,
+    write_run: WriteRun,
+) -> None:
+    write_run([fixture_posting(job_id) for job_id in ("4012345008", "4012345009")])
+    write_run(
+        [fixture_posting("4012345008", fetch=False), fixture_posting("4012345010")],
+        run_date=DAY_2,
+        run_id="20261026T030000Z-bbbb0001",
+    )
+    for day in (DAY_1, DAY_2):
+        run_load(OldGreenhouse(), "greenhouse", day, store, warehouse, now=lambda: NOW)
+
+    result = run_reparse(
+        GreenhouseAdapter(), "greenhouse", DAY_1, DAY_2, store, warehouse, now=lambda: NOW
+    )
+
+    assert result.rows_inserted == 4
+    rows = admin.execute(
+        "select parser_version, count(*), count(title_raw) from raw.raw_postings"
+        " group by parser_version order by parser_version"
+    ).fetchall()
+    # The old rows are kept, untouched, next to the fixed ones
+    assert rows == [(GreenhouseAdapter.PARSER_VERSION, 4, 4), ("old", 4, 0)]
+    runs = admin.execute(
+        "select run_date, status, parser_version, rows_inserted from ops.ingest_runs"
+        " order by run_date"
+    ).fetchall()
+    assert runs == [
+        (DAY_1, "succeeded", GreenhouseAdapter.PARSER_VERSION, 2),
+        (DAY_2, "succeeded", GreenhouseAdapter.PARSER_VERSION, 2),
+    ]

@@ -53,3 +53,13 @@ class BrokenGreenhouse(GreenhouseAdapter):
 
     def parse(self, payload: RawPayload) -> RawPosting:
         raise ValueError("the page changed")
+
+
+class OldGreenhouse(GreenhouseAdapter):
+    """The parser before a fix: it lost every title."""
+
+    PARSER_VERSION = "old"
+
+    def parse(self, payload: RawPayload) -> RawPosting:
+        row = super().parse(payload)
+        return row.model_copy(update={"title_raw": None, "parser_version": self.PARSER_VERSION})

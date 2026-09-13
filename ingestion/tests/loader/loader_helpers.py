@@ -7,6 +7,8 @@ from datetime import date
 from pathlib import Path
 
 from jobtracker_ingest.core.manifest import RunManifest
+from jobtracker_ingest.core.models import RawPayload, RawPosting
+from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "greenhouse"
 JSON = "application/json; charset=utf-8"
@@ -42,3 +44,12 @@ def with_description(job_id: str, extra: str) -> Posting:
 
 
 WriteRun = Callable[..., RunManifest]
+
+
+class BrokenGreenhouse(GreenhouseAdapter):
+    """A parser release that fails on every page."""
+
+    PARSER_VERSION = "broken"
+
+    def parse(self, payload: RawPayload) -> RawPosting:
+        raise ValueError("the page changed")

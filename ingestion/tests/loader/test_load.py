@@ -8,6 +8,7 @@ from loader_helpers import (
     DAY_2,
     DETAILS,
     FIXTURES,
+    BrokenGreenhouse,
     Posting,
     WriteRun,
     fixture_posting,
@@ -208,6 +209,21 @@ def test_a_newer_run_after_a_failed_load_is_loaded(
 
     statuses = {run_id: r.status for (_, run_id), r in warehouse.ingest_runs.items()}
     assert statuses == {"20261025T030000Z-aaaa0001": "failed", run.run_id: "succeeded"}
+
+
+def test_a_failed_load_does_not_replace_a_succeeded_one(
+    store: MemoryObjectStore, warehouse: MemoryWarehouse, write_run: WriteRun
+) -> None:
+    manifest = write_run([fixture_posting(job_id) for job_id in ALL])
+    good = load(store, warehouse)
+
+    # The same run loaded again with a broken parser, for example by a reparse
+    with pytest.raises(LoadError):
+        run_load(BrokenGreenhouse(), "greenhouse", DAY_1, store, warehouse, now=lambda: NOW)
+
+    # Its rows are still in raw, so the run still counts as succeeded
+    assert warehouse.ingest_runs == {("greenhouse", manifest.run_id): good}
+    assert len(warehouse.raw_postings) == 3
 
 
 def test_personal_data_is_scrubbed_before_it_is_stored(

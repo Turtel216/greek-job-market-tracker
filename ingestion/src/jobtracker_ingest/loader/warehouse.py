@@ -75,11 +75,15 @@ on conflict (source, source_job_id) do update set
 where excluded.last_seen_run_date >= posting_fingerprints.last_seen_run_date
 """
 
+# A failed load never replaces a succeeded one, for example a reparse with a
+# broken parser. The rows of the succeeded load are still in raw, so the run
+# still counts.
 UPSERT_RUN = f"""
 insert into ops.ingest_runs ({", ".join(RUN_COLUMNS)})
 values ({placeholders(RUN_COLUMNS)})
 on conflict (source, run_id) do update set
     {", ".join(f"{c} = excluded.{c}" for c in RUN_COLUMNS[2:])}
+where ingest_runs.status = 'failed' or excluded.status = 'succeeded'
 """
 
 SELECT_FINGERPRINTS = f"""
@@ -240,7 +244,11 @@ class MemoryTx:
                 self.posting_fingerprints[key] = fp
 
     def upsert_ingest_run(self, run: IngestRun) -> None:
+        key = (run.source, run.run_id)
+        old = self.ingest_runs.get(key)
+        if old is not None and old.status == "succeeded" and run.status == "failed":
+            return
         # Stored as JSON and read back, like the jsonb columns
-        self.ingest_runs[(run.source, run.run_id)] = IngestRun.model_validate_json(
+        self.ingest_runs[key] = IngestRun.model_validate_json(
             json.dumps(run.model_dump(mode="json"))
         )

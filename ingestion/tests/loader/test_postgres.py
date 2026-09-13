@@ -195,6 +195,18 @@ def test_ingest_run_is_replaced_on_a_second_load(
     ]
 
 
+def test_a_failed_load_does_not_replace_a_succeeded_one(
+    warehouse: PostgresWarehouse, admin: psycopg.Connection[tuple[object, ...]]
+) -> None:
+    with warehouse.transaction() as tx:
+        tx.upsert_ingest_run(ingest_run())
+    with warehouse.transaction() as tx:
+        tx.upsert_ingest_run(ingest_run(status="failed", rows=0))
+
+    rows = admin.execute("select status, error, rows_parsed from ops.ingest_runs").fetchall()
+    assert rows == [("succeeded", None, 3)]
+
+
 def test_a_failed_transaction_writes_nothing(
     warehouse: PostgresWarehouse, admin: psycopg.Connection[tuple[object, ...]]
 ) -> None:

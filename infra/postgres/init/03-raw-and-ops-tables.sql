@@ -6,7 +6,9 @@
 -- 02-warehouse.sh apply: the loader can only insert into raw, and can
 -- read, insert and update ops.
 
--- One row per posting, source and run_date. Never updated or deleted.
+-- One row per posting, source, run_date and parser version. Never updated
+-- or deleted. A reparse with a new parser version adds rows next to the
+-- old ones, and staging reads the newest.
 create table if not exists raw.raw_postings (
     raw_posting_id bigint generated always as identity primary key,
     source text not null,
@@ -26,9 +28,15 @@ create table if not exists raw.raw_postings (
     content_hash text not null,
     object_key text,
     parser_version text not null,
-    load_id uuid not null,
-    unique (source, source_job_id, run_date)
+    load_id uuid not null
 );
+
+-- The natural key. Older databases have it without parser_version, which
+-- stops a reparse from adding rows, so that constraint is replaced.
+alter table raw.raw_postings
+    drop constraint if exists raw_postings_source_source_job_id_run_date_key;
+create unique index if not exists raw_postings_natural_key
+    on raw.raw_postings (source, source_job_id, run_date, parser_version);
 
 -- One row per extract run that was loaded. Loading the same run again
 -- replaces its row, so a retried load leaves the same end state.

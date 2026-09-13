@@ -49,7 +49,7 @@ def warehouse(
         yield warehouse
 
 
-def posting(job_id: str, title: str = "Data Engineer") -> RawPosting:
+def posting(job_id: str, title: str = "Data Engineer", parser_version: str = "1") -> RawPosting:
     return RawPosting(
         source="greenhouse",
         source_job_id=job_id,
@@ -66,7 +66,7 @@ def posting(job_id: str, title: str = "Data Engineer") -> RawPosting:
         description_raw="Python και SQL",
         posted_at_raw=None,
         object_key=f"raw/greenhouse/2026-10-25/r1/detail/{job_id}.json.gz",
-        parser_version="1",
+        parser_version=parser_version,
     )
 
 
@@ -132,6 +132,22 @@ def test_raw_inserts_skip_rows_that_are_already_there(
         ("3", "Data Engineer", "Αθήνα", LOAD_1),
     ]
     assert rows[0][4] == posting("1").content_hash
+
+
+def test_a_new_parser_version_adds_rows_next_to_the_old_ones(
+    warehouse: PostgresWarehouse, admin: psycopg.Connection[tuple[object, ...]]
+) -> None:
+    with warehouse.transaction() as tx:
+        assert tx.insert_raw_postings([posting("1")], LOAD_1) == 1
+    with warehouse.transaction() as tx:
+        # A reparse of the same day after a parser fix
+        fixed = posting("1", title="Data Engineer II", parser_version="2")
+        assert tx.insert_raw_postings([fixed, posting("1", parser_version="2")], LOAD_1) == 1
+
+    rows = admin.execute(
+        "select parser_version, title_raw from raw.raw_postings order by raw_posting_id"
+    ).fetchall()
+    assert rows == [("1", "Data Engineer"), ("2", "Data Engineer II")]
 
 
 @pytest.mark.parametrize(

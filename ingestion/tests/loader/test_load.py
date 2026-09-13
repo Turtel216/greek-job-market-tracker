@@ -26,6 +26,7 @@ LOAD_1 = UUID("00000000-0000-0000-0000-000000000001")
 LOAD_2 = UUID("00000000-0000-0000-0000-000000000002")
 NOW = datetime(2026, 10, 25, 3, 30, tzinfo=UTC)
 ALL = ["4012345008", "4012345009", "4012345010"]
+PARSER = GreenhouseAdapter.PARSER_VERSION
 
 
 @pytest.fixture
@@ -62,8 +63,8 @@ def test_loads_every_posting(
 
     run = load(store, warehouse)
 
-    assert sorted(job_id for _, job_id, _ in warehouse.raw_postings) == ALL
-    row = warehouse.raw_postings[("greenhouse", "4012345009", DAY_1)]
+    assert sorted(job_id for _, job_id, _, _ in warehouse.raw_postings) == ALL
+    row = warehouse.raw_postings[("greenhouse", "4012345009", DAY_1, PARSER)]
     want = expected("4012345009")
     for column in ("title_raw", "company_raw", "description_raw", "salary_raw", "content_hash"):
         assert row[column] == want[column], column
@@ -109,7 +110,7 @@ def test_an_unchanged_posting_reuses_its_last_detail(
 ) -> None:
     write_run([fixture_posting("4012345008")])
     load(store, warehouse)
-    first = warehouse.raw_postings[("greenhouse", "4012345008", DAY_1)]
+    first = warehouse.raw_postings[("greenhouse", "4012345008", DAY_1, PARSER)]
 
     # Next day the fingerprint is the same, so extract skipped the detail
     day_2 = write_run(
@@ -119,7 +120,7 @@ def test_an_unchanged_posting_reuses_its_last_detail(
     )
     run = load(store, warehouse, run_date=DAY_2, load_id=LOAD_2)
 
-    row = warehouse.raw_postings[("greenhouse", "4012345008", DAY_2)]
+    row = warehouse.raw_postings[("greenhouse", "4012345008", DAY_2, PARSER)]
     assert row["content_hash"] == first["content_hash"]
     assert row["object_key"] == first["object_key"]
     # Seen on today's listing, even though the detail is older
@@ -216,7 +217,8 @@ def test_personal_data_is_scrubbed_before_it_is_stored(
 
     load(store, warehouse)
 
-    description = warehouse.raw_postings[("greenhouse", "4012345009", DAY_1)]["description_raw"]
+    row = warehouse.raw_postings[("greenhouse", "4012345009", DAY_1, PARSER)]
+    description = row["description_raw"]
     assert description.endswith("Contact: [contact]")
     assert "maria" not in description.lower()
 

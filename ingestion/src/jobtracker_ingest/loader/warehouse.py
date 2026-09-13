@@ -45,6 +45,9 @@ RAW_COLUMNS = (
     "load_id",
 )
 FINGERPRINT_COLUMNS = tuple(Fingerprint.model_fields)
+# The natural key of raw.raw_postings: source, source_job_id, run_date and
+# parser_version
+RawKey = tuple[str, str, date, str]
 RUN_COLUMNS = tuple(IngestRun.model_fields)
 
 
@@ -189,7 +192,7 @@ class MemoryWarehouse:
     """Keeps the three tables in dicts. Changes only stick if the transaction ends cleanly."""
 
     def __init__(self) -> None:
-        self.raw_postings: dict[tuple[str, str, date], dict[str, Any]] = {}
+        self.raw_postings: dict[RawKey, dict[str, Any]] = {}
         self.posting_fingerprints: dict[tuple[str, str], Fingerprint] = {}
         self.ingest_runs: dict[tuple[str, str], IngestRun] = {}
 
@@ -212,7 +215,7 @@ class MemoryWarehouse:
 class MemoryTx:
     def __init__(
         self,
-        raw_postings: dict[tuple[str, str, date], dict[str, Any]],
+        raw_postings: dict[RawKey, dict[str, Any]],
         posting_fingerprints: dict[tuple[str, str], Fingerprint],
         ingest_runs: dict[tuple[str, str], IngestRun],
     ) -> None:
@@ -223,7 +226,7 @@ class MemoryTx:
     def insert_raw_postings(self, postings: Sequence[RawPosting], load_id: UUID) -> int:
         inserted = 0
         for posting in postings:
-            key = (posting.source, posting.source_job_id, posting.run_date)
+            key = (posting.source, posting.source_job_id, posting.run_date, posting.parser_version)
             if key not in self.raw_postings:
                 self.raw_postings[key] = raw_row(posting, load_id)
                 inserted += 1

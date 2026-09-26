@@ -114,8 +114,8 @@ services:
     command: ["python", "/init_bucket.py"]
 
   # Runs once: migrates the Airflow database, creates the admin user and
-  # the http_sources pool, then exits. The image entrypoint does the first
-  # two because of the _AIRFLOW_* variables.
+  # the http_sources and dbt pools, then exits. The image entrypoint does
+  # the first two because of the _AIRFLOW_* variables.
   airflow-init:
     <<: *airflow-common
     restart: "no"
@@ -125,7 +125,12 @@ services:
       _AIRFLOW_WWW_USER_CREATE: "true"
       _AIRFLOW_WWW_USER_USERNAME: admin
       _AIRFLOW_WWW_USER_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
-    command: ["bash", "-c", "airflow pools set http_sources 3 'Concurrent extract tasks'"]
+    command:
+      - bash
+      - -c
+      - >-
+        airflow pools set http_sources 3 'Concurrent extract tasks'
+        && airflow pools set dbt 1 'One dbt build at a time'
 
   # Web UI and API, also the execution API the tasks report to
   airflow-apiserver:

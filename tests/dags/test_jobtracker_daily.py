@@ -11,7 +11,7 @@ from airflow.sdk import CronTriggerTimetable, TriggerRule
 from conftest import DAGS, DBT_STEPS
 
 from common.cli import CliOperator
-from common.defaults import HTTP_POOL
+from common.defaults import DBT_POOL, HTTP_POOL
 
 DBT_TASKS = ["dbt_freshness", "dbt_staging", "dbt_snapshot", "dbt_intermediate", "dbt_marts"]
 
@@ -34,7 +34,7 @@ def load_dags(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, registry: str) ->
     path.write_text(registry)
     monkeypatch.setenv("JOBTRACKER_SOURCES", str(path))
     # Tasks that use any other pool become import errors
-    return DagBag(dag_folder=str(DAGS), known_pools={"default_pool", HTTP_POOL})
+    return DagBag(dag_folder=str(DAGS), known_pools={"default_pool", HTTP_POOL, DBT_POOL})
 
 
 @pytest.fixture
@@ -154,6 +154,11 @@ def test_retries_and_pool_follow_the_design(dagbag: DagBag) -> None:
     assert extract.retry_delay == timedelta(minutes=10)
     assert load.pool != HTTP_POOL
     assert load.retries == 1
+
+
+def test_dbt_steps_share_the_dbt_pool(dagbag: DagBag) -> None:
+    dag = dagbag.dags["jobtracker_daily"]
+    assert {dag.get_task(task_id).pool for task_id in DBT_TASKS} == {DBT_POOL}
 
 
 @pytest.mark.parametrize(

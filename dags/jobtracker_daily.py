@@ -7,6 +7,8 @@ tasks share the http_sources pool, which caps how many are fetched at once.
 Once every load is done, dbt checks source freshness and then builds one
 layer at a time: staging, snapshots, intermediate and marts. Each step runs
 its layer's tests, so a failed test keeps the marts on the last good state.
+The dbt steps share the dbt pool with jobtracker_reparse, so the two never
+build at the same time.
 dbt starts when at least one source loaded, so one broken source never
 blocks the others. When none did, the dbt steps do not run at all.
 
@@ -24,7 +26,7 @@ from airflow.sdk import DAG, CronTriggerTimetable, TaskGroup, TriggerRule
 
 from common.cli import CliOperator
 from common.dbt import dbt_build, dbt_freshness
-from common.defaults import DAILY_RUN_HOUR, DEFAULT_ARGS, HTTP_POOL, enabled_sources
+from common.defaults import DAILY_RUN_HOUR, DBT_POOL, DEFAULT_ARGS, HTTP_POOL, enabled_sources
 from common.rundate import RUN_DATE, TIMEZONE, athens_date
 from common.summary import notify_summary
 
@@ -64,11 +66,16 @@ with DAG(
             task_id="dbt_freshness",
             command=dbt_freshness(),
             trigger_rule=TriggerRule.ALL_DONE_MIN_ONE_SUCCESS,
+            pool=DBT_POOL,
         )
-        staging = CliOperator(task_id="dbt_staging", command=dbt_build("staging"))
-        snapshot = CliOperator(task_id="dbt_snapshot", command=dbt_build("snapshots"), retries=1)
-        intermediate = CliOperator(task_id="dbt_intermediate", command=dbt_build("intermediate"))
-        marts = CliOperator(task_id="dbt_marts", command=dbt_build("marts"))
+        staging = CliOperator(task_id="dbt_staging", command=dbt_build("staging"), pool=DBT_POOL)
+        snapshot = CliOperator(
+            task_id="dbt_snapshot", command=dbt_build("snapshots"), retries=1, pool=DBT_POOL
+        )
+        intermediate = CliOperator(
+            task_id="dbt_intermediate", command=dbt_build("intermediate"), pool=DBT_POOL
+        )
+        marts = CliOperator(task_id="dbt_marts", command=dbt_build("marts"), pool=DBT_POOL)
         summary = PythonOperator(
             task_id="notify_summary",
             python_callable=notify_summary,

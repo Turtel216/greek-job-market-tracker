@@ -12,6 +12,10 @@ from common import alerts
 # Caps how many sources are extracted at the same time
 HTTP_POOL = "http_sources"
 
+# One slot, shared by the dbt steps of every DAG, so a reparse and the daily
+# run never build the same models at once
+DBT_POOL = "dbt"
+
 # jobtracker_daily runs at this hour, Europe/Athens. The watchdog looks for
 # the run scheduled then.
 DAILY_RUN_HOUR = 6
@@ -30,8 +34,8 @@ DEFAULT_ARGS: dict[str, Any] = {
 }
 
 
-def enabled_sources(path: Path | None = None) -> list[str]:
-    """Names of the enabled sources in the registry, in registry order.
+def registry_sources(path: Path | None = None) -> list[dict[str, Any]]:
+    """The sources in the registry, in registry order.
 
     The ingestion CLI validates the registry when a task runs. This only
     reads it, because the DAG runs on Airflow's Python, not the ingestion
@@ -40,4 +44,14 @@ def enabled_sources(path: Path | None = None) -> list[str]:
     path = path or Path(os.environ.get("JOBTRACKER_SOURCES", REPO_REGISTRY))
     with path.open(encoding="utf-8") as f:
         data = yaml.safe_load(f) or {}
-    return [s["name"] for s in data.get("sources") or [] if s.get("enabled")]
+    return list(data.get("sources") or [])
+
+
+def enabled_sources(path: Path | None = None) -> list[str]:
+    """Names of the enabled sources in the registry, in registry order."""
+    return [s["name"] for s in registry_sources(path) if s.get("enabled")]
+
+
+def all_sources(path: Path | None = None) -> list[str]:
+    """Names of every source in the registry, enabled or not."""
+    return [s["name"] for s in registry_sources(path)]

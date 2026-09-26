@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from common.defaults import enabled_sources
+from common.defaults import all_sources, enabled_sources
 
 REGISTRY = """
 sources:
@@ -19,6 +19,12 @@ def test_enabled_sources_in_registry_order(tmp_path: Path) -> None:
     path = tmp_path / "sources.yml"
     path.write_text(REGISTRY)
     assert enabled_sources(path) == ["greenhouse", "lever"]
+
+
+def test_all_sources_includes_disabled_ones(tmp_path: Path) -> None:
+    path = tmp_path / "sources.yml"
+    path.write_text(REGISTRY)
+    assert all_sources(path) == ["greenhouse", "kariera", "lever"]
 
 
 def test_enabled_sources_reads_the_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

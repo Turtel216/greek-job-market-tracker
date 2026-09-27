@@ -50,11 +50,13 @@ make help               # list every target
 `make up` also runs two one-off containers: `objectstore-init` creates the
 `jobtracker-raw` bucket and its access key, and `airflow-init` migrates the
 Airflow database, creates the `admin` user (password from
-`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` pool. The Airflow UI is at
+`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` and `dbt` pools. The Airflow UI is at
 <http://localhost:8080>; on the server, reach it through an SSH tunnel. The Postgres init scripts in
 `infra/postgres/init/` run only on the first start with an empty volume, so
 after changing them reset the database with `docker compose down -v`, or
-run `make db-tables` to add the raw and ops tables to an existing one.
+run `make db-tables` to add the raw and ops tables to an existing one. It
+also moves an older `raw.raw_postings` to the natural key that includes
+`parser_version`.
 
 ## Airflow image
 
@@ -101,13 +103,47 @@ good data. `dbt_freshness` waits for every load and runs when at least one
 of them succeeded, so one broken source never blocks the others; when none
 did, no dbt step runs. dbt unit tests run in CI, not in the DAG. Each step
 keeps its artifacts and `dbt.log` in `logs/dbt/<run_date>/<step>/` on the
-Airflow logs volume.
+Airflow logs volume. The dbt steps of every DAG share the `dbt` pool, which
+has one slot, so two builds never run at once.
+
+### Backfilling a parser fix
+
+`dags/jobtracker_reparse.py` loads stored payloads again after a parser fix,
+without scraping again, and then runs the same dbt steps as the daily DAG
+(without freshness). It only runs when triggered, with three params:
+`source` (any source in the registry, enabled or not), `start_date` and
+`end_date`. Its dbt artifacts go to `logs/dbt/reparse/<dag run id>/<step>/`,
+apart from the daily ones.
+
+When a parser breaks, for example after the volume test fails:
+
+1. Fix the parser, add the new page as a fixture, and bump the adapter's
+   `PARSER_VERSION`. Without the bump the reparse inserts nothing.
+2. Deploy: `make airflow-image && make up`.
+3. Trigger `jobtracker_reparse` in the UI with the source and the first and
+   last affected `run_date`. Payloads are kept for 30 days, so older days
+   cannot be reparsed and keep their old rows.
+4. Check the result: `raw.raw_postings` has rows with the new
+   `parser_version` next to the old ones, `ops.ingest_runs` shows the new
+   version for each day, and the `qa_*` views and marts look right.
+
+The old rows stay in raw, since raw is never updated, and
+`stg_raw_postings` reads the newest load of each posting and day.
+`snap_postings` records a new version for each posting the fix changed.
+A day that fails to load does not stop the others, and the task fails at
+the end. Clear the failed tasks to run them again; a second reparse of the
+same days inserts nothing new.
+
+This was rehearsed on 2026-10-28 on a local stack. Three days of stored
+Greenhouse fixture runs were loaded by a parser that lost the location, so
+every job showed city Unknown. A reparse with the fixed parser added nine
+rows, and `dim_jobs` showed the right cities again.
 
 Shared code lives in `dags/common/`:
 
 | Module | Contents |
 | --- | --- |
-| `defaults.py` | Default task args, the pool name, enabled sources |
+| `defaults.py` | Default task args, the pool names, the registry sources |
 | `rundate.py` | `run_date`, the Europe/Athens date of the run |
 | `cli.py` | `CliOperator`, which runs a CLI command and keeps its last lines |
 | `alerts.py` | Failure and retry alerts |

@@ -68,6 +68,29 @@ create table if not exists ops.ingest_runs (
 create index if not exists ingest_runs_source_run_date
     on ops.ingest_runs (source, run_date);
 
+-- One row per dbt node per dbt invocation, from the run_results.json and
+-- sources.json each dbt step leaves. Loading the same artifacts again
+-- replaces their rows. Running a step again is a new invocation, so both
+-- runs stay. The health dashboard reads the newest one.
+create table if not exists ops.dbt_runs (
+    invocation_id uuid not null,
+    unique_id text not null,
+    run_date date not null,
+    step text not null,
+    resource_type text not null,
+    name text not null,
+    status text not null,
+    failures integer,
+    message text,
+    rows_affected integer,
+    execution_time double precision,
+    generated_at timestamptz not null,
+    loaded_at timestamptz not null default now(),
+    primary key (invocation_id, unique_id)
+);
+
+create index if not exists dbt_runs_run_date on ops.dbt_runs (run_date, step);
+
 -- One row per posting: the last listing fingerprint and the last stored
 -- detail. Extract compares the fingerprint to decide whether to fetch the
 -- detail again, and the loader reuses the stored detail when it did not.

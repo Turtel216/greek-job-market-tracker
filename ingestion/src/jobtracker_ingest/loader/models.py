@@ -51,3 +51,21 @@ class IngestRun(Model):
     extract_errors: int
     extract_counts: dict[str, int]
     http_stats: dict[str, Any]
+
+
+class DbtResult(Model):
+    """One row of ops.dbt_runs, for one node in one dbt invocation."""
+
+    invocation_id: UUID
+    unique_id: str
+    run_date: date
+    # The dbt step, such as staging or marts, named after its artifacts folder
+    step: str
+    resource_type: str
+    name: str
+    status: str
+    failures: int | None = None
+    message: str | None = None
+    rows_affected: int | None = None
+    execution_time: float | None = None
+    generated_at: datetime

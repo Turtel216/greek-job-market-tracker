@@ -1,0 +1,90 @@
+{
+  "metadata": {
+    "dbt_schema_version": "https://schemas.getdbt.com/dbt/run-results/v6.json",
+    "dbt_version": "1.12.5",
+    "generated_at": "2026-10-28T16:50:57.230326Z",
+    "invocation_id": "be727a38-f858-4e1b-b8fc-15744ff62c6d",
+    "invocation_started_at": "2026-10-28T16:50:43.381166Z"
+  },
+  "results": [
+    {
+      "status": "success",
+      "execution_time": 0.2542886734008789,
+      "adapter_response": {
+        "_message": "INSERT 6",
+        "code": "INSERT",
+        "rows_affected": 6
+      },
+      "message": "INSERT 6",
+      "failures": null,
+      "unique_id": "seed.jobtracker.company_placeholders",
+      "overload_results": null
+    },
+    {
+      "status": "pass",
+      "execution_time": 0.416487455368042,
+      "adapter_response": {
+        "_message": "SELECT 4",
+        "code": "SELECT",
+        "rows_affected": 4
+      },
+      "message": null,
+      "failures": 0,
+      "unique_id": "unit_test.jobtracker.stg_raw_postings.stg_raw_postings_keys_and_text",
+      "overload_results": null
+    },
+    {
+      "status": "success",
+      "execution_time": 0.08363199234008789,
+      "adapter_response": {
+        "_message": "CREATE VIEW",
+        "code": "CREATE VIEW",
+        "rows_affected": -1
+      },
+      "message": "CREATE VIEW",
+      "failures": null,
+      "unique_id": "model.jobtracker.stg_raw_postings",
+      "overload_results": null
+    },
+    {
+      "status": "warn",
+      "execution_time": 0.046846628189086914,
+      "adapter_response": {
+        "_message": "SELECT 1",
+        "code": "SELECT",
+        "rows_affected": 1
+      },
+      "message": "Got 1 result, configured to warn if != 0",
+      "failures": 1,
+      "unique_id": "test.jobtracker.share_of_todays_postings_qa_unclassified_titles_postings_today.063e1bb4d5",
+      "overload_results": null
+    },
+    {
+      "status": "pass",
+      "execution_time": 0.08385252952575684,
+      "adapter_response": {
+        "_message": "SELECT 1",
+        "code": "SELECT",
+        "rows_affected": 1
+      },
+      "message": null,
+      "failures": 0,
+      "unique_id": "test.jobtracker.not_null_stg_postings_posting_key.4b1e8f3a2c",
+      "overload_results": null
+    },
+    {
+      "status": "fail",
+      "execution_time": 0.08385252952575684,
+      "adapter_response": {
+        "_message": "SELECT 1",
+        "code": "SELECT",
+        "rows_affected": 1
+      },
+      "message": "Got 3 results, configured to fail if != 0",
+      "failures": 3,
+      "unique_id": "test.jobtracker.accepted_values_stg_postings_seniority.9d2c4e7f1a",
+      "overload_results": null
+    }
+  ],
+  "elapsed_time": 10.842624425888062
+}

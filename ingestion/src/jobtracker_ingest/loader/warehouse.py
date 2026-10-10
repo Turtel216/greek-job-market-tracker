@@ -22,7 +22,7 @@ from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 
 from jobtracker_ingest.core.models import RawPosting
-from jobtracker_ingest.loader.models import Fingerprint, IngestRun
+from jobtracker_ingest.loader.models import DbtResult, Fingerprint, IngestRun
 
 RAW_COLUMNS = (
     "source",
@@ -49,6 +49,7 @@ FINGERPRINT_COLUMNS = tuple(Fingerprint.model_fields)
 # parser_version
 RawKey = tuple[str, str, date, str]
 RUN_COLUMNS = tuple(IngestRun.model_fields)
+DBT_RESULT_COLUMNS = tuple(DbtResult.model_fields)
 
 
 def placeholders(columns: Sequence[str]) -> str:
@@ -86,6 +87,15 @@ on conflict (source, run_id) do update set
 where ingest_runs.status = 'failed' or excluded.status = 'succeeded'
 """
 
+# Loading the same artifacts again replaces their rows
+UPSERT_DBT_RESULT = f"""
+insert into ops.dbt_runs ({", ".join(DBT_RESULT_COLUMNS)})
+values ({placeholders(DBT_RESULT_COLUMNS)})
+on conflict (invocation_id, unique_id) do update set
+    {", ".join(f"{c} = excluded.{c}" for c in DBT_RESULT_COLUMNS[2:])},
+    loaded_at = now()
+"""
+
 SELECT_FINGERPRINTS = f"""
 select {", ".join(FINGERPRINT_COLUMNS)}
 from ops.posting_fingerprints
@@ -101,6 +111,8 @@ class WarehouseTx(Protocol):
     def upsert_fingerprints(self, fingerprints: Sequence[Fingerprint]) -> None: ...
 
     def upsert_ingest_run(self, run: IngestRun) -> None: ...
+
+    def upsert_dbt_results(self, results: Sequence[DbtResult]) -> None: ...
 
 
 class Warehouse(Protocol):
@@ -160,6 +172,12 @@ class PostgresTx:
     def upsert_ingest_run(self, run: IngestRun) -> None:
         self.conn.execute(UPSERT_RUN, run_row(run))
 
+    def upsert_dbt_results(self, results: Sequence[DbtResult]) -> None:
+        if not results:
+            return
+        with self.conn.cursor() as cur:
+            cur.executemany(UPSERT_DBT_RESULT, [r.model_dump() for r in results])
+
 
 class PostgresWarehouse:
     def __init__(self, conn: psycopg.Connection[Any]) -> None:
@@ -193,12 +211,13 @@ class PostgresWarehouse:
 
 
 class MemoryWarehouse:
-    """Keeps the three tables in dicts. Changes only stick if the transaction ends cleanly."""
+    """Keeps the ops and raw tables in dicts. Changes only stick if the transaction ends cleanly."""
 
     def __init__(self) -> None:
         self.raw_postings: dict[RawKey, dict[str, Any]] = {}
         self.posting_fingerprints: dict[tuple[str, str], Fingerprint] = {}
         self.ingest_runs: dict[tuple[str, str], IngestRun] = {}
+        self.dbt_runs: dict[tuple[UUID, str], DbtResult] = {}
 
     def fingerprints(self, source: str) -> dict[str, Fingerprint]:
         return {
@@ -208,12 +227,16 @@ class MemoryWarehouse:
     @contextmanager
     def transaction(self) -> Iterator[WarehouseTx]:
         tx = MemoryTx(
-            dict(self.raw_postings), dict(self.posting_fingerprints), dict(self.ingest_runs)
+            dict(self.raw_postings),
+            dict(self.posting_fingerprints),
+            dict(self.ingest_runs),
+            dict(self.dbt_runs),
         )
         yield tx
         self.raw_postings = tx.raw_postings
         self.posting_fingerprints = tx.posting_fingerprints
         self.ingest_runs = tx.ingest_runs
+        self.dbt_runs = tx.dbt_runs
 
 
 class MemoryTx:
@@ -222,10 +245,12 @@ class MemoryTx:
         raw_postings: dict[RawKey, dict[str, Any]],
         posting_fingerprints: dict[tuple[str, str], Fingerprint],
         ingest_runs: dict[tuple[str, str], IngestRun],
+        dbt_runs: dict[tuple[UUID, str], DbtResult],
     ) -> None:
         self.raw_postings = raw_postings
         self.posting_fingerprints = posting_fingerprints
         self.ingest_runs = ingest_runs
+        self.dbt_runs = dbt_runs
 
     def insert_raw_postings(self, postings: Sequence[RawPosting], load_id: UUID) -> int:
         inserted = 0
@@ -252,3 +277,7 @@ class MemoryTx:
         self.ingest_runs[key] = IngestRun.model_validate_json(
             json.dumps(run.model_dump(mode="json"))
         )
+
+    def upsert_dbt_results(self, results: Sequence[DbtResult]) -> None:
+        for result in results:
+            self.dbt_runs[(result.invocation_id, result.unique_id)] = result

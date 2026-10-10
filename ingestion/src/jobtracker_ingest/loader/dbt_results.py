@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import Any
 
 from jobtracker_ingest.loader.models import DbtResult
+from jobtracker_ingest.loader.warehouse import Warehouse
 
 ARTIFACTS = ("run_results.json", "sources.json")
 
@@ -80,3 +81,11 @@ def read_dbt_results(folder: Path, run_date: date) -> list[DbtResult]:
                 # One row per node and invocation, like the table's key
                 rows[(str(row.invocation_id), row.unique_id)] = row
     return list(rows.values())
+
+
+def load_dbt_results(folder: Path, run_date: date, warehouse: Warehouse) -> int:
+    """Write every result under folder to ops.dbt_runs and return how many."""
+    rows = read_dbt_results(folder, run_date)
+    with warehouse.transaction() as tx:
+        tx.upsert_dbt_results(rows)
+    return len(rows)

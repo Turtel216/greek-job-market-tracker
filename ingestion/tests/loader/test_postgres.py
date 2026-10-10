@@ -13,10 +13,11 @@ from uuid import UUID
 
 import psycopg
 import pytest
-from loader_helpers import DAY_1, DAY_2, OldGreenhouse, WriteRun, fixture_posting
+from loader_helpers import DAY_1, DAY_2, FIXTURES, OldGreenhouse, WriteRun, fixture_posting
 
 from jobtracker_ingest.core.models import RawPosting
 from jobtracker_ingest.core.storage import MemoryObjectStore
+from jobtracker_ingest.loader.dbt_results import load_dbt_results
 from jobtracker_ingest.loader.load import run_load
 from jobtracker_ingest.loader.models import Fingerprint, IngestRun
 from jobtracker_ingest.loader.reparse import run_reparse
@@ -38,7 +39,9 @@ NOW = datetime(2026, 10, 25, 3, 30, tzinfo=UTC)
 @pytest.fixture
 def admin() -> Iterator[psycopg.Connection[tuple[object, ...]]]:
     with psycopg.connect(str(ADMIN_DSN), autocommit=True) as conn:
-        conn.execute("truncate raw.raw_postings, ops.ingest_runs, ops.posting_fingerprints")
+        conn.execute(
+            "truncate raw.raw_postings, ops.ingest_runs, ops.posting_fingerprints, ops.dbt_runs"
+        )
         yield conn
 
 
@@ -287,3 +290,33 @@ def test_a_reparse_after_a_parser_fix(
         (DAY_1, "succeeded", GreenhouseAdapter.PARSER_VERSION, 2),
         (DAY_2, "succeeded", GreenhouseAdapter.PARSER_VERSION, 2),
     ]
+
+
+def test_dbt_results_round_trip_and_load_again(
+    warehouse: PostgresWarehouse, admin: psycopg.Connection[tuple[object, ...]]
+) -> None:
+    folder = FIXTURES.parent / "dbt"
+    assert load_dbt_results(folder, DAY_2, warehouse) == 8
+    # The same artifacts again replace their rows
+    assert load_dbt_results(folder, DAY_2, warehouse) == 8
+
+    rows = admin.execute(
+        "select step, status, count(*) from ops.dbt_runs group by step, status order by 1, 2"
+    ).fetchall()
+    assert rows == [
+        ("freshness", "runtime error", 1),
+        ("freshness", "warn", 1),
+        ("staging", "fail", 1),
+        ("staging", "pass", 2),
+        ("staging", "success", 2),
+        ("staging", "warn", 1),
+    ]
+    failed = admin.execute(
+        "select name, failures, message, run_date from ops.dbt_runs where status = 'fail'"
+    ).fetchone()
+    assert failed == (
+        "accepted_values_stg_postings_seniority",
+        3,
+        "Got 3 results, configured to fail if != 0",
+        DAY_2,
+    )

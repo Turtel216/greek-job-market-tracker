@@ -7,7 +7,8 @@ from uuid import UUID
 
 import pytest
 
-from jobtracker_ingest.loader.dbt_results import node_name, read_dbt_results
+from jobtracker_ingest.loader.dbt_results import load_dbt_results, node_name, read_dbt_results
+from jobtracker_ingest.loader.warehouse import MemoryWarehouse
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "dbt"
 RUN_DATE = date(2026, 10, 28)
@@ -93,5 +94,20 @@ def test_freshness_results(folder: Path) -> None:
     assert "does not exist" in broken.message
 
 
-def test_empty_folder_gives_no_rows(tmp_path: Path) -> None:
+def test_empty_step_folders_give_no_rows(tmp_path: Path) -> None:
+    (tmp_path / "staging").mkdir()
     assert read_dbt_results(tmp_path, RUN_DATE) == []
+
+
+def test_load_writes_every_row(folder: Path) -> None:
+    warehouse = MemoryWarehouse()
+    assert load_dbt_results(folder, RUN_DATE, warehouse) == 8
+    assert len(warehouse.dbt_runs) == 8
+
+
+def test_loading_again_leaves_the_same_rows(folder: Path) -> None:
+    warehouse = MemoryWarehouse()
+    load_dbt_results(folder, RUN_DATE, warehouse)
+    first = dict(warehouse.dbt_runs)
+    load_dbt_results(folder, RUN_DATE, warehouse)
+    assert warehouse.dbt_runs == first

@@ -1,5 +1,7 @@
+from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
@@ -42,7 +44,11 @@ def dag(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Any:
 def render(dag: Any, task_id: str) -> list[str]:
     task = dag.get_task(task_id)
     assert isinstance(task, CliOperator)
-    context = {"params": PARAMS, "run_id": RUN_ID}
+    context = {
+        "params": PARAMS,
+        "run_id": RUN_ID,
+        "dag_run": SimpleNamespace(run_after=datetime(2026, 10, 28, 10, 0, tzinfo=UTC)),
+    }
     return task.render_template(task.command, context, dag.get_template_env())
 
 
@@ -70,9 +76,25 @@ def test_imports_with_an_empty_registry(tmp_path: Path, monkeypatch: pytest.Monk
 
 
 def test_reparse_then_dbt_in_order(dag: Any) -> None:
-    assert sorted(dag.task_ids) == sorted(TASKS)
-    for before, after in pairwise(TASKS):
+    assert sorted(dag.task_ids) == sorted([*TASKS, "load_dbt_results"])
+    for before, after in pairwise(TASKS[:-1]):
         assert dag.get_task(before).downstream_task_ids == {after}
+    assert dag.get_task("dbt_marts").downstream_task_ids == {"load_dbt_results"}
+
+
+def test_dbt_results_load_from_the_reparse_folder(dag: Any) -> None:
+    task = dag.get_task("load_dbt_results")
+    # Runs after a failed step too, without deciding the run
+    assert task.is_teardown
+    assert task.retries == 1
+    assert render(dag, "load_dbt_results") == [
+        "jobtracker",
+        "load-dbt-results",
+        "--run-date",
+        "2026-10-28",
+        "--folder",
+        f"/opt/airflow/logs/dbt/reparse/{RUN_ID}",
+    ]
 
 
 def test_reparse_command_gets_the_params(dag: Any) -> None:

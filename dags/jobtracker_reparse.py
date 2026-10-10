@@ -11,8 +11,9 @@ rows stay as they are.
 
 The dbt steps share the dbt pool with jobtracker_daily, so two builds never
 run at once. They keep their artifacts in a folder per reparse run, apart
-from the daily ones the summary reads. Source freshness is not checked,
-since a reparse fetches nothing new.
+from the daily ones the summary reads, and a teardown task writes their
+results to ops.dbt_runs under the Athens date of the reparse. Source
+freshness is not checked, since a reparse fetches nothing new.
 """
 
 from datetime import datetime
@@ -20,8 +21,9 @@ from datetime import datetime
 from airflow.sdk import DAG, Param
 
 from common.cli import CliOperator
-from common.dbt import REPARSE_FOLDER, dbt_build
+from common.dbt import REPARSE_FOLDER, dbt_build, load_dbt_results
 from common.defaults import DBT_POOL, DEFAULT_ARGS, all_sources
+from common.rundate import athens_date
 
 # Every source in the registry, since a disabled one may still need its
 # stored runs loaded again
@@ -35,6 +37,7 @@ with DAG(
     catchup=False,
     max_active_runs=1,
     default_args=DEFAULT_ARGS,
+    user_defined_macros={"athens_date": athens_date},
     params={
         "source": Param(
             type="string",
@@ -82,4 +85,8 @@ with DAG(
     marts = CliOperator(
         task_id="dbt_marts", command=dbt_build("marts", REPARSE_FOLDER), pool=DBT_POOL
     )
+    results = CliOperator(
+        task_id="load_dbt_results", command=load_dbt_results(REPARSE_FOLDER), retries=1
+    )
     reparse >> staging >> snapshot >> intermediate >> marts
+    marts >> results.as_teardown()

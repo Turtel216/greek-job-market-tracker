@@ -11,6 +11,9 @@ running a step again for the same run_date replaces them. A reparse uses
 one folder per DAG run, so it never mixes with the daily artifacts the
 summary reads.
 
+After the dbt steps, `jobtracker load-dbt-results` writes every result in
+the run's folder to ops.dbt_runs, for the health dashboard.
+
 dbt unit tests run in CI, not here. The SQL they test only changes with a
 deploy, and CI has already run them by then.
 """
@@ -45,3 +48,8 @@ def dbt_build(selector: str, folder: str = DAILY_FOLDER) -> list[str]:
 def dbt_freshness() -> list[str]:
     """Check that every source loaded recently. Errors at 50 hours."""
     return dbt_command("freshness", "source", "freshness")
+
+
+def load_dbt_results(folder: str = DAILY_FOLDER) -> list[str]:
+    """Write the results of every dbt step in folder to ops.dbt_runs."""
+    return ["jobtracker", "load-dbt-results", "--run-date", RUN_DATE, "--folder", folder]

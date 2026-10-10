@@ -12,9 +12,11 @@ build at the same time.
 dbt starts when at least one source loaded, so one broken source never
 blocks the others. When none did, the dbt steps do not run at all.
 
-Last, notify_summary sends the day's counts per source and any dbt warnings.
-It is a teardown task, so it runs even when an earlier task failed, and it
-never changes whether the run succeeded. The watchdog relies on that.
+Last, load_dbt_results writes the dbt results to ops.dbt_runs for the
+health dashboard, and notify_summary sends the day's counts per source and
+any dbt warnings. Both are teardown tasks, so they run even when an earlier
+task failed, and they never change whether the run succeeded. The watchdog
+relies on that.
 
 Each task calls a CLI command with an explicit run_date.
 """
@@ -25,7 +27,7 @@ from airflow.providers.standard.operators.python import PythonOperator
 from airflow.sdk import DAG, CronTriggerTimetable, TaskGroup, TriggerRule
 
 from common.cli import CliOperator
-from common.dbt import dbt_build, dbt_freshness
+from common.dbt import dbt_build, dbt_freshness, load_dbt_results
 from common.defaults import DAILY_RUN_HOUR, DBT_POOL, DEFAULT_ARGS, HTTP_POOL, enabled_sources
 from common.rundate import RUN_DATE, TIMEZONE, athens_date
 from common.summary import notify_summary
@@ -76,6 +78,7 @@ with DAG(
             task_id="dbt_intermediate", command=dbt_build("intermediate"), pool=DBT_POOL
         )
         marts = CliOperator(task_id="dbt_marts", command=dbt_build("marts"), pool=DBT_POOL)
+        results = CliOperator(task_id="load_dbt_results", command=load_dbt_results(), retries=1)
         summary = PythonOperator(
             task_id="notify_summary",
             python_callable=notify_summary,
@@ -83,4 +86,4 @@ with DAG(
             retries=1,
         )
         loads >> freshness >> staging >> snapshot >> intermediate >> marts
-        marts >> summary.as_teardown()
+        marts >> [results.as_teardown(), summary.as_teardown()]

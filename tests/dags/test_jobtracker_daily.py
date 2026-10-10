@@ -78,6 +78,7 @@ def test_one_task_group_per_enabled_source(dagbag: DagBag) -> None:
             "lever.extract",
             "lever.load",
             *DBT_TASKS,
+            "load_dbt_results",
             "notify_summary",
         ]
     )
@@ -103,7 +104,7 @@ def test_dbt_steps_run_in_order_after_every_load(dagbag: DagBag) -> None:
     assert dag.get_task("dbt_freshness").upstream_task_ids == {"greenhouse.load", "lever.load"}
     for before, after in pairwise(DBT_TASKS):
         assert dag.get_task(before).downstream_task_ids == {after}
-    assert dag.get_task("dbt_marts").downstream_task_ids == {"notify_summary"}
+    assert dag.get_task("dbt_marts").downstream_task_ids == {"load_dbt_results", "notify_summary"}
 
 
 def test_summary_runs_last_without_deciding_the_run(dagbag: DagBag) -> None:
@@ -114,6 +115,22 @@ def test_summary_runs_last_without_deciding_the_run(dagbag: DagBag) -> None:
     # run's state, so a failed dbt step still fails the run
     assert summary.is_teardown
     assert summary.retries == 1
+
+
+def test_dbt_results_load_last_without_deciding_the_run(dagbag: DagBag) -> None:
+    dag = dagbag.dags["jobtracker_daily"]
+    task = dag.get_task("load_dbt_results")
+    assert task.downstream_task_ids == set()
+    assert task.is_teardown
+    assert task.retries == 1
+    assert render(dag, "load_dbt_results", datetime(2026, 10, 24, 3, 0, tzinfo=UTC)) == [
+        "jobtracker",
+        "load-dbt-results",
+        "--run-date",
+        "2026-10-24",
+        "--folder",
+        "/opt/airflow/logs/dbt/2026-10-24",
+    ]
 
 
 def test_summary_gets_the_athens_run_date(dagbag: DagBag) -> None:

@@ -304,3 +304,43 @@ def test_reparse_with_a_failed_day_returns_1(
         store.objects[key] = gzip_bytes(b"not json")
 
     assert reparse(tmp_path) == cli.EXIT_FAILED
+
+
+DBT_FIXTURES = Path(__file__).parent / "fixtures" / "dbt"
+
+
+def load_dbt_results(folder: Path) -> int:
+    return cli.main(["load-dbt-results", "--run-date", "2026-10-28", "--folder", str(folder)])
+
+
+def test_load_dbt_results(warehouse: MemoryWarehouse) -> None:
+    assert load_dbt_results(DBT_FIXTURES) == 0
+    assert len(warehouse.dbt_runs) == 8
+    assert {row.run_date for row in warehouse.dbt_runs.values()} == {date(2026, 10, 28)}
+
+
+def test_load_dbt_results_without_a_folder_loads_nothing(
+    tmp_path: Path, warehouse: MemoryWarehouse
+) -> None:
+    # No dbt step ran, which the run's other tasks already report
+    assert load_dbt_results(tmp_path / "missing") == 0
+    assert warehouse.dbt_runs == {}
+
+
+def test_load_dbt_results_with_a_broken_artifact_returns_1(
+    tmp_path: Path, warehouse: MemoryWarehouse
+) -> None:
+    (tmp_path / "staging").mkdir()
+    (tmp_path / "staging" / "run_results.json").write_text('{"results": [')
+    assert load_dbt_results(tmp_path) == cli.EXIT_FAILED
+    assert warehouse.dbt_runs == {}
+
+
+def test_load_dbt_results_when_the_database_is_down_returns_1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def refuse() -> None:
+        raise psycopg.OperationalError("connection refused")
+
+    monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
+    assert load_dbt_results(DBT_FIXTURES) == cli.EXIT_FAILED

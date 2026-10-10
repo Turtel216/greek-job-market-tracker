@@ -3,6 +3,7 @@
     jobtracker extract --source greenhouse --run-date 2026-10-25
     jobtracker load --source greenhouse --run-date 2026-10-25
     jobtracker reparse --source greenhouse --start-date 2026-10-20 --end-date 2026-10-25
+    jobtracker load-dbt-results --run-date 2026-10-25 --folder /opt/airflow/logs/dbt/2026-10-25
 
 Exit codes: 0 on success, 1 on a failure worth retrying later, and 3 when
 the source blocked us. Airflow does not retry a block, since the source is
@@ -24,6 +25,7 @@ from jobtracker_ingest.core.logs import configure_logging
 from jobtracker_ingest.core.registry import load_registry
 from jobtracker_ingest.core.storage import S3ObjectStore
 from jobtracker_ingest.extract import ExtractError, detail_needed, run_extract
+from jobtracker_ingest.loader.dbt_results import load_dbt_results
 from jobtracker_ingest.loader.load import LoadError, run_load
 from jobtracker_ingest.loader.reparse import run_reparse
 from jobtracker_ingest.loader.runs import NoCompleteRun
@@ -60,6 +62,14 @@ def build_parser() -> argparse.ArgumentParser:
     reparse.add_argument("--end-date", required=True, type=date.fromisoformat)
     reparse.add_argument(
         "--registry", type=Path, help="path to sources.yml (default: JOBTRACKER_SOURCES)"
+    )
+
+    dbt_results = commands.add_parser(
+        "load-dbt-results", help="write the results of a run's dbt steps to ops.dbt_runs"
+    )
+    dbt_results.add_argument("--run-date", required=True, type=date.fromisoformat)
+    dbt_results.add_argument(
+        "--folder", required=True, type=Path, help="folder with one artifacts folder per dbt step"
     )
     return parser
 
@@ -168,6 +178,25 @@ def reparse(args: argparse.Namespace) -> int:
     return 0
 
 
+def load_dbt(args: argparse.Namespace) -> int:
+    log = structlog.get_logger("jobtracker_ingest.cli")
+    # No folder means no dbt step ran, for example when every load failed
+    if not args.folder.is_dir():
+        log.warning("dbt_results_missing", folder=str(args.folder))
+        return 0
+    try:
+        with PostgresWarehouse.connect() as warehouse:
+            rows = load_dbt_results(args.folder, args.run_date, warehouse)
+    # A broken artifact gives OSError, ValueError or KeyError
+    except (psycopg.Error, OSError, ValueError, KeyError) as err:
+        log.error(
+            "dbt_results_failed", folder=str(args.folder), error=f"{type(err).__name__}: {err}"
+        )
+        return EXIT_FAILED
+    log.info("dbt_results_loaded", folder=str(args.folder), rows=rows)
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     configure_logging()
     args = build_parser().parse_args(argv)
@@ -177,6 +206,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return load(args)
     if args.command == "reparse":
         return reparse(args)
+    if args.command == "load-dbt-results":
+        return load_dbt(args)
     return 2
 
 

@@ -180,6 +180,41 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
+  # Serves the public dashboard and the internal health dashboard. It keeps
+  # its own settings in the metabase_app database, so dashboards are backed
+  # up with everything else, and reads the warehouse as bi_reader.
+  metabase:
+    image: metabase/metabase:v0.64.2.3
+    restart: unless-stopped
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_HOST: postgres
+      MB_DB_PORT: "5432"
+      MB_DB_DBNAME: metabase_app
+      MB_DB_USER: metabase_app
+      MB_DB_PASS: ${METABASE_DB_PASSWORD}
+      # Encrypts the warehouse password stored in metabase_app
+      MB_ENCRYPTION_SECRET_KEY: ${METABASE_ENCRYPTION_SECRET_KEY}
+      # Public links are built from this
+      MB_SITE_URL: ${METABASE_SITE_URL}
+      MB_REPORT_TIMEZONE: Europe/Athens
+      MB_ENABLE_PUBLIC_SHARING: "true"
+      MB_ANON_TRACKING_ENABLED: "false"
+      MB_CHECK_FOR_UPDATES: "false"
+      # Keeps it near the 1.5 GB the design plans for
+      JAVA_OPTS: -Xmx1g
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   objectstore-data:

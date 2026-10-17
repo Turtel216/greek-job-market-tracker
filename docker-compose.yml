@@ -217,6 +217,27 @@ services:
       postgres:
         condition: service_healthy
 
+  # Runs once to create the admin user, the warehouse connection and the
+  # dashboards from metabase/. Running it again brings the dashboards back
+  # in line with the files, see `make dashboards`.
+  metabase-init:
+    image: python:3.12.15-slim
+    restart: "no"
+    depends_on:
+      metabase:
+        condition: service_healthy
+    environment:
+      METABASE_URL: http://metabase:3000
+      METABASE_ADMIN_EMAIL: ${METABASE_ADMIN_EMAIL}
+      METABASE_ADMIN_PASSWORD: ${METABASE_ADMIN_PASSWORD}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      WAREHOUSE_DB: ${WAREHOUSE_DB}
+      BI_READER_PASSWORD: ${BI_READER_PASSWORD}
+    volumes:
+      - ./metabase:/metabase:ro
+    command: ["python", "/metabase/provision.py"]
+
 volumes:
   postgres-data:
   objectstore-data:

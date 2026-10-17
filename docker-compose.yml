@@ -199,6 +199,8 @@ services:
       MB_SITE_URL: ${METABASE_SITE_URL}
       MB_REPORT_TIMEZONE: Europe/Athens
       MB_ENABLE_PUBLIC_SHARING: "true"
+      # No sample database or example dashboards
+      MB_LOAD_SAMPLE_CONTENT: "false"
       MB_ANON_TRACKING_ENABLED: "false"
       MB_CHECK_FOR_UPDATES: "false"
       # Keeps it near the 1.5 GB the design plans for

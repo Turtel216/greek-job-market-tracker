@@ -1,0 +1,390 @@
+{
+  "name": "Greek tech job market",
+  "description": "Hiring trends in Greek tech, from daily job postings. Public.",
+  "collection": "Job market",
+  "public": true,
+  "parameters": [
+    {
+      "slug": "role_family",
+      "name": "Role family",
+      "values": [
+        "data",
+        "backend",
+        "frontend",
+        "fullstack",
+        "mobile",
+        "devops",
+        "qa",
+        "other"
+      ]
+    },
+    {
+      "slug": "salary_basis",
+      "name": "Salary basis",
+      "values": [
+        "gross",
+        "net",
+        "unknown"
+      ],
+      "default": "gross"
+    }
+  ],
+  "cards": [
+    {
+      "text": "**Greek tech job market.** Tech job postings collected every day from public job boards and company career pages in Greece, cleaned and deduplicated, so a job listed on two sites counts once. A job is open while its source still lists it. The role family filter narrows every chart. Salaries are monthly amounts in EUR, with annual pay divided by 14 payments. Only totals are shown, never single postings.",
+      "row": 0,
+      "col": 0,
+      "width": 24,
+      "height": 3
+    },
+    {
+      "title": "Open jobs",
+      "sql": "public/open_jobs.sql",
+      "display": "scalar",
+      "description": "Jobs open now, across every source.",
+      "row": 3,
+      "col": 0,
+      "width": 6,
+      "height": 3
+    },
+    {
+      "title": "New jobs, last 7 days",
+      "sql": "public/new_jobs_last_7_days.sql",
+      "display": "scalar",
+      "description": "Jobs first seen in the 7 days up to the newest run.",
+      "row": 3,
+      "col": 6,
+      "width": 6,
+      "height": 3
+    },
+    {
+      "title": "Fully remote",
+      "sql": "public/remote_share.sql",
+      "display": "scalar",
+      "description": "Share of open jobs that are fully remote, out of those whose work mode is known.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"remote_share\"]": {
+            "number_style": "percent",
+            "decimals": 1
+          }
+        }
+      },
+      "row": 3,
+      "col": 12,
+      "width": 6,
+      "height": 3
+    },
+    {
+      "title": "Data as of",
+      "sql": "public/data_as_of.sql",
+      "display": "scalar",
+      "description": "The newest daily run behind these numbers.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"data_as_of\"]": {
+            "date_style": "MMMM D, YYYY"
+          }
+        }
+      },
+      "row": 3,
+      "col": 18,
+      "width": 6,
+      "height": 3
+    },
+    {
+      "heading": "Which skills are in demand?",
+      "row": 6,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Most asked for skills this month",
+      "sql": "public/top_skills_this_month.sql",
+      "display": "row",
+      "description": "Share of the jobs open this month that ask for each skill.",
+      "settings": {
+        "graph.dimensions": [
+          "skill"
+        ],
+        "graph.metrics": [
+          "share_of_jobs"
+        ],
+        "graph.show_values": true,
+        "column_settings": {
+          "[\"name\",\"share_of_jobs\"]": {
+            "number_style": "percent",
+            "decimals": 1
+          }
+        },
+        "graph.x_axis.labels_enabled": false,
+        "graph.y_axis.title_text": "Share of open jobs"
+      },
+      "row": 7,
+      "col": 0,
+      "width": 10,
+      "height": 8
+    },
+    {
+      "title": "Skill demand month to month",
+      "sql": "public/skill_demand_by_month.sql",
+      "display": "line",
+      "description": "Share of the jobs open each month that ask for each of the 8 most asked for skills. A job counts in every month it was open.",
+      "settings": {
+        "graph.dimensions": [
+          "month",
+          "skill"
+        ],
+        "graph.metrics": [
+          "share_of_jobs"
+        ],
+        "graph.x_axis.title_text": "Month",
+        "graph.y_axis.title_text": "Share of open jobs",
+        "column_settings": {
+          "[\"name\",\"share_of_jobs\"]": {
+            "number_style": "percent",
+            "decimals": 1
+          }
+        }
+      },
+      "row": 7,
+      "col": 10,
+      "width": 14,
+      "height": 8
+    },
+    {
+      "heading": "How many new jobs each week?",
+      "row": 15,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "New jobs per week, by role family",
+      "sql": "public/new_jobs_per_week.sql",
+      "display": "bar",
+      "description": "Jobs first seen each week over the last 26 weeks. The first week of tracking also counts every job that was already open.",
+      "settings": {
+        "graph.dimensions": [
+          "week",
+          "role_family"
+        ],
+        "graph.metrics": [
+          "new_jobs"
+        ],
+        "stackable.stack_type": "stacked",
+        "graph.x_axis.title_text": "Week",
+        "graph.y_axis.title_text": "New jobs"
+      },
+      "row": 16,
+      "col": 0,
+      "width": 24,
+      "height": 7
+    },
+    {
+      "heading": "Remote, hybrid or on-site?",
+      "row": 23,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Work mode of open jobs, by city",
+      "sql": "public/work_mode_by_city.sql",
+      "display": "bar",
+      "description": "Work mode of the jobs open now in the 8 cities with the most of them. unknown means the posting does not say.",
+      "settings": {
+        "graph.dimensions": [
+          "city",
+          "work_mode"
+        ],
+        "graph.metrics": [
+          "jobs"
+        ],
+        "stackable.stack_type": "normalized",
+        "graph.x_axis.title_text": "City",
+        "graph.y_axis.title_text": "Share of open jobs"
+      },
+      "row": 24,
+      "col": 0,
+      "width": 24,
+      "height": 7
+    },
+    {
+      "heading": "Which seniority levels are hiring?",
+      "row": 31,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Open jobs by seniority",
+      "sql": "public/open_jobs_by_seniority.sql",
+      "display": "bar",
+      "description": "Jobs open now by seniority, read from the title. unknown means the title gives no signal.",
+      "settings": {
+        "graph.dimensions": [
+          "seniority"
+        ],
+        "graph.metrics": [
+          "jobs"
+        ],
+        "graph.show_values": true,
+        "graph.x_axis.title_text": "Seniority",
+        "graph.y_axis.title_text": "Open jobs"
+      },
+      "row": 32,
+      "col": 0,
+      "width": 10,
+      "height": 7
+    },
+    {
+      "title": "New jobs per month, by seniority",
+      "sql": "public/new_jobs_by_seniority.sql",
+      "display": "bar",
+      "description": "Jobs first seen each month, by seniority.",
+      "settings": {
+        "graph.dimensions": [
+          "month",
+          "seniority"
+        ],
+        "graph.metrics": [
+          "jobs"
+        ],
+        "stackable.stack_type": "stacked",
+        "graph.x_axis.title_text": "Month",
+        "graph.y_axis.title_text": "New jobs"
+      },
+      "row": 32,
+      "col": 10,
+      "width": 14,
+      "height": 7
+    },
+    {
+      "heading": "What do jobs pay?",
+      "row": 39,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Monthly salary by role and seniority",
+      "sql": "public/salary_by_role_and_seniority.sql",
+      "display": "table",
+      "description": "Monthly salary in EUR of every job seen that states one. Annual pay is divided by 14 payments. Net amounts stay net, so the salary basis filter shows one basis at a time, gross by default.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"role_family\"]": {
+            "column_title": "Role family"
+          },
+          "[\"name\",\"seniority\"]": {
+            "column_title": "Seniority"
+          },
+          "[\"name\",\"jobs\"]": {
+            "column_title": "Jobs"
+          },
+          "[\"name\",\"median_from\"]": {
+            "number_style": "currency",
+            "currency": "EUR",
+            "currency_style": "symbol",
+            "decimals": 0,
+            "column_title": "Median from"
+          },
+          "[\"name\",\"median_to\"]": {
+            "number_style": "currency",
+            "currency": "EUR",
+            "currency_style": "symbol",
+            "decimals": 0,
+            "column_title": "Median to"
+          },
+          "[\"name\",\"lowest\"]": {
+            "number_style": "currency",
+            "currency": "EUR",
+            "currency_style": "symbol",
+            "decimals": 0,
+            "column_title": "Lowest"
+          },
+          "[\"name\",\"highest\"]": {
+            "number_style": "currency",
+            "currency": "EUR",
+            "currency_style": "symbol",
+            "decimals": 0,
+            "column_title": "Highest"
+          }
+        }
+      },
+      "row": 40,
+      "col": 0,
+      "width": 18,
+      "height": 7
+    },
+    {
+      "title": "Jobs that state a salary",
+      "sql": "public/salary_stated_share.sql",
+      "display": "scalar",
+      "description": "Share of all jobs seen that state a salary in EUR, gross, net or unknown.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"salary_stated_share\"]": {
+            "number_style": "percent",
+            "decimals": 1
+          }
+        }
+      },
+      "row": 40,
+      "col": 18,
+      "width": 6,
+      "height": 7
+    },
+    {
+      "heading": "How long do jobs stay open?",
+      "row": 47,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Median days open, by role family",
+      "sql": "public/days_open_by_role.sql",
+      "display": "bar",
+      "description": "Median days that closed jobs stayed open, from first seen to last seen. Jobs still open are left out.",
+      "settings": {
+        "graph.dimensions": [
+          "role_family"
+        ],
+        "graph.metrics": [
+          "median_days_open"
+        ],
+        "graph.show_values": true,
+        "graph.x_axis.title_text": "Role family",
+        "graph.y_axis.title_text": "Median days open"
+      },
+      "row": 48,
+      "col": 0,
+      "width": 12,
+      "height": 7
+    },
+    {
+      "title": "Closed jobs by days open",
+      "sql": "public/days_open_distribution.sql",
+      "display": "bar",
+      "description": "Closed jobs by how many days they stayed open.",
+      "settings": {
+        "graph.dimensions": [
+          "days_open"
+        ],
+        "graph.metrics": [
+          "closed_jobs"
+        ],
+        "graph.show_values": true,
+        "graph.x_axis.title_text": "Days open",
+        "graph.y_axis.title_text": "Closed jobs"
+      },
+      "row": 48,
+      "col": 12,
+      "width": 12,
+      "height": 7
+    }
+  ]
+}

@@ -43,18 +43,20 @@ posting is a job of its own.
 ```sh
 cp .env.example .env    # then fill in real values
 make setup              # install dev dependencies, dbt and git hooks
-make up                 # start Postgres, the object store and Airflow
+make up                 # start Postgres, the object store, Airflow and Metabase
 make help               # list every target
 ```
 
-`make up` also runs two one-off containers: `objectstore-init` creates the
+`make up` also runs three one-off containers: `objectstore-init` creates the
 `jobtracker-raw` bucket and its access key, and `airflow-init` migrates the
 Airflow database, creates the `admin` user (password from
-`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` and `dbt` pools. The Airflow UI is at
+`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` and `dbt` pools, and
+`metabase-init` sets up the dashboards (see [Dashboards](#dashboards)). The Airflow UI is at
 <http://localhost:8080>; on the server, reach it through an SSH tunnel. The Postgres init scripts in
 `infra/postgres/init/` run only on the first start with an empty volume, so
 after changing them reset the database with `docker compose down -v`, or
-run `make db-tables` to add the raw and ops tables to an existing one. It
+run `make db-tables` to add the raw and ops tables, such as `ops.dbt_runs`,
+to an existing one. It
 also moves an older `raw.raw_postings` to the natural key that includes
 `parser_version`.
 
@@ -105,6 +107,14 @@ did, no dbt step runs. dbt unit tests run in CI, not in the DAG. Each step
 keeps its artifacts and `dbt.log` in `logs/dbt/<run_date>/<step>/` on the
 Airflow logs volume. The dbt steps of every DAG share the `dbt` pool, which
 has one slot, so two builds never run at once.
+
+After the dbt steps, `load_dbt_results` runs
+`jobtracker load-dbt-results`, which writes every result in those artifacts
+to `ops.dbt_runs`: one row per node per dbt invocation, with its status,
+failures, message, row count and timing. Like `notify_summary` it is a
+teardown task, so it also records the results of a failed build and never
+decides whether the run succeeded. The reparse DAG loads its results the
+same way, under the Athens date of the reparse.
 
 ### Backfilling a parser fix
 
@@ -177,7 +187,7 @@ make test-db
 Before opening a pull request, run:
 
 ```sh
-make lint test test-db test-dags test-dbt
+make lint test test-db test-dags test-metabase test-dbt
 ```
 
 `make test` also measures coverage and fails when `core/` and `sources/`
@@ -281,6 +291,62 @@ docker compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB
     -c "grant temporary on database $POSTGRES_DB to transformer"'
 ```
 
+## Dashboards
+
+Metabase serves two dashboards, both defined in `metabase/`:
+
+| Dashboard | Collection | Who sees it | Reads |
+| --- | --- | --- | --- |
+| Greek tech job market | Job market | Anyone with its public link | `marts` only |
+| Pipeline health | Pipeline health | Metabase admins | `qa` and `ops` |
+
+The public dashboard answers the six MVP questions in the design doc: skill
+demand month to month, new jobs per week by role family, work mode by city,
+demand by seniority, salary ranges by role and seniority (gross by default,
+with the share of jobs that state a salary), and how long jobs stay open.
+A role family filter narrows every chart. It shows totals only, never a
+title, company or link of a single posting.
+
+The health dashboard shows each source's newest run and how long ago it
+loaded, postings parsed per source and day, every load of the last 30
+days, dbt test results per day and what did not pass in the newest build,
+and the most common values in `qa_unmapped_locations`,
+`qa_unclassified_titles` and `qa_salary_parse_failures`. Never share it.
+
+Each file in `metabase/dashboards/` is one dashboard: its collection, its
+filters, and every card with its place on the 24 column grid and its chart
+settings. Each question's SQL is a file in `metabase/questions/`, and a
+filter is a Metabase text tag in an optional clause:
+
+```sql
+where is_open [[and role_family = {{role_family}}]]
+```
+
+`metabase/provision.py` turns these files into Metabase content through its
+API. The `metabase-init` container runs it on `make up`. It creates the
+admin from `METABASE_ADMIN_EMAIL` and `METABASE_ADMIN_PASSWORD` on the first
+start, connects to the warehouse as `bi_reader` (seeing only `marts`, `qa`
+and `ops`), and creates or updates the collections, questions and
+dashboards. Questions removed from a file are archived. Only the public
+dashboard gets a public link, which the script prints. Changes made to
+these dashboards in the Metabase UI are lost on the next run, so edit the
+files and run:
+
+```sh
+make dashboards
+```
+
+Metabase keeps its own data in the `metabase_app` database, and is at
+<http://localhost:3000>; on the server, reach it through an SSH tunnel
+until Caddy serves the public dashboard. Public links start with
+`METABASE_SITE_URL`.
+
+`make test-metabase` checks the files without a Metabase: every card fits
+the grid without overlapping another, every filter tag has a dashboard
+filter, and the public questions read only `marts`. `make test-dbt` also
+runs every question, with and without its filters, as `bi_reader` against
+the marts it built, so a mart change that breaks the dashboard fails there.
+
 ## CI
 
 `.github/workflows/ci.yml` runs on every pull request and on pushes to
@@ -289,9 +355,9 @@ docker compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB
 | Job | Runs |
 | --- | --- |
 | `lint` | `make lint`, then a gitleaks scan of the whole git history |
-| `test` | `make test`, with the coverage check |
+| `test` | `make test`, with the coverage check, then `make test-metabase` |
 | `test-db` | `make test-db`, using the Docker on the runner |
-| `dbt` | `make dbt-setup`, then `make test-dbt` |
+| `dbt` | `make dbt-setup`, then `make test-dbt`, which also runs every dashboard question |
 
 The gitleaks pre-commit hook only looks at staged changes, so CI skips it
 and scans every commit instead. When you bump gitleaks in

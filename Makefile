@@ -11,7 +11,7 @@ COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dbt-setup up down db-tables lint test test-db test-dags dbt-build test-dbt dedup-sample dedup-label-sample airflow-image dbt-lock backup restore
+.PHONY: help setup dbt-setup up down db-tables dashboards lint test test-db test-dags test-metabase dbt-build test-dbt dedup-sample dedup-label-sample airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -37,6 +37,11 @@ db-tables: ## Create the raw and ops tables on a running stack
 	$(COMPOSE) exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" \
 		-d "$$POSTGRES_DB" -f /docker-entrypoint-initdb.d/03-raw-and-ops-tables.sql'
 
+# metabase-init runs once on `make up`. This runs it again, so Metabase
+# matches the definitions in metabase/ after changing them.
+dashboards: ## Create or update the Metabase dashboards on a running stack
+	$(COMPOSE) run --rm metabase-init
+
 lint: ## Run every pre-commit check on all files
 	$(PRE_COMMIT) run --all-files --show-diff-on-failure
 
@@ -58,6 +63,12 @@ test-dags: ## Run the DAG tests inside the Airflow image
 		--entrypoint bash $(AIRFLOW_IMAGE) -c \
 		"uv pip install --quiet --target /tmp/pytest pytest==9.1.1 \
 		&& PYTHONPATH=/tmp/pytest python -m pytest -p no:cacheprovider tests/dags"
+
+# The provisioning script uses only the standard library, so pytest is
+# the one thing these tests need
+test-metabase: ## Test the Metabase provisioning script and dashboard files
+	$(UV) run --no-project --python 3.12 --with pytest==9.1.1 \
+		pytest -p no:cacheprovider tests/metabase
 
 # dbt reads the rest of the connection from .env by itself. The host there
 # is the one Compose services use, so point it at the published port.

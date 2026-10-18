@@ -74,6 +74,9 @@ jobs:
       - name: Python tests with coverage
         run: make test
 
+      - name: Metabase provisioning tests
+        run: make test-metabase
+
   # The loader tests that need Postgres. The script starts the same image
   # as Compose with our init scripts, using the Docker on the runner.
   test-db:

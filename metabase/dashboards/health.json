@@ -1,0 +1,198 @@
+{
+  "name": "Pipeline health",
+  "description": "Run history, row counts, dbt results and unmapped values. Internal only.",
+  "collection": "Pipeline health",
+  "public": false,
+  "cards": [
+    {
+      "text": "**Pipeline health. Internal, never share this dashboard.** Run history and row counts per source come from `ops.ingest_runs`, dbt results from `ops.dbt_runs`, and the values the seeds miss from the `qa` views. See the runbook in the design doc for what to do about each problem.",
+      "row": 0,
+      "col": 0,
+      "width": 24,
+      "height": 3
+    },
+    {
+      "title": "Newest successful load",
+      "sql": "health/newest_load.sql",
+      "display": "scalar",
+      "description": "The newest run_date any source loaded successfully. It should be today once the daily run is done.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"newest_load\"]": {
+            "date_style": "MMMM D, YYYY"
+          }
+        }
+      },
+      "row": 3,
+      "col": 0,
+      "width": 8,
+      "height": 3
+    },
+    {
+      "title": "Failed loads, last 30 days",
+      "sql": "health/failed_loads.sql",
+      "display": "scalar",
+      "description": "Loads in ops.ingest_runs with status failed.",
+      "row": 3,
+      "col": 8,
+      "width": 8,
+      "height": 3
+    },
+    {
+      "title": "dbt problems in the newest build",
+      "sql": "health/dbt_problems_count.sql",
+      "display": "scalar",
+      "description": "Nodes that warned, failed or errored in the newest build of each dbt step.",
+      "row": 3,
+      "col": 16,
+      "width": 8,
+      "height": 3
+    },
+    {
+      "title": "Sources",
+      "sql": "health/source_status.sql",
+      "display": "table",
+      "description": "Each source as of its newest successful run. Freshness warns at 26 hours since the load and errors at 50.",
+      "settings": {
+        "column_settings": {
+          "[\"name\",\"source\"]": {
+            "column_title": "Source"
+          },
+          "[\"name\",\"last_run_date\"]": {
+            "column_title": "Last good run"
+          },
+          "[\"name\",\"hours_since_load\"]": {
+            "column_title": "Hours since load"
+          },
+          "[\"name\",\"new_postings\"]": {
+            "column_title": "New"
+          },
+          "[\"name\",\"closed_postings\"]": {
+            "column_title": "Closed"
+          },
+          "[\"name\",\"open_postings\"]": {
+            "column_title": "Open"
+          }
+        }
+      },
+      "row": 6,
+      "col": 0,
+      "width": 24,
+      "height": 4
+    },
+    {
+      "heading": "Ingestion",
+      "row": 10,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Postings parsed per source",
+      "sql": "health/rows_per_source.sql",
+      "display": "line",
+      "description": "Postings parsed from the newest load of each day. The volume test fails a day below half the 7 day average.",
+      "settings": {
+        "graph.dimensions": [
+          "run_date",
+          "source"
+        ],
+        "graph.metrics": [
+          "rows_parsed"
+        ],
+        "graph.x_axis.title_text": "Run date",
+        "graph.y_axis.title_text": "Postings parsed"
+      },
+      "row": 11,
+      "col": 0,
+      "width": 24,
+      "height": 7
+    },
+    {
+      "title": "Loads, last 30 days",
+      "sql": "health/ingest_runs.sql",
+      "display": "table",
+      "description": "Every load in ops.ingest_runs from the last 30 days, newest first.",
+      "row": 18,
+      "col": 0,
+      "width": 24,
+      "height": 8
+    },
+    {
+      "heading": "dbt",
+      "row": 26,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Test results per day",
+      "sql": "health/dbt_results_by_day.sql",
+      "display": "bar",
+      "description": "Data tests and freshness checks by result, for the newest build of each step on each day.",
+      "settings": {
+        "graph.dimensions": [
+          "run_date",
+          "status"
+        ],
+        "graph.metrics": [
+          "results"
+        ],
+        "stackable.stack_type": "stacked",
+        "graph.x_axis.title_text": "Run date",
+        "graph.y_axis.title_text": "Results"
+      },
+      "row": 27,
+      "col": 0,
+      "width": 8,
+      "height": 8
+    },
+    {
+      "title": "Problems in the newest build",
+      "sql": "health/dbt_problems.sql",
+      "display": "table",
+      "description": "What warned, failed or errored in the newest build of each dbt step.",
+      "row": 27,
+      "col": 8,
+      "width": 16,
+      "height": 8
+    },
+    {
+      "heading": "Values the seeds miss",
+      "row": 35,
+      "col": 0,
+      "width": 24,
+      "height": 1
+    },
+    {
+      "title": "Unmapped locations",
+      "sql": "health/unmapped_locations.sql",
+      "display": "table",
+      "description": "Locations no alias in city_aliases.csv matches, so the city is Unknown. Remote postings are left out.",
+      "row": 36,
+      "col": 0,
+      "width": 8,
+      "height": 8
+    },
+    {
+      "title": "Unclassified titles",
+      "sql": "health/unclassified_titles.sql",
+      "display": "table",
+      "description": "Titles no rule in role_family_rules.csv matches, so the role family is other.",
+      "row": 36,
+      "col": 8,
+      "width": 8,
+      "height": 8
+    },
+    {
+      "title": "Salary parse failures",
+      "sql": "health/salary_parse_failures.sql",
+      "display": "table",
+      "description": "Salary texts that gave no monthly amount, with the reason.",
+      "row": 36,
+      "col": 16,
+      "width": 8,
+      "height": 8
+    }
+  ]
+}

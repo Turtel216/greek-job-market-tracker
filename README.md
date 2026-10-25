@@ -1,368 +1,252 @@
 # Greek Tech Job Market Tracker
 
 A self-hosted data pipeline that collects Greek tech job postings every day,
-cleans and deduplicates them, and turns them into a dashboard of hiring trends:
-in-demand skills, hiring roles and cities, remote work share, and how all of
-this changes month to month.
+cleans and deduplicates them, and publishes a dashboard of what the market
+looks like: which skills are in demand, who is hiring for which roles, how
+much remote work there is, what people get paid and how long postings stay
+open.
 
-The design document in `docs/design.md` is the source of truth for how the
-project is built.
+I started this because there is no simple way to see the Greek tech job
+market as a whole. Job boards show one posting at a time, in two languages,
+with salaries quoted per month, per year over 14 payments, net or gross, or
+not at all. The same job often shows up on more than one site. I wanted
+something that turns that into a few honest numbers that a student or a
+junior engineer can actually use, and I wanted to build it the way a real
+data platform would be built: scheduled, tested, monitored and rebuildable
+from raw data.
+
+## Screenshots
+
+The public dashboard:
+
+![Public job market dashboard](docs/images/public-dashboard.png)
+
+The internal pipeline health dashboard:
+
+![Pipeline health dashboard](docs/images/pipeline-health.png)
+
+## What the dashboard answers
+
+1. Which skills appear most often, month to month?
+2. How many new postings are there per week, by role family?
+3. What share of jobs are remote, hybrid or on-site, by city?
+4. How does demand split by seniority?
+5. What are the salary ranges by role and seniority?
+6. How long do postings stay open?
+
+Only aggregates are published. The dashboard never shows a single
+posting's text, company or link.
+
+## How it works
+
+```mermaid
+flowchart LR
+    sources["Job sources<br/>(Greenhouse API, kariera.gr)"]
+    extract["jobtracker extract<br/>(Python)"]
+    store[("Object store<br/>raw payloads, 30 days")]
+    load["jobtracker load<br/>parse + scrub PII"]
+    raw[("Postgres<br/>raw, ops")]
+    dbt["dbt<br/>staging, snapshots,<br/>intermediate, marts"]
+    marts[("Postgres<br/>marts, qa")]
+    mb["Metabase<br/>dashboards"]
+
+    sources --> extract --> store --> load --> raw --> dbt --> marts --> mb
+```
+
+Airflow runs the whole thing once a day at 06:00 Athens time:
+
+1. **Extract.** One task per source fetches the listing pages and the
+   details of new or changed postings, and saves every response as is in
+   an S3-compatible object store (Garage). Unchanged postings are not
+   fetched again.
+2. **Load.** A parser per source turns the saved payloads into typed rows,
+   removes emails, phone numbers and contact names, and appends them to
+   `raw.raw_postings` in Postgres. Raw rows are never updated.
+3. **Transform.** dbt builds the warehouse layer by layer. Staging
+   normalizes text and classifies each posting (city, work mode,
+   seniority, role family, salary). Intermediate works out when postings
+   open and close, extracts skills and merges duplicate postings into
+   jobs. The marts are the tables the dashboard reads.
+4. **Test and publish.** Every layer runs its tests before the next one
+   builds. If anything fails, the marts are not touched and the dashboard
+   keeps showing the last good day.
+5. **Report.** Failures and retries alert to Discord (with email as a
+   fallback), a summary of new, open and closed postings goes out at the
+   end of each run, and a watchdog alerts if the run has not succeeded by
+   10:00.
+
+## Stack
+
+| Layer | Tool |
+| --- | --- |
+| Ingestion | Python 3.12, requests, BeautifulSoup, Pydantic, structlog |
+| Orchestration | Apache Airflow 3 (LocalExecutor) |
+| Raw storage | Garage, an S3-compatible object store |
+| Warehouse | PostgreSQL 17 with `pg_trgm` and `unaccent` |
+| Transformation and tests | dbt Core with dbt-postgres |
+| Dashboards | Metabase, defined as JSON and SQL files |
+| Deployment | Docker Compose, one `make up` for the whole stack |
+| Tooling | uv, ruff, mypy, sqlfluff, pre-commit, gitleaks, GitHub Actions |
+
+Every piece is open source and self-hosted, and each one has an obvious
+managed equivalent (S3, RDS, MWAA, and so on). The code only talks to
+storage through the S3 API, so moving it would be a configuration change.
+
+## Design choices
+
+A few decisions shape most of the code. The reasoning behind each is in the
+[design document](docs/design.md) and the [ADRs](docs/adr/).
+
+**Scraping politely.** All HTTP goes through one shared client that sends
+an identifying User-Agent, waits at least 3 seconds between requests to a
+host, respects robots.txt and `Retry-After`, and stops the source for the
+day on a 401, 403, CAPTCHA or login wall instead of trying to get around
+it. A source is only enabled after I have read its terms and robots.txt.
+One Greek job board was dropped at that step because its terms ban bots.
+
+**Raw data is immutable and replayable.** Payloads are kept for 30 days and
+parsed rows forever. When a site changes its HTML and a parser breaks, I
+fix the parser, bump its version and run a reparse DAG over the stored
+payloads, without hitting the site again. Everything after
+`raw.raw_postings` can be rebuilt with `dbt build --full-refresh`.
+
+**Python fetches, dbt decides.** Python only fetches and parses. Every
+business rule (normalization, classification, salary parsing, skill
+matching, deduplication, metrics) lives in dbt, and the dictionaries and
+keyword rules behind them are CSV seeds. Teaching the pipeline a new city
+spelling or a new skill means adding a row and a test, not changing code.
+
+**Greek text is handled on purpose.** Text is lowercased and stripped of
+accents, and the Greek final sigma is folded into the regular one, before
+anything is matched. City names are matched in Greek and Latin spellings,
+Attica suburbs map to Athens, and annual salaries are divided by 14 because
+that is how Greek pay is usually split. Values that no rule covers land in
+`qa_*` views, so the seeds grow from real data.
+
+**Deterministic deduplication.** Postings from the same company with
+matching titles, close first-seen dates and compatible city and seniority
+are paired, and pairs are joined into clusters. Each cluster's `job_id` is
+the key of its earliest posting, so a full refresh always produces the same
+ids.
+
+**A broken scraper should not lie.** A posting only closes after it is
+missing from two successful runs of its source, and failed runs do not
+count, so a scraper that breaks overnight does not close every job. A
+volume test fails the build when a source suddenly returns less than half
+its usual number of rows.
+
+**Dashboards are code.** Metabase's own export is a paid feature, so both
+dashboards are JSON and SQL files that a small script applies through the
+Metabase API. CI checks the layout and runs every dashboard query against
+freshly built marts, so a mart change that would break a chart fails the
+build.
+
+**Least privilege.** Each part of the stack uses its own Postgres role:
+the loader can only write `raw` and `ops`, dbt can only read those and
+write its own schemas, and Metabase reads through a role that sees `marts`,
+`qa` and `ops` and nothing else.
+
+## Data sources
+
+| Source | Kind | How it is read |
+| --- | --- | --- |
+| Greenhouse job boards | ATS | Public Job Board JSON API, for a curated list of companies |
+| kariera.gr | Greek job board | HTML pages, using the schema.org JSON-LD embedded in each posting |
+
+Sources are listed in [`config/sources.yml`](config/sources.yml), with the
+date their terms and robots.txt were reviewed. Adding a source means
+writing one adapter, one registry entry and its test fixtures; the DAG
+picks it up on its own. The kariera.gr fixtures in the repo are made up,
+because the site's terms do not allow passing its content on.
+
+## Running it locally
+
+You need [uv](https://docs.astral.sh/uv/) (it installs Python 3.12 for
+you), [pre-commit](https://pre-commit.com/), Docker with the Compose plugin
+and GNU Make.
+
+```sh
+git clone https://github.com/Turtel216/greek-job-market-tracker.git
+cd greek-job-market-tracker
+cp .env.example .env    # fill in the passwords and keys; each one says how to generate it
+make setup              # dev dependencies, dbt and git hooks
+make up                 # Postgres, Garage, Airflow and Metabase
+```
+
+Then open Airflow at <http://localhost:8080> (user `admin`) and Metabase at
+<http://localhost:3000>. Unpause `jobtracker_daily` to start collecting.
+
+To see the transformation layer work without scraping anything, build the
+dbt project against a throwaway Postgres loaded with a made-up sample of
+postings:
+
+```sh
+make test-dbt
+```
+
+`make help` lists every target. Day to day operation, including how to
+backfill a parser fix, is described in [docs/operations.md](docs/operations.md).
+
+## Testing
+
+Tests run offline, against saved pages and a made-up sample of postings, so
+the suite never touches a real website.
+
+- Parser tests compare each adapter's output on saved pages with the
+  expected JSON. Every parser change ships with a fixture.
+- Unit tests cover the HTTP client (rate limits, retries, robots.txt, block
+  detection), PII scrubbing and the loader, with the loader also tested
+  against a real Postgres.
+- dbt unit tests check normalization, salary parsing, classification,
+  skill patterns, lifecycle and deduplication with real Greek and English
+  examples, and data tests check keys, relationships, accepted values,
+  volume and the mart contracts.
+- DAG tests check the task graphs, alerts and schedules, and that the dbt
+  steps build every model and test exactly once.
+
+```sh
+make lint test test-db test-dags test-metabase test-dbt
+```
+
+GitHub Actions runs lint, a secrets scan of the full history, the Python
+tests with an 85% coverage floor, the database tests and the full dbt build
+on every pull request.
 
 ## Status
 
-Phase 3, Modeling. Phases 1 and 2 are done: the repo skeleton, tooling,
-Postgres, the object store and the ingestion adapters are in place.
-Airflow runs in Compose with the `jobtracker_daily` DAG and its alerts, and
-the loader writes each run to `raw` and `ops`. CI runs lint and the Python
-tests on every pull request. The dbt project builds every layer: seeds,
-staging, the posting snapshot, lifecycle and skill extraction, and the marts
-with enforced contracts. Deduplication comes in Phase 4; until then every
-posting is a job of its own.
+The pipeline, the warehouse and both dashboards are built and tested
+locally. Still to do:
+
+- Deploy to a server behind HTTPS (Caddy) and publish the dashboard.
+- Nightly backups with a tested restore.
+- Run unattended for four weeks on both sources, which is my definition of
+  done for the first version.
+- Score deduplication on hand-labeled real postings. It currently reaches
+  the 95% precision target on a made-up sample only.
+
+Ideas for later include more sources, LLM-assisted skill and seniority
+extraction, and a public export of the aggregated data.
 
 ## Repository layout
 
 | Folder | Contents |
 | --- | --- |
 | `config/` | Source registry (`sources.yml`) |
-| `ingestion/` | Python package `jobtracker_ingest` |
-| `dags/` | Airflow DAGs |
-| `transform/` | dbt project |
-| `infra/` | Dockerfiles and service config |
-| `metabase/` | Exported dashboard definitions |
-| `scripts/` | Backup and restore scripts |
-
-## Requirements
-
-- [uv](https://docs.astral.sh/uv/) (installs Python 3.12 for you)
-- [pre-commit](https://pre-commit.com/)
-- Docker with the Compose plugin
-- GNU Make
-
-## Getting started
-
-```sh
-cp .env.example .env    # then fill in real values
-make setup              # install dev dependencies, dbt and git hooks
-make up                 # start Postgres, the object store, Airflow and Metabase
-make help               # list every target
-```
-
-`make up` also runs three one-off containers: `objectstore-init` creates the
-`jobtracker-raw` bucket and its access key, and `airflow-init` migrates the
-Airflow database, creates the `admin` user (password from
-`AIRFLOW_ADMIN_PASSWORD`) and the `http_sources` and `dbt` pools, and
-`metabase-init` sets up the dashboards (see [Dashboards](#dashboards)). The Airflow UI is at
-<http://localhost:8080>; on the server, reach it through an SSH tunnel. The Postgres init scripts in
-`infra/postgres/init/` run only on the first start with an empty volume, so
-after changing them reset the database with `docker compose down -v`, or
-run `make db-tables` to add the raw and ops tables, such as `ops.dbt_runs`,
-to an existing one. It
-also moves an older `raw.raw_postings` to the natural key that includes
-`parser_version`.
-
-## Airflow image
-
-`infra/airflow/Dockerfile` builds the image that runs every pipeline task.
-It adds two things to the official Airflow image, each in its own virtualenv
-so their pinned dependencies never touch Airflow's:
-
-- the ingestion package, installed from `ingestion/uv.lock`, as `jobtracker`
-- dbt Core with dbt-postgres, installed from
-  `infra/airflow/requirements-dbt.txt`, as `dbt`
-
-```sh
-make airflow-image
-docker run --rm --entrypoint bash jobtracker-airflow:dev -c "jobtracker --help && dbt --version"
-```
-
-The image also contains `config/sources.yml` and the dbt project from
-`transform/`, so rebuild it after changing the registry, the ingestion
-package or any dbt model, seed or macro. `DBT_PROJECT_DIR` and
-`DBT_PROFILES_DIR` point dbt at the project. To change the dbt version,
-edit `infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
-
-## DAGs
-
-`dags/jobtracker_daily.py` runs at 06:00 Europe/Athens. It has one task
-group per enabled source in `config/sources.yml`, each running
-`jobtracker extract` and then `jobtracker load` for that day's `run_date`.
-Extract tasks share the `http_sources` pool, so at most 3 sources are
-fetched at once. A source that blocks us fails without a retry.
-
-Once every load is done, the dbt steps run one after the other:
-
-| Task | Command | Retries |
-| --- | --- | --- |
-| `dbt_freshness` | `dbt source freshness` | 0 |
-| `dbt_staging` | `dbt build --selector staging` (seeds and staging) | 0 |
-| `dbt_snapshot` | `dbt build --selector snapshots` | 1 |
-| `dbt_intermediate` | `dbt build --selector intermediate` | 0 |
-| `dbt_marts` | `dbt build --selector marts` | 0 |
-
-The selectors are in `transform/selectors.yml`. Each step runs its layer's
-tests, so a failed test stops the later steps and the marts keep the last
-good data. `dbt_freshness` waits for every load and runs when at least one
-of them succeeded, so one broken source never blocks the others; when none
-did, no dbt step runs. dbt unit tests run in CI, not in the DAG. Each step
-keeps its artifacts and `dbt.log` in `logs/dbt/<run_date>/<step>/` on the
-Airflow logs volume. The dbt steps of every DAG share the `dbt` pool, which
-has one slot, so two builds never run at once.
-
-After the dbt steps, `load_dbt_results` runs
-`jobtracker load-dbt-results`, which writes every result in those artifacts
-to `ops.dbt_runs`: one row per node per dbt invocation, with its status,
-failures, message, row count and timing. Like `notify_summary` it is a
-teardown task, so it also records the results of a failed build and never
-decides whether the run succeeded. The reparse DAG loads its results the
-same way, under the Athens date of the reparse.
-
-### Backfilling a parser fix
-
-`dags/jobtracker_reparse.py` loads stored payloads again after a parser fix,
-without scraping again, and then runs the same dbt steps as the daily DAG
-(without freshness). It only runs when triggered, with three params:
-`source` (any source in the registry, enabled or not), `start_date` and
-`end_date`. Its dbt artifacts go to `logs/dbt/reparse/<dag run id>/<step>/`,
-apart from the daily ones.
-
-When a parser breaks, for example after the volume test fails:
-
-1. Fix the parser, add the new page as a fixture, and bump the adapter's
-   `PARSER_VERSION`. Without the bump the reparse inserts nothing.
-2. Deploy: `make airflow-image && make up`.
-3. Trigger `jobtracker_reparse` in the UI with the source and the first and
-   last affected `run_date`. Payloads are kept for 30 days, so older days
-   cannot be reparsed and keep their old rows.
-4. Check the result: `raw.raw_postings` has rows with the new
-   `parser_version` next to the old ones, `ops.ingest_runs` shows the new
-   version for each day, and the `qa_*` views and marts look right.
-
-The old rows stay in raw, since raw is never updated, and
-`stg_raw_postings` reads the newest load of each posting and day.
-`snap_postings` records a new version for each posting the fix changed.
-A day that fails to load does not stop the others, and the task fails at
-the end. Clear the failed tasks to run them again; a second reparse of the
-same days inserts nothing new.
-
-This was rehearsed on 2026-10-28 on a local stack. Three days of stored
-Greenhouse fixture runs were loaded by a parser that lost the location, so
-every job showed city Unknown. A reparse with the fixed parser added nine
-rows, and `dim_jobs` showed the right cities again.
-
-Shared code lives in `dags/common/`:
-
-| Module | Contents |
-| --- | --- |
-| `defaults.py` | Default task args, the pool names, the registry sources |
-| `rundate.py` | `run_date`, the Europe/Athens date of the run |
-| `cli.py` | `CliOperator`, which runs a CLI command and keeps its last lines |
-| `alerts.py` | Failure and retry alerts |
-| `dbt.py` | The commands for the dbt steps |
-
-Every task alerts on failure and on retry. Alerts go to the Discord webhook
-in `ALERT_DISCORD_WEBHOOK_URL`, and by email to `ALERT_EMAIL` through the
-`AIRFLOW_CONN_SMTP_DEFAULT` connection when Discord is not set or does not
-answer. A failure alert has the task, `run_date`, a log link and the last
-lines of the command's output.
-
-DAGs are paused when first created. Unpause `jobtracker_daily` in the UI
-once at least one source is enabled.
-
-The DAG tests in `tests/dags/` need Airflow, so they run inside the Airflow
-image. They also check with `dbt ls` that the dbt steps build every model,
-seed, snapshot and test exactly once:
-
-```sh
-make airflow-image   # after changing the image
-make test-dags
-```
-
-The loader's warehouse tests need a real Postgres. This starts a throwaway
-one with the init scripts, runs them and removes it:
-
-```sh
-make test-db
-```
-
-Before opening a pull request, run:
-
-```sh
-make lint test test-db test-dags test-metabase test-dbt
-```
-
-`make test` also measures coverage and fails when `core/` and `sources/`
-together drop below 85%.
-
-## dbt
-
-The dbt project is in `transform/`. `make setup` (or `make dbt-setup` on
-its own) installs dbt with uv into `transform/.venv`, from the same locked
-`infra/airflow/requirements-dbt.txt` as the Airflow image, so there is no
-need for a system-wide install.
-
-The quickest check is to build everything against a throwaway Postgres
-with the init scripts, like `make test-db` does:
-
-```sh
-make test-dbt
-```
-
-To build against the running stack instead, run `make dbt-build`.
-`transform/profiles.yml` reads the connection from the environment
-(`POSTGRES_HOST`, `POSTGRES_PORT`, `WAREHOUSE_DB`, `TRANSFORMER_PASSWORD`,
-`DBT_TARGET`, `DBT_THREADS`) and connects as the `transformer` role. dbt
-also loads `.env` on its own, without overriding variables that are already
-set, so the target only sets `POSTGRES_HOST=localhost`.
-
-Seeds hold the dictionaries and rules that drive matching. They load into
-the `staging` schema:
-
-| Seed | Contents |
-| --- | --- |
-| `skills` | Skills with a stable `skill_id` and a category |
-| `skill_aliases` | Words that mark a skill, with a regex for ambiguous ones such as Go, R and C |
-| `city_aliases` | Greek and Latin place names mapped to a city and region |
-| `company_suffixes` | Legal forms stripped from company names, such as ΑΕ and Ltd |
-| `company_aliases` | Other names of a company mapped to one `company_key` |
-| `work_mode_rules`, `seniority_rules`, `role_family_rules` | Keyword rules with a priority; the highest match wins |
-
-Aliases and keywords are written the way `normalize_text` leaves text:
-lowercase, no accents, final sigma as σ, single spaces. The tests in
-`transform/seeds/_seeds.yml` check this, so a new row in the wrong form
-fails `dbt build`. To improve matching, edit the CSV and run
-`make test-dbt`.
-
-The staging models read `raw.raw_postings`:
-
-| Model | Grain | Contents |
-| --- | --- | --- |
-| `stg_raw_postings` (view) | posting and run_date | `posting_key` and tidy display text, nothing heavier |
-| `stg_postings` (table) | posting | The newest row of each posting with normalized text, `company_key`, city, work mode, seniority, role family and monthly salary |
-
-The logic lives in macros in `transform/macros/`:
-
-| Macro | Does |
-| --- | --- |
-| `normalize_text` | Lowercase, strip accents, final sigma to σ, punctuation other than `+ # .` to spaces |
-| `match_rules` | Picks the value of the best rule in a keyword rule seed |
-| `parse_salary` | Turns salary text into a monthly range with currency, basis and period; reads gross or net from a salary sentence in the description when the salary text says neither |
-
-The salary settings are dbt vars in `transform/dbt_project.yml`:
-`salaries_per_year` (14), the annual threshold and the monthly bounds.
-Two more vars drive the later layers: `missed_runs_to_close` (2) and
-`ats_sources`, the sources with `kind: ats_api` in `config/sources.yml`.
-Keep that list in step with the registry.
-
-The snapshot `snap_postings` (in the `snapshots` schema) keeps one row per
-version of each posting, with a new version whenever its `content_hash`
-changes.
-
-The intermediate models are tables in the `intermediate` schema:
-
-| Model | Grain | Contents |
-| --- | --- | --- |
-| `int_posting_lifecycle` | posting | `first_seen`, `last_seen`, `is_open` and `closed_date`. A posting closes after it is missing from `missed_runs_to_close` successful runs of its source in a row; failed runs in `ops.ingest_runs` do not count |
-| `int_posting_skills` | posting and skill | Skills found by matching `skill_aliases` on the normalized title and description, with `matched_in` |
-| `int_job_matches` | posting | The `job_id` of each posting. For now `job_id` is the `posting_key`; deduplication replaces this model in Phase 4 |
-
-The marts are tables in the `marts` schema, the only one Metabase reads.
-Their contracts are enforced, so a renamed column or a changed type fails
-the build:
-
-| Model | Grain | Contents |
-| --- | --- | --- |
-| `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` |
-| `dim_skills` | skill | `skill_id`, `name`, `category` |
-| `bridge_job_skills` | job and skill | Every skill of the job's postings, with `matched_in` |
-| `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. Fully remote jobs count under `Remote` |
-| `fct_monthly_skill_demand` | month, skill, role family | Jobs with the skill, all open jobs and the share. A job counts in every month it was open |
-
-Unit tests for these rules are in `transform/models/staging/_unit_tests.yml`,
-with real Greek and English examples. The intermediate models and marts
-have their own `_unit_tests.yml` next to them, covering when postings
-close, the skill patterns, how postings merge into jobs and the date
-spines. They run as part of `dbt build`
-against the real seed files, so a seed change that breaks a rule fails the
-build. dbt needs to create temporary tables for them; a database created
-before that grant was added needs it once:
-
-```sh
-docker compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-    -c "grant temporary on database $POSTGRES_DB to transformer"'
-```
-
-## Dashboards
-
-Metabase serves two dashboards, both defined in `metabase/`:
-
-| Dashboard | Collection | Who sees it | Reads |
-| --- | --- | --- | --- |
-| Greek tech job market | Job market | Anyone with its public link | `marts` only |
-| Pipeline health | Pipeline health | Metabase admins | `qa` and `ops` |
-
-The public dashboard answers the six MVP questions in the design doc: skill
-demand month to month, new jobs per week by role family, work mode by city,
-demand by seniority, salary ranges by role and seniority (gross by default,
-with the share of jobs that state a salary), and how long jobs stay open.
-A role family filter narrows every chart. It shows totals only, never a
-title, company or link of a single posting.
-
-The health dashboard shows each source's newest run and how long ago it
-loaded, postings parsed per source and day, every load of the last 30
-days, dbt test results per day and what did not pass in the newest build,
-and the most common values in `qa_unmapped_locations`,
-`qa_unclassified_titles` and `qa_salary_parse_failures`. Never share it.
-
-Each file in `metabase/dashboards/` is one dashboard: its collection, its
-filters, and every card with its place on the 24 column grid and its chart
-settings. Each question's SQL is a file in `metabase/questions/`, and a
-filter is a Metabase text tag in an optional clause:
-
-```sql
-where is_open [[and role_family = {{role_family}}]]
-```
-
-`metabase/provision.py` turns these files into Metabase content through its
-API. The `metabase-init` container runs it on `make up`. It creates the
-admin from `METABASE_ADMIN_EMAIL` and `METABASE_ADMIN_PASSWORD` on the first
-start, connects to the warehouse as `bi_reader` (seeing only `marts`, `qa`
-and `ops`), and creates or updates the collections, questions and
-dashboards. Questions removed from a file are archived. Only the public
-dashboard gets a public link, which the script prints. Changes made to
-these dashboards in the Metabase UI are lost on the next run, so edit the
-files and run:
-
-```sh
-make dashboards
-```
-
-Metabase keeps its own data in the `metabase_app` database, and is at
-<http://localhost:3000>; on the server, reach it through an SSH tunnel
-until Caddy serves the public dashboard. Public links start with
-`METABASE_SITE_URL`.
-
-`make test-metabase` checks the files without a Metabase: every card fits
-the grid without overlapping another, every filter tag has a dashboard
-filter, and the public questions read only `marts`. `make test-dbt` also
-runs every question, with and without its filters, as `bi_reader` against
-the marts it built, so a mart change that breaks the dashboard fails there.
-
-## CI
-
-`.github/workflows/ci.yml` runs on every pull request and on pushes to
-`main`. Each job calls the same make target as above:
-
-| Job | Runs |
-| --- | --- |
-| `lint` | `make lint`, then a gitleaks scan of the whole git history |
-| `test` | `make test`, with the coverage check, then `make test-metabase` |
-| `test-db` | `make test-db`, using the Docker on the runner |
-| `dbt` | `make dbt-setup`, then `make test-dbt`, which also runs every dashboard question |
-
-The gitleaks pre-commit hook only looks at staged changes, so CI skips it
-and scans every commit instead. When you bump gitleaks in
-`.pre-commit-config.yaml`, update the version and checksum in the workflow
-too. CI sets `UV_LOCKED=1`, so it fails if `ingestion/uv.lock` is out of
-date; run `uv lock` in `ingestion/` and commit the result.
-
-The DAG tests are not in CI yet.
+| `ingestion/` | Python package `jobtracker_ingest`: HTTP client, source adapters, loader and CLI |
+| `dags/` | Airflow DAGs and their shared code |
+| `transform/` | dbt project: models, seeds, macros, snapshots and tests |
+| `metabase/` | Dashboard definitions and the provisioning script |
+| `infra/` | Airflow Dockerfile, Postgres init scripts, object store setup |
+| `scripts/` | Test helpers and the dedup sampling scripts |
+| `tests/` | DAG, Metabase and dedup sample tests |
+| `docs/` | Design document, operations guide and ADRs |
+
+## Further reading
+
+- [docs/operations.md](docs/operations.md): running, changing and debugging
+  the pipeline
+- [ingestion/README.md](ingestion/README.md): the ingestion CLI
+
+## License
+
+MIT

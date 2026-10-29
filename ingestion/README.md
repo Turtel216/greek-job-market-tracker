@@ -6,7 +6,7 @@ payloads in the object store and loads parsed rows into `raw.raw_postings`.
 ## HTTP client
 
 Every request to a source goes through `core.http.PoliteClient`, which
-enforces the politeness rules in the design doc: an identifying User-Agent,
+enforces these politeness rules: an identifying User-Agent,
 a per host delay with jitter, timeouts, retries with backoff, robots.txt and
 the stop conditions for blocks. Adapters never call `requests` directly.
 

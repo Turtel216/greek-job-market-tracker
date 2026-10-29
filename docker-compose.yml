@@ -1,5 +1,5 @@
 # Whole stack for local development and the server. Start with `make up`.
-# Every service binds to 127.0.0.1 only, see the design doc for details.
+# Every service binds to 127.0.0.1 only.
 
 name: jobtracker
 
@@ -203,7 +203,7 @@ services:
       MB_LOAD_SAMPLE_CONTENT: "false"
       MB_ANON_TRACKING_ENABLED: "false"
       MB_CHECK_FOR_UPDATES: "false"
-      # Keeps it near the 1.5 GB the design plans for
+      # Keeps Metabase near its 1.5 GB memory budget
       JAVA_OPTS: -Xmx1g
     ports:
       - "127.0.0.1:3000:3000"

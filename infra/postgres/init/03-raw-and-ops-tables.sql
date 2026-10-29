@@ -1,6 +1,6 @@
--- Tables in raw and ops, written by the loader. See "Data model" in the
--- design doc. The postgres image runs this once on an empty volume. It is
--- safe to run again, so `make db-tables` applies it to a running stack.
+-- Tables in raw and ops, written by the loader. The postgres image runs
+-- this once on an empty volume. It is safe to run again, so
+-- `make db-tables` applies it to a running stack.
 --
 -- The admin role creates these tables, so the default privileges from
 -- 02-warehouse.sh apply: the loader can only insert into raw, and can

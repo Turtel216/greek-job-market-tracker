@@ -5,7 +5,7 @@
   "public": false,
   "cards": [
     {
-      "text": "**Pipeline health. Internal, never share this dashboard.** Run history and row counts per source come from `ops.ingest_runs`, dbt results from `ops.dbt_runs`, and the values the seeds miss from the `qa` views. See the runbook in the design doc for what to do about each problem.",
+      "text": "**Pipeline health. Internal, never share this dashboard.** Run history and row counts per source come from `ops.ingest_runs`, dbt results from `ops.dbt_runs`, and the values the seeds miss from the `qa` views.",
       "row": 0,
       "col": 0,
       "width": 24,

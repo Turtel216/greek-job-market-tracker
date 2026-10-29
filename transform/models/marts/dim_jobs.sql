@@ -1,6 +1,6 @@
 -- One row per real-world job. The title and attributes come from the job's
 -- primary posting, the salary from its first posting that states one, and
--- the dates from all of its postings. See "Marts" in the design doc.
+-- the dates from all of its postings.
 
 {%- set ats_sources = "'" ~ var('ats_sources') | join("', '") ~ "'" %}
 

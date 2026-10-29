@@ -1,5 +1,5 @@
 # Lookup tables and rules used by staging and intermediate models. Edit the
-# CSV files to improve matching; see "Transformation logic" in the design doc.
+# CSV files to improve matching.
 #
 # Every alias and keyword is written the way normalize_text leaves text:
 # lowercase, no accents, final sigma written as σ, punctuation other than
@@ -212,7 +212,7 @@ seeds:
   - name: seniority_rules
     description: >
       Keywords that set seniority, matched on the title only. No match
-      gives unknown, not mid (ADR-005). The match with the highest priority wins.
+      gives unknown, not mid. The match with the highest priority wins.
     config:
       column_types:
         pattern: text

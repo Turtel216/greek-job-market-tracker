@@ -1,7 +1,7 @@
 -- How well deduplication agrees with the hand-labeled pairs in
 -- dedup_labels. A pair is merged when both postings got the same job_id,
 -- so pairs joined through a chain count too. Precision is the share of
--- merged pairs that really are one job; the design asks for at least 0.95.
+-- merged pairs that really are one job; the target is at least 0.95.
 -- Recall is the share of real duplicates that were merged.
 --
 -- Run it with: dbt show --select dedup_precision --output json

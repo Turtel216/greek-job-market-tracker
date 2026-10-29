@@ -73,8 +73,7 @@ models:
       The latest cleaned version of each posting, from its newest raw row.
       Text is normalized with normalize_text, the city and company key come
       from the alias seeds, work mode, seniority and role family from the
-      rule seeds, and the salary from parse_salary. See "Transformation
-      logic" in the design doc.
+      rule seeds, and the salary from parse_salary.
     columns:
       - name: posting_key
         description: Primary key. md5 of source and source_job_id.

@@ -10,7 +10,7 @@ import time
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 
-# Floor from the design doc. A registry value below this is raised to it.
+# The minimum delay per host. A registry value below this is raised to it.
 MIN_DELAY_SECONDS = 3.0
 MAX_JITTER_SECONDS = 1.0
 

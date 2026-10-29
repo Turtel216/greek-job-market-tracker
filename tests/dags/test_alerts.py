@@ -58,7 +58,7 @@ def emails(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     return sent
 
 
-def test_failure_message_has_what_the_design_asks_for() -> None:
+def test_failure_message_has_task_run_date_attempt_log_and_error() -> None:
     error = CommandFailed("jobtracker extract exited with 1\nline a\nline b")
     message = alerts.failure_message(make_context(error))
 

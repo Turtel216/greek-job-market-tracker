@@ -2,8 +2,8 @@
 # requires-python = ">=3.12"
 # dependencies = ["boto3==1.43.111"]
 # ///
-"""Storage spike for ADR-001: check that an S3-compatible server does what the
-pipeline needs, using plain boto3 with its default settings.
+"""Storage spike: check that an S3-compatible server does what the pipeline
+needs, using plain boto3 with its default settings.
 
 Covers put, get, list and delete, plus the S3 features the extract, load and
 maintenance steps rely on. Every object is written under a random spike/
@@ -126,7 +126,7 @@ def check_missing_key(s3, bucket, root):
 
 @check("list run folders with a delimiter")
 def check_list_delimiter(s3, bucket, root):
-    # Same layout as the design: raw/<source>/<run_date>/<run_id>/
+    # Same layout the pipeline uses: raw/<source>/<run_date>/<run_id>/
     day = f"{root}raw/greenhouse/2026-10-25/"
     for run_id in ("run-1", "run-2", "run-3"):
         s3.put_object(Bucket=bucket, Key=f"{day}{run_id}/listing/page-0001.json.gz", Body=b"x")

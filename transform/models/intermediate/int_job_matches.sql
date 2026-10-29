@@ -1,8 +1,8 @@
 -- The job each posting belongs to. Candidate pairs are joined into
 -- clusters, so if A pairs with B and B with C, all three are one job. The
 -- job_id is the posting_key of the member first seen, with posting_key
--- breaking ties, so a full refresh gives the same ids (ADR-004). A posting
--- with no pair is a job of its own. See "Deduplication" in the design doc.
+-- breaking ties, so a full refresh gives the same ids. A posting with no
+-- pair is a job of its own.
 
 with recursive
 

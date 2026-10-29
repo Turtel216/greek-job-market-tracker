@@ -1,4 +1,4 @@
-# SeaweedFS for the ADR-001 storage spike only, it is not part of the stack.
+# SeaweedFS for the storage spike only, it is not part of the stack.
 # Start with:
 #   docker compose --env-file .env -f infra/objectstore/spike/docker-compose.seaweedfs.yml up -d
 # It reuses the S3 key from .env so the spike script works unchanged.

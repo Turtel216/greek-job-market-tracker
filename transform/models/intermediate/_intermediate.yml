@@ -5,7 +5,7 @@ models:
       open. A posting closes once it is missing from missed_runs_to_close
       (2) successful runs of its source in a row; closed_date is the first
       of those runs. Only runs with a succeeded row in ops.ingest_runs
-      count, so a failed run never closes anything (ADR-003). A posting
+      count, so a failed run never closes anything. A posting
       that comes back after closing is open again.
     columns:
       - name: posting_key
@@ -118,7 +118,7 @@ models:
       The real-world job each posting belongs to, one row per posting.
       Postings joined by int_job_candidate_pairs, directly or through other
       postings, form one cluster. job_id is the posting_key of the member
-      with the earliest first_seen, ties broken by posting_key (ADR-004). A
+      with the earliest first_seen, ties broken by posting_key. A
       posting with no pair is its own cluster, so its job_id is its
       posting_key.
     columns:

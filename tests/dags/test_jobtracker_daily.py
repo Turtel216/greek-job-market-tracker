@@ -149,7 +149,7 @@ def test_dbt_starts_when_one_source_loaded(dagbag: DagBag) -> None:
         assert dag.get_task(task_id).trigger_rule == TriggerRule.ALL_SUCCESS
 
 
-def test_dbt_retries_follow_the_design(dagbag: DagBag) -> None:
+def test_only_the_dbt_snapshot_retries(dagbag: DagBag) -> None:
     dag = dagbag.dags["jobtracker_daily"]
     retries = {task_id: dag.get_task(task_id).retries for task_id in DBT_TASKS}
     assert retries == {
@@ -161,7 +161,7 @@ def test_dbt_retries_follow_the_design(dagbag: DagBag) -> None:
     }
 
 
-def test_retries_and_pool_follow_the_design(dagbag: DagBag) -> None:
+def test_extract_and_load_retries_and_pools(dagbag: DagBag) -> None:
     dag = dagbag.dags["jobtracker_daily"]
     extract = dag.get_task("greenhouse.extract")
     load = dag.get_task("greenhouse.load")

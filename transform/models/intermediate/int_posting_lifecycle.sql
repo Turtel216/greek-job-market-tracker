@@ -1,8 +1,7 @@
 -- When each posting was first and last seen, and whether it is still open.
 -- A posting closes once it is missing from missed_runs_to_close successful
--- runs of its source in a row. Failed runs do not count (ADR-003), so a
--- broken scraper never closes postings in bulk. See "Posting lifecycle" in
--- the design doc.
+-- runs of its source in a row. Failed runs do not count, so a broken
+-- scraper never closes postings in bulk.
 
 with
 

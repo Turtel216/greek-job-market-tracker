@@ -1,4 +1,4 @@
--- Turns salary text into a monthly range. See "Salary" in the design doc.
+-- Turns salary text into a monthly range.
 -- Use it in a lateral join on the column with the salary text, as in
 -- "left join lateral (parse_salary(...)) as salary on true" with the
 -- macro call in double curly braces.

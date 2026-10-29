@@ -1,4 +1,4 @@
-# dbt project for the warehouse. See "Transformation logic" in the design doc.
+# dbt project for the warehouse.
 name: jobtracker
 version: "0.1.0"
 profile: jobtracker
@@ -13,8 +13,8 @@ test-paths: ["tests"]
 clean-targets: ["target", "dbt_packages"]
 
 vars:
-  # Salary parsing, see parse_salary. Greek pay runs over 14 payments
-  # (ADR-006), so an annual amount is divided by 14 to get a month.
+  # Salary parsing, see parse_salary. Greek pay runs over 14 payments, so
+  # an annual amount is divided by 14 to get a month.
   salaries_per_year: 14
   # With no period keyword, an amount at least this big is annual
   salary_annual_threshold: 10000
@@ -22,7 +22,7 @@ vars:
   salary_monthly_min: 400
   salary_monthly_max: 20000
   # A posting closes once it is missing from this many successful runs of
-  # its source in a row (ADR-003)
+  # its source in a row
   missed_runs_to_close: 2
   # Sources with kind ats_api in config/sources.yml. Their postings are
   # preferred over job board ones when dim_jobs picks a job's primary posting.

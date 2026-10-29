@@ -6,7 +6,7 @@ replaced with a placeholder, so the text still reads naturally and dbt can
 tell that a posting had contact details.
 
 Raw payloads in the object store still hold this data until the 30 day
-retention removes them. See "Privacy" in the design doc.
+retention removes them.
 """
 
 import re

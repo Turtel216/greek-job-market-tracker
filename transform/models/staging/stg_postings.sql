@@ -1,7 +1,6 @@
 -- The latest cleaned version of each posting: normalized text, company
 -- and title keys for dedup, city, work mode, seniority, role family and
--- monthly salary. The rules are in "Transformation logic" in the design
--- doc and in the seeds.
+-- monthly salary. The rules are in the seeds and the macros it calls.
 
 {{ config(materialized='table') }}
 

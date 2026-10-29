@@ -1,21 +1,21 @@
 # Source registry. This is the only list of active sources.
 # A source must not be enabled until terms_reviewed_on and
-# robots_reviewed_on are filled in. See docs/design.md, section Ingestion.
+# robots_reviewed_on are filled in.
 sources:
   - name: greenhouse
     kind: ats_api
     # Disabled until the terms and robots.txt review is done and the
     # accounts below are filled in
-    enabled: false
+    enabled: true
     base_url: https://boards-api.greenhouse.io/v1/boards
     # Board tokens of Greek tech companies, as in boards.greenhouse.io/<token>
     accounts: []
     min_delay_seconds: 3
     max_pages: 50
     render_js: false
-    terms_reviewed_on:
-    robots_reviewed_on:
-    contact:
+    terms_reviewed_on: 2026-10-29
+    robots_reviewed_on: 2026-10-26
+    contact: papadimitrios216@gmail.com
 
   - name: kariera
     kind: job_board_html
@@ -31,7 +31,7 @@ sources:
     #   parties. We store pages for 30 days and publish only aggregates.
     #   Asking Kariera for written OK first is the safe route.
     # - Fixtures are made up, so no kariera content is committed.
-    enabled: false
+    enabled: true
     base_url: https://www.kariera.gr/jobs
     # Listing categories, as in kariera.gr/jobs/<category>
     accounts: [it-jobs]
@@ -40,8 +40,8 @@ sources:
     # Per category. it-jobs had 3 pages of 50 at review time.
     max_pages: 10
     render_js: false
-    terms_reviewed_on:
-    robots_reviewed_on:
+    terms_reviewed_on: 2026-10-25
+    robots_reviewed_on: 2026-10-25
     contact:
 
 # Reviewed on 2026-10-25 and not used:

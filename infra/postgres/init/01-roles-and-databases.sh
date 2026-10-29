@@ -9,7 +9,7 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" \
     -v bi_reader_password="$BI_READER_PASSWORD" \
     -v airflow_password="$AIRFLOW_DB_PASSWORD" \
     -v metabase_password="$METABASE_DB_PASSWORD" <<'SQL'
--- Warehouse roles, see "Least-privilege database roles" in the design doc
+-- Least-privilege warehouse roles
 create role loader login password :'loader_password';
 create role transformer login password :'transformer_password';
 create role bi_reader login password :'bi_reader_password';

@@ -1,5 +1,5 @@
 """Typed records that cross boundaries between adapters, the extract runner
-and the loader. See the Ingestion and Data model sections of the design doc.
+and the loader.
 """
 
 import hashlib

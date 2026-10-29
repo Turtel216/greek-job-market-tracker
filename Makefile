@@ -45,8 +45,8 @@ dashboards: ## Create or update the Metabase dashboards on a running stack
 lint: ## Run every pre-commit check on all files
 	$(PRE_COMMIT) run --all-files --show-diff-on-failure
 
-# The design asks for at least 85% coverage on core/ and sources/, so the
-# second step fails the target when those two folders fall below it.
+# core/ and sources/ must keep at least 85% coverage, so the second step
+# fails the target when those two folders fall below it.
 test: ## Run the Python tests with coverage
 	cd ingestion && $(UV) run pytest --cov
 	@echo "Coverage of core/ and sources/ (at least 85%):"

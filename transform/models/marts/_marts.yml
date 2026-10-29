@@ -1,6 +1,6 @@
 # The marts are a contract with the dashboard: their schemas are enforced,
 # so a renamed column or a changed type fails the build. Changing one means
-# updating the design doc and the dashboard too. Metabase reads only these.
+# updating the dashboard too. Metabase reads only these.
 
 models:
   - name: dim_skills

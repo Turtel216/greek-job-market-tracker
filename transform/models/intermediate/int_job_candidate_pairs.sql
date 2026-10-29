@@ -5,8 +5,7 @@
 -- has already dropped noise such as city names and "(m/f)" and mapped
 -- synonyms such as developer and engineer, so a word left over on either
 -- side names a different job, as in "backend engineer" and "backend
--- engineer payments". int_job_matches joins the pairs into jobs. See
--- "Deduplication" in the design doc.
+-- engineer payments". int_job_matches joins the pairs into jobs.
 
 with
 

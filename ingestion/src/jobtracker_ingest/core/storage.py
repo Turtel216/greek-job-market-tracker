@@ -1,7 +1,7 @@
 """Object store access for raw payloads.
 
 Code talks to storage only through the S3 API, so any S3-compatible server
-works. Keys follow the layout in the design doc:
+works. Keys follow this layout:
 
     raw/<source>/<run_date>/<run_id>/
       _manifest.json

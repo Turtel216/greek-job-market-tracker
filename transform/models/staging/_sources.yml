@@ -1,4 +1,4 @@
-# Tables written by the loader. See "Data model" in the design doc.
+# Tables written by the loader.
 
 sources:
   - name: raw
@@ -12,7 +12,7 @@ sources:
         config:
           loaded_at_field: scraped_at
           # Warn only at 26 hours so one late source does not block the
-          # others (ADR-003). The volume test guards the marts instead.
+          # others. The volume test guards the marts instead.
           freshness:
             warn_after: {count: 26, period: hour}
             error_after: {count: 50, period: hour}

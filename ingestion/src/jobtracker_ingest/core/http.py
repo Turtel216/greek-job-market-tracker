@@ -1,7 +1,6 @@
 """The shared HTTP client. Every request to a source goes through here.
 
-It enforces the politeness rules from the design doc, so adapters do not
-have to:
+It enforces these politeness rules, so adapters do not have to:
 
 - an identifying User-Agent
 - a per host delay with jitter, and one request per host at a time

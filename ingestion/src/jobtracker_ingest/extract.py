@@ -49,7 +49,7 @@ def fetch_everything(ref: ListingRef) -> bool:
 
 
 def detail_needed(known: Mapping[str, Fingerprint], now: datetime) -> NeedsDetail:
-    """The fetch strategy from the design doc, from what the loader stored.
+    """The detail fetch strategy, from what the loader stored.
 
     Fetch the detail when the posting is new, its listing fingerprint
     changed, or the stored detail is older than 14 days. Otherwise the

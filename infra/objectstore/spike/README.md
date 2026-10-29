@@ -1,4 +1,4 @@
-# Storage spike (ADR-001)
+# Storage spike
 
 Checks that an S3-compatible server does what the pipeline needs, using plain
 boto3 with its default settings. It was used to pick Garage over SeaweedFS and

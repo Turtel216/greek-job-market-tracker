@@ -1,6 +1,6 @@
 """Load one source's newest complete extract run for one run_date.
 
-Follows the load step in the design doc:
+It runs in five steps:
 
 1. Read the newest complete run for the source and date.
 2. Parse each payload and scrub personal data.

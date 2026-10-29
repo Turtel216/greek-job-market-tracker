@@ -94,8 +94,7 @@ storage through the S3 API, so moving it would be a configuration change.
 
 ## Design choices
 
-A few decisions shape most of the code. The reasoning behind each is in the
-[design document](docs/design.md) and the [ADRs](docs/adr/).
+A few decisions shape most of the code.
 
 **Scraping politely.** All HTTP goes through one shared client that sends
 an identifying User-Agent, waits at least 3 seconds between requests to a
@@ -239,7 +238,7 @@ extraction, and a public export of the aggregated data.
 | `infra/` | Airflow Dockerfile, Postgres init scripts, object store setup |
 | `scripts/` | Test helpers and the dedup sampling scripts |
 | `tests/` | DAG, Metabase and dedup sample tests |
-| `docs/` | Design document, operations guide and ADRs |
+| `docs/` | Operations guide |
 
 ## Further reading
 

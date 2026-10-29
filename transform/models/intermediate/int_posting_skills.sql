@@ -1,6 +1,6 @@
 -- Skills found in each posting, one row per posting and skill. Aliases
 -- from the skill_aliases seed are matched on the normalized title and
--- description. See "Skill extraction" in the design doc.
+-- description.
 
 with
 

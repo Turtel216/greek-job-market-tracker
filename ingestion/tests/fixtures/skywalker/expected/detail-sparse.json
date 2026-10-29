@@ -1,0 +1,19 @@
+{
+  "source": "skywalker",
+  "source_job_id": "01m7k0m1n2p3q4r5s6t7v8w9x0",
+  "run_date": "2026-10-29",
+  "scraped_at": "2026-10-29T04:00:05Z",
+  "url": "https://www.skywalker.gr/el/aggelia-ergasias/01m7k0m1n2p3q4r5s6t7v8w9x0/developer",
+  "title_raw": "Developer",
+  "company_raw": "Small Example Co",
+  "location_raw": null,
+  "workplace_raw": null,
+  "employment_type_raw": null,
+  "salary_raw": null,
+  "department_raw": null,
+  "description_raw": null,
+  "posted_at_raw": null,
+  "object_key": "raw/skywalker/2026-10-29/run/detail/01m7k0m1n2p3q4r5s6t7v8w9x0.xml.gz",
+  "parser_version": "1",
+  "content_hash": "0af46071c3a2b1c7fcc29d9c894e08db645bb94dc7dff1c627c37dd9c278ad4f"
+}

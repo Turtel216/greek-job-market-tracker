@@ -1,0 +1,19 @@
+{
+  "source": "skywalker",
+  "source_job_id": "01m7d4e5f6g7h8j9k0m1n2p3q4",
+  "run_date": "2026-10-29",
+  "scraped_at": "2026-10-29T04:00:05Z",
+  "url": "https://www.skywalker.gr/el/aggelia-ergasias/01m7d4e5f6g7h8j9k0m1n2p3q4/senior-frontend-engineer--react-",
+  "title_raw": "Senior Frontend Engineer (React)",
+  "company_raw": "Sample Labs",
+  "location_raw": "Νομός Θεσσαλονίκης, Δήμος Θεσσαλονίκης, Περιφέρεια Κεντρικής Μακεδονίας, Ελλάδα",
+  "workplace_raw": "remote",
+  "employment_type_raw": "Πλήρης απασχόληση",
+  "salary_raw": null,
+  "department_raw": "Web Developer, Προγραμματιστές, Πληροφορική",
+  "description_raw": "About us\nSample Labs builds tools for small shops. We are hiring a Senior Frontend Engineer with React and TypeScript to work fully remotely from...",
+  "posted_at_raw": "2026-10-28",
+  "object_key": "raw/skywalker/2026-10-29/run/detail/01m7d4e5f6g7h8j9k0m1n2p3q4.xml.gz",
+  "parser_version": "1",
+  "content_hash": "464119ff56303bb6ad73da6d7dfe6c3a8fac2ec935a77d1ffba8898c077523af"
+}

@@ -71,7 +71,13 @@ class ObjectExistsError(Exception):
 
 
 def extension_for(content_type: str) -> str:
-    return "json" if "json" in content_type.lower() else "html"
+    content_type = content_type.lower()
+    if "json" in content_type:
+        return "json"
+    # RSS and other XML feeds
+    if "xml" in content_type:
+        return "xml"
+    return "html"
 
 
 class RunWriter:

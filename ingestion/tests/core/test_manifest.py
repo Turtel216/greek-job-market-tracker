@@ -58,7 +58,13 @@ def payload(job_id: str, content_type: str = "application/json") -> RawPayload:
 
 @pytest.mark.parametrize(
     ("content_type", "ext"),
-    [("application/json; charset=utf-8", "json"), ("text/html", "html"), ("", "html")],
+    [
+        ("application/json; charset=utf-8", "json"),
+        ("text/xml; charset=UTF-8", "xml"),
+        ("application/rss+xml", "xml"),
+        ("text/html", "html"),
+        ("", "html"),
+    ],
 )
 def test_extension_for(content_type: str, ext: str) -> None:
     assert extension_for(content_type) == ext

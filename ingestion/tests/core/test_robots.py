@@ -86,6 +86,48 @@ def test_a_longer_disallow_beats_an_earlier_allow(path: str, allowed: bool) -> N
     assert rules.can_fetch(f"https://www.kariera.gr{path}") is allowed
 
 
+# skywalker.gr's file as of the onboarding review, trimmed. Cloudflare
+# writes the first * group, the site the second, and both apply to us.
+TWO_WILDCARD_GROUPS = """
+User-agent: *
+Content-Signal: search=yes,ai-train=no,use=reference
+Allow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: ClaudeBot
+Crawl-delay: 10
+
+User-agent: *
+
+Disallow: /manage/
+Disallow: /el/candidate/login/
+Disallow: /*/apply
+Disallow: /*/apply/
+Disallow: /*/contact
+
+Sitemap: https://www.skywalker.gr/sitemaps/index/sitemap-index.xml
+"""
+
+
+@pytest.mark.parametrize(
+    ("path", "allowed"),
+    [
+        ("/el/xml/aggelies-ergasias?category=01hdtm1ff0g1rdef228eftwthm&page=2", True),
+        ("/el/aggelia-ergasias/01m643q23gtpdhvepwrp7whfnw/qa-engineer", True),
+        ("/el/aggelia-ergasias/01m643q23gtpdhvepwrp7whfnw/qa-engineer/apply", False),
+        ("/el/profile/etairias/01hdtme45hv95vhm7k1kdw59gr/example/contact", False),
+        ("/el/candidate/login/", False),
+        ("/manage/", False),
+    ],
+)
+def test_both_wildcard_groups_apply(path: str, allowed: bool) -> None:
+    rules = RobotsRules.from_response(200, TWO_WILDCARD_GROUPS)
+    assert rules.can_fetch(f"https://www.skywalker.gr{path}") is allowed
+    assert rules.crawl_delay is None
+
+
 def test_a_longer_allow_beats_a_disallow() -> None:
     rules = RobotsRules.from_response(200, "User-agent: *\nDisallow: /jobs\nAllow: /jobs/it\n")
     assert rules.can_fetch("https://example.org/jobs/it-jobs")

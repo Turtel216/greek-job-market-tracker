@@ -127,3 +127,13 @@ structure of real pages with made up companies and texts, because the
 site's terms do not allow passing its content on. The source is disabled
 until its terms review is signed off; see the notes in
 `config/sources.yml`.
+
+`sources/skywalker.py` reads the skywalker.gr job board from its RSS feed,
+one registry account per search category id. Posting pages answer with a
+Cloudflare challenge, which we never try to pass, so the feed item is the
+whole payload: `fetch_detail` hands out the item kept from the listing
+page and makes no request. The feed cuts descriptions at about 150
+characters and has no salary, so skills come from the title and that short
+text only. Locations are written prefecture first, because municipality
+names such as Dimos Irakleiou (a suburb of Athens) would otherwise match
+the wrong city alias. Its fixtures are made up, like kariera's.

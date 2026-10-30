@@ -220,7 +220,8 @@ unit_tests:
     description: >
       The location is tried before the title. The first place in the text
       wins, and of places that start at the same spot the longest. No
-      match gives Unknown.
+      match gives Unknown. j to l are skywalker locations, which put the
+      prefecture before the municipalities.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -234,6 +235,9 @@ unit_tests:
           - {posting_key: g, location_text: "Remote - Greece", title: "Backend Engineer (Thessaloniki)"}
           - {posting_key: h, location_text: "Πάτρα", title: "Data Analyst, Athens office"}
           - {posting_key: i, location_text: null, title: "Software Engineer"}
+          - {posting_key: j, location_text: "Νομός Αττικής, Βόρειος Τομέας Αθηνών, Δήμος Ηρακλείου, Δήμος Κηφισιάς, Περιφέρεια Αττικής, Ελλάδα"}
+          - {posting_key: k, location_text: "Νομός Ιωαννίνων, Περιφέρεια Ηπείρου, Ελλάδα"}
+          - {posting_key: l, location_text: "Ελλάδα, Κύπρος, Ευρώπη, Εξωτερικό"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -253,12 +257,16 @@ unit_tests:
         - {posting_key: g, city: Thessaloniki, region: Central Macedonia}
         - {posting_key: h, city: Patras, region: Western Greece}
         - {posting_key: i, city: Unknown, region: Unknown}
+        - {posting_key: j, city: Athens, region: Attica}
+        - {posting_key: k, city: Ioannina, region: Epirus}
+        - {posting_key: l, city: Unknown, region: Unknown}
 
   - name: stg_postings_work_mode
     description: >
       The workplace field is tried first, then location, title and
       description; the first field with a match decides and the highest
-      priority wins within it. Covers the kariera and Greenhouse values.
+      priority wins within it. Covers the kariera, Greenhouse and skywalker
+      values.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -276,6 +284,9 @@ unit_tests:
           - {posting_key: k, description: "We welcome disabled applicants."}
           - {posting_key: l, title: "Java Developer"}
           - {posting_key: m, workplace_text: TEMPORARILY_REMOTE}
+          - {posting_key: n, workplace_text: on-site, description: "Remote work one day a week."}
+          - {posting_key: o, workplace_text: hybrid}
+          - {posting_key: p, workplace_text: remote}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -299,6 +310,9 @@ unit_tests:
         - {posting_key: k, work_mode: unknown}
         - {posting_key: l, work_mode: unknown}
         - {posting_key: m, work_mode: remote}
+        - {posting_key: n, work_mode: onsite}
+        - {posting_key: o, work_mode: hybrid}
+        - {posting_key: p, work_mode: remote}
 
   - name: stg_postings_seniority
     description: Seniority comes from the title only, and a title with no signal is unknown, not mid.

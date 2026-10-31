@@ -250,6 +250,10 @@ unit_tests:
           - {posting_key: s, location_text: "Λάρνακα, Λευκωσία, Κύπρος"}
           - {posting_key: t, location_text: "Λεμεσός, Κύπρος"}
           - {posting_key: u, location_text: "Μάλτα, Ευρώπη, Εξωτερικό"}
+          # Paros must not match inside Antiparos
+          - {posting_key: v, location_text: "Νομός Κυκλάδων, Δήμος Αντιπάρου, Περιφέρεια Νοτίου Αιγαίου, Ελλάδα"}
+          - {posting_key: w, location_text: "Νομός Κυκλάδων, Δήμος Πάρου, Περιφέρεια Νοτίου Αιγαίου, Ελλάδα"}
+          - {posting_key: x, location_text: "Νομός Κυκλάδων, Δήμος Θήρας, Περιφέρεια Νοτίου Αιγαίου, Ελλάδα"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -281,6 +285,9 @@ unit_tests:
         - {posting_key: s, city: Larnaca, region: Cyprus}
         - {posting_key: t, city: Limassol, region: Cyprus}
         - {posting_key: u, city: Malta, region: Malta}
+        - {posting_key: v, city: Antiparos, region: South Aegean}
+        - {posting_key: w, city: Paros, region: South Aegean}
+        - {posting_key: x, city: Santorini, region: South Aegean}
 
   - name: stg_postings_work_mode
     description: >

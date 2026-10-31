@@ -122,6 +122,21 @@ veroia,Veria,Central Macedonia
 σκυδρα,Skydra,Central Macedonia
 σκυδρασ,Skydra,Central Macedonia
 skydra,Skydra,Central Macedonia
+εδεσσα,Edessa,Central Macedonia
+εδεσσασ,Edessa,Central Macedonia
+edessa,Edessa,Central Macedonia
+γιαννιτσα,Giannitsa,Central Macedonia
+γιαννιτσων,Giannitsa,Central Macedonia
+giannitsa,Giannitsa,Central Macedonia
+κιλκισ,Kilkis,Central Macedonia
+kilkis,Kilkis,Central Macedonia
+χαλκιδικη,Chalkidiki,Central Macedonia
+χαλκιδικησ,Chalkidiki,Central Macedonia
+chalkidiki,Chalkidiki,Central Macedonia
+halkidiki,Chalkidiki,Central Macedonia
+πολυγυροσ,Chalkidiki,Central Macedonia
+πολυγυρου,Chalkidiki,Central Macedonia
+polygyros,Chalkidiki,Central Macedonia
 πατρα,Patras,Western Greece
 πατρασ,Patras,Western Greece
 patra,Patras,Western Greece
@@ -129,6 +144,16 @@ patras,Patras,Western Greece
 αγρινιο,Agrinio,Western Greece
 αγρινιου,Agrinio,Western Greece
 agrinio,Agrinio,Western Greece
+πυργοσ,Pyrgos,Western Greece
+πυργου,Pyrgos,Western Greece
+pyrgos,Pyrgos,Western Greece
+μεσολογγι,Messolonghi,Western Greece
+μεσολογγιου,Messolonghi,Western Greece
+mesolongi,Messolonghi,Western Greece
+missolonghi,Messolonghi,Western Greece
+αιγιο,Aigio,Western Greece
+αιγιου,Aigio,Western Greece
+aigio,Aigio,Western Greece
 ηρακλειο,Heraklion,Crete
 ηρακλειου,Heraklion,Crete
 heraklion,Heraklion,Crete
@@ -142,6 +167,13 @@ nea alikarnassos,Heraklion,Crete
 αγιοσ νικολαοσ κρητησ,Agios Nikolaos,Crete
 αγιοσ νικολαοσ λασιθιου,Agios Nikolaos,Crete
 agios nikolaos crete,Agios Nikolaos,Crete
+ιεραπετρα,Ierapetra,Crete
+ιεραπετρασ,Ierapetra,Crete
+ierapetra,Ierapetra,Crete
+χερσονησοσ,Heraklion,Crete
+χερσονησου,Heraklion,Crete
+hersonissos,Heraklion,Crete
+chersonissos,Heraklion,Crete
 χανια,Chania,Crete
 χανιων,Chania,Crete
 chania,Chania,Crete
@@ -171,6 +203,15 @@ skiathos,Skiathos,Thessaly
 ιωαννινων,Ioannina,Epirus
 γιαννενα,Ioannina,Epirus
 ioannina,Ioannina,Epirus
+αρτα,Arta,Epirus
+αρτασ,Arta,Epirus
+arta,Arta,Epirus
+πρεβεζα,Preveza,Epirus
+πρεβεζασ,Preveza,Epirus
+preveza,Preveza,Epirus
+ηγουμενιτσα,Igoumenitsa,Epirus
+ηγουμενιτσασ,Igoumenitsa,Epirus
+igoumenitsa,Igoumenitsa,Epirus
 καβαλα,Kavala,Eastern Macedonia and Thrace
 καβαλασ,Kavala,Eastern Macedonia and Thrace
 kavala,Kavala,Eastern Macedonia and Thrace
@@ -186,9 +227,24 @@ alexandroupoli,Alexandroupoli,Eastern Macedonia and Thrace
 alexandroupolis,Alexandroupoli,Eastern Macedonia and Thrace
 δραμα,Drama,Eastern Macedonia and Thrace
 δραμασ,Drama,Eastern Macedonia and Thrace
+ορεστιαδα,Orestiada,Eastern Macedonia and Thrace
+ορεστιαδασ,Orestiada,Eastern Macedonia and Thrace
+orestiada,Orestiada,Eastern Macedonia and Thrace
 κοζανη,Kozani,Western Macedonia
 κοζανησ,Kozani,Western Macedonia
 kozani,Kozani,Western Macedonia
+φλωρινα,Florina,Western Macedonia
+φλωρινασ,Florina,Western Macedonia
+florina,Florina,Western Macedonia
+καστορια,Kastoria,Western Macedonia
+καστοριασ,Kastoria,Western Macedonia
+kastoria,Kastoria,Western Macedonia
+πτολεμαιδα,Ptolemaida,Western Macedonia
+πτολεμαιδασ,Ptolemaida,Western Macedonia
+ptolemaida,Ptolemaida,Western Macedonia
+γρεβενα,Grevena,Western Macedonia
+γρεβενων,Grevena,Western Macedonia
+grevena,Grevena,Western Macedonia
 λαμια,Lamia,Central Greece
 λαμιασ,Lamia,Central Greece
 lamia,Lamia,Central Greece
@@ -196,6 +252,20 @@ lamia,Lamia,Central Greece
 χαλκιδασ,Chalkida,Central Greece
 chalkida,Chalkida,Central Greece
 halkida,Chalkida,Central Greece
+λιβαδεια,Livadeia,Central Greece
+λιβαδειασ,Livadeia,Central Greece
+livadeia,Livadeia,Central Greece
+livadia,Livadeia,Central Greece
+θηβα,Thiva,Central Greece
+θηβων,Thiva,Central Greece
+thiva,Thiva,Central Greece
+thebes,Thiva,Central Greece
+αμφισσα,Amfissa,Central Greece
+αμφισσασ,Amfissa,Central Greece
+amfissa,Amfissa,Central Greece
+καρπενησι,Karpenisi,Central Greece
+καρπενησιου,Karpenisi,Central Greece
+karpenisi,Karpenisi,Central Greece
 καλαματα,Kalamata,Peloponnese
 καλαματασ,Kalamata,Peloponnese
 kalamata,Kalamata,Peloponnese
@@ -209,10 +279,32 @@ korinthos,Corinth,Peloponnese
 ναυπλιο,Nafplio,Peloponnese
 ναυπλιου,Nafplio,Peloponnese
 nafplio,Nafplio,Peloponnese
+σπαρτη,Sparti,Peloponnese
+σπαρτησ,Sparti,Peloponnese
+sparti,Sparti,Peloponnese
+sparta,Sparti,Peloponnese
+αργοσ,Argos,Peloponnese
+αργουσ,Argos,Peloponnese
 κερκυρα,Corfu,Ionian Islands
 κερκυρασ,Corfu,Ionian Islands
 corfu,Corfu,Ionian Islands
 kerkyra,Corfu,Ionian Islands
+ζακυνθοσ,Zakynthos,Ionian Islands
+ζακυνθου,Zakynthos,Ionian Islands
+zakynthos,Zakynthos,Ionian Islands
+zante,Zakynthos,Ionian Islands
+κεφαλονια,Kefalonia,Ionian Islands
+κεφαλονιασ,Kefalonia,Ionian Islands
+κεφαλληνια,Kefalonia,Ionian Islands
+κεφαλληνιασ,Kefalonia,Ionian Islands
+kefalonia,Kefalonia,Ionian Islands
+cephalonia,Kefalonia,Ionian Islands
+αργοστολι,Kefalonia,Ionian Islands
+αργοστολιου,Kefalonia,Ionian Islands
+argostoli,Kefalonia,Ionian Islands
+λευκαδα,Lefkada,Ionian Islands
+λευκαδασ,Lefkada,Ionian Islands
+lefkada,Lefkada,Ionian Islands
 ροδοσ,Rhodes,South Aegean
 ροδου,Rhodes,South Aegean
 rhodes,Rhodes,South Aegean
@@ -226,10 +318,35 @@ mykonos,Mykonos,South Aegean
 αντιπαροσ,Antiparos,South Aegean
 αντιπαρου,Antiparos,South Aegean
 antiparos,Antiparos,South Aegean
+σαντορινη,Santorini,South Aegean
+σαντορινησ,Santorini,South Aegean
+santorini,Santorini,South Aegean
+θηρα,Santorini,South Aegean
+θηρασ,Santorini,South Aegean
+thira,Santorini,South Aegean
+ναξοσ,Naxos,South Aegean
+ναξου,Naxos,South Aegean
+naxos,Naxos,South Aegean
+παροσ,Paros,South Aegean
+παρου,Paros,South Aegean
+paros,Paros,South Aegean
+συροσ,Syros,South Aegean
+συρου,Syros,South Aegean
+syros,Syros,South Aegean
+ερμουπολη,Syros,South Aegean
+ερμουπολησ,Syros,South Aegean
+ermoupoli,Syros,South Aegean
 μυτιληνη,Mytilene,North Aegean
 μυτιληνησ,Mytilene,North Aegean
 mytilene,Mytilene,North Aegean
 mytilini,Mytilene,North Aegean
+λεσβοσ,Mytilene,North Aegean
+λεσβου,Mytilene,North Aegean
+lesvos,Mytilene,North Aegean
+lesbos,Mytilene,North Aegean
+σαμοσ,Samos,North Aegean
+σαμου,Samos,North Aegean
+samos,Samos,North Aegean
 χιοσ,Chios,North Aegean
 χιου,Chios,North Aegean
 chios,Chios,North Aegean

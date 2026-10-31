@@ -412,6 +412,21 @@ unit_tests:
           - {posting_key: x, title: "Τεχνικός Δικτύων & Τεχνητής Νοημοσύνης"}
           # A plain sysadmin stays devops
           - {posting_key: y, title: "Systems Administrator"}
+          - {posting_key: z, title: "IT Support Specialist / IT Technician"}
+          - {posting_key: aa, title: "SERVICE DESK ENGINEER"}
+          - {posting_key: ab, title: "APHI AURA | Hotel IT Administrator"}
+          - {posting_key: ac, title: "ΤΕΧΝΙΚΟΣ Η/Υ & ΚΙΝΗΤΩΝ"}
+          # Antivirus help desk jobs are support, not security
+          - {posting_key: ad, title: "German-Speaking Cybersecurity Customer Experts"}
+          - {posting_key: ae, title: "IT Mid-Senior SAP SD/Logistics Consultant"}
+          - {posting_key: af, title: "ERP Consultant (PYLON) 1st Level"}
+          # Written with a Greek iota and tau
+          - {posting_key: ag, title: "ΙΤ Support & Operations Coordinator"}
+          # Sales support is not tech, so it stays other
+          - {posting_key: ah, title: "Sales Support"}
+          - {posting_key: ai, title: "TECHNICAL SALES / Τεχνική Υποστήριξη Πωλήσεων"}
+          # A stack keyword beats it_support
+          - {posting_key: aj, title: "IT Support Engineer (Python)"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -447,6 +462,17 @@ unit_tests:
         - {posting_key: w, role_family: security}
         - {posting_key: x, role_family: network}
         - {posting_key: y, role_family: devops}
+        - {posting_key: z, role_family: it_support}
+        - {posting_key: aa, role_family: it_support}
+        - {posting_key: ab, role_family: it_support}
+        - {posting_key: ac, role_family: it_support}
+        - {posting_key: ad, role_family: it_support}
+        - {posting_key: ae, role_family: it_support}
+        - {posting_key: af, role_family: it_support}
+        - {posting_key: ag, role_family: it_support}
+        - {posting_key: ah, role_family: other}
+        - {posting_key: ai, role_family: other}
+        - {posting_key: aj, role_family: backend}
 
   - name: stg_postings_salary
     description: >

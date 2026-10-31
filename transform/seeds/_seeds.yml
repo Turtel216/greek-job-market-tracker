@@ -281,7 +281,7 @@ seeds:
           - not_null
           - accepted_values:
               arguments:
-                values: [data, backend, frontend, fullstack, mobile, devops, qa, security, network]
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, security, network, it_support]
       - name: priority
         description: Higher wins. Rules that share a priority give the same value, so ties cannot change the result.
         data_tests:

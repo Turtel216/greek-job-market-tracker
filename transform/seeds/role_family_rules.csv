@@ -22,6 +22,21 @@ computer vision,data,100
 μηχανικ[α-ω]* δεδομενων,data,100
 αναλυτ[α-ω]* δεδομενων,data,100
 επιστημον[α-ω]* δεδομενων,data,100
+cyber ?security,security,90
+(it|information|application|network|cloud|ot|email|offensive|product|data) security,security,90
+security (engineer(ing|s)?|analysts?|architects?|consultants?|specialists?|administrators?|officers?|operations),security,90
+infosec,security,90
+soc analysts?,security,90
+forensics?,security,90
+penetration test(er|ers|ing)?,security,90
+pentest(er|ers|ing)?,security,90
+red team(ers?)?,security,90
+vulnerability,security,90
+grc,security,90
+iso ?27001,security,90
+information protection,security,90
+κυβερνοασφαλει[α-ω]*,security,90
+ασφαλει[α-ω]* πληροφορι[α-ω]*,security,90
 devops,devops,80
 devsecops,devops,80
 sre,devops,80

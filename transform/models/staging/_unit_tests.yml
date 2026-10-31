@@ -396,6 +396,15 @@ unit_tests:
           - {posting_key: k, title: "Senior Engineer (Android)", department: "Data Platform"}
           - {posting_key: l, title: "Software Engineer", department: "IT"}
           - {posting_key: m, title: "Product Manager"}
+          - {posting_key: n, title: "Senior Cyber Security Engineer"}
+          - {posting_key: o, title: "Application Security Engineer"}
+          # Security beats cloud, which is a devops rule
+          - {posting_key: p, title: "Cloud Security Engineer"}
+          - {posting_key: q, title: "Senior Digital Forensic Analyst"}
+          - {posting_key: r, title: "Εσωτερικός/ή Επιθεωρητής/τρια για τα πρότυπα ISO27001, ISO27701"}
+          # Penetration testers are security, not qa
+          - {posting_key: s, title: "Penetration Tester"}
+          - {posting_key: t, title: "DevSecOps Engineer"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -419,6 +428,13 @@ unit_tests:
         - {posting_key: k, role_family: mobile}
         - {posting_key: l, role_family: other}
         - {posting_key: m, role_family: other}
+        - {posting_key: n, role_family: security}
+        - {posting_key: o, role_family: security}
+        - {posting_key: p, role_family: security}
+        - {posting_key: q, role_family: security}
+        - {posting_key: r, role_family: security}
+        - {posting_key: s, role_family: security}
+        - {posting_key: t, role_family: devops}
 
   - name: stg_postings_salary
     description: >

@@ -136,7 +136,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, software, network, security, it_support, other]
       - name: salary_min_monthly
         description: >
           Lower monthly amount. Null when no salary is given, the period is

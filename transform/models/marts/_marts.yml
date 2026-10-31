@@ -64,7 +64,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, software, network, security, it_support, other]
       - name: seniority
         description: Seniority of the primary posting. unknown when its title gives no signal.
         data_type: text
@@ -231,7 +231,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, software, network, security, it_support, other]
       - name: city
         description: City of the jobs, Remote for fully remote jobs, or Unknown.
         data_type: text
@@ -301,7 +301,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: [data, backend, frontend, fullstack, mobile, devops, qa, other]
+                values: [data, backend, frontend, fullstack, mobile, devops, qa, software, network, security, it_support, other]
       - name: jobs_with_skill
         description: Jobs open in the month that ask for the skill.
         data_type: integer

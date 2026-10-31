@@ -47,6 +47,11 @@ infrastructure,devops,80
 sys ?admins?,devops,80
 systems? administrators?,devops,80
 διαχειριστ[α-ω]* συστηματων,devops,80
+network (engineer(ing|s)?|administrators?|admins?|architects?|specialists?|technicians?|operations),network,70
+networking,network,70
+noc (engineers?|technicians?|operators?),network,70
+ccn[ap],network,70
+(τεχνικ|μηχανικ|διαχειριστ)[α-ω]* δικτυ[α-ω]*,network,70
 qa,qa,60
 quality assurance,qa,60
 test(er|ers|ing)?,qa,60

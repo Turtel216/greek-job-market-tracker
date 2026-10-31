@@ -405,6 +405,13 @@ unit_tests:
           # Penetration testers are security, not qa
           - {posting_key: s, title: "Penetration Tester"}
           - {posting_key: t, title: "DevSecOps Engineer"}
+          - {posting_key: u, title: "Network Engineer, Mid-Senior Level"}
+          - {posting_key: v, title: "System & Network Administrator"}
+          # Security beats network
+          - {posting_key: w, title: "Network Security Engineer"}
+          - {posting_key: x, title: "Τεχνικός Δικτύων & Τεχνητής Νοημοσύνης"}
+          # A plain sysadmin stays devops
+          - {posting_key: y, title: "Systems Administrator"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -435,6 +442,11 @@ unit_tests:
         - {posting_key: r, role_family: security}
         - {posting_key: s, role_family: security}
         - {posting_key: t, role_family: devops}
+        - {posting_key: u, role_family: network}
+        - {posting_key: v, role_family: network}
+        - {posting_key: w, role_family: security}
+        - {posting_key: x, role_family: network}
+        - {posting_key: y, role_family: devops}
 
   - name: stg_postings_salary
     description: >

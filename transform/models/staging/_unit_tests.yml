@@ -247,6 +247,9 @@ unit_tests:
           # Athens has an Agios Nikolaos too, so only the Cretan forms are aliases
           - {posting_key: q, location_text: "Άγιος Νικόλαος, Αττική, Ελλάδα"}
           - {posting_key: r, location_text: "Νομός Πιερίας, Περιφέρεια Κεντρικής Μακεδονίας, Ελλάδα"}
+          - {posting_key: s, location_text: "Λάρνακα, Λευκωσία, Κύπρος"}
+          - {posting_key: t, location_text: "Λεμεσός, Κύπρος"}
+          - {posting_key: u, location_text: "Μάλτα, Ευρώπη, Εξωτερικό"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -275,6 +278,9 @@ unit_tests:
         - {posting_key: p, city: Agios Nikolaos, region: Crete}
         - {posting_key: q, city: Athens, region: Attica}
         - {posting_key: r, city: Katerini, region: Central Macedonia}
+        - {posting_key: s, city: Larnaca, region: Cyprus}
+        - {posting_key: t, city: Limassol, region: Cyprus}
+        - {posting_key: u, city: Malta, region: Malta}
 
   - name: stg_postings_work_mode
     description: >

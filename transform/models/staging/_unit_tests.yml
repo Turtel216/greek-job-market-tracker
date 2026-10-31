@@ -238,6 +238,15 @@ unit_tests:
           - {posting_key: j, location_text: "Νομός Αττικής, Βόρειος Τομέας Αθηνών, Δήμος Ηρακλείου, Δήμος Κηφισιάς, Περιφέρεια Αττικής, Ελλάδα"}
           - {posting_key: k, location_text: "Νομός Ιωαννίνων, Περιφέρεια Ηπείρου, Ελλάδα"}
           - {posting_key: l, location_text: "Ελλάδα, Κύπρος, Ευρώπη, Εξωτερικό"}
+          # kariera writes the town, then the region
+          - {posting_key: m, location_text: "Ευκαρπία, Κεντρική Μακεδονία, Ελλάδα"}
+          # skywalker writes the prefecture, then the municipality in the genitive
+          - {posting_key: n, location_text: "Νομός Κυκλάδων, Δήμος Μυκόνου, Περιφέρεια Νοτίου Αιγαίου, Ελλάδα"}
+          - {posting_key: o, location_text: "Νομός Δωδεκανήσου, Δήμος Κω, Περιφέρεια Νοτίου Αιγαίου, Ελλάδα"}
+          - {posting_key: p, location_text: "Νομός Λασιθίου, Δήμος Αγίου Νικολάου, Περιφέρεια Κρήτης, Ελλάδα"}
+          # Athens has an Agios Nikolaos too, so only the Cretan forms are aliases
+          - {posting_key: q, location_text: "Άγιος Νικόλαος, Αττική, Ελλάδα"}
+          - {posting_key: r, location_text: "Νομός Πιερίας, Περιφέρεια Κεντρικής Μακεδονίας, Ελλάδα"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -260,6 +269,12 @@ unit_tests:
         - {posting_key: j, city: Athens, region: Attica}
         - {posting_key: k, city: Ioannina, region: Epirus}
         - {posting_key: l, city: Unknown, region: Unknown}
+        - {posting_key: m, city: Thessaloniki, region: Central Macedonia}
+        - {posting_key: n, city: Mykonos, region: South Aegean}
+        - {posting_key: o, city: Kos, region: South Aegean}
+        - {posting_key: p, city: Agios Nikolaos, region: Crete}
+        - {posting_key: q, city: Athens, region: Attica}
+        - {posting_key: r, city: Katerini, region: Central Macedonia}
 
   - name: stg_postings_work_mode
     description: >

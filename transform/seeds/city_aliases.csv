@@ -103,16 +103,25 @@ stavroupoli,Thessaloniki,Central Macedonia
 sindos,Thessaloniki,Central Macedonia
 ωραιοκαστρο,Thessaloniki,Central Macedonia
 oraiokastro,Thessaloniki,Central Macedonia
+ευκαρπια,Thessaloniki,Central Macedonia
+ευκαρπιασ,Thessaloniki,Central Macedonia
+efkarpia,Thessaloniki,Central Macedonia
 σερρεσ,Serres,Central Macedonia
 σερρων,Serres,Central Macedonia
 serres,Serres,Central Macedonia
 κατερινη,Katerini,Central Macedonia
 κατερινησ,Katerini,Central Macedonia
 katerini,Katerini,Central Macedonia
+πιερια,Katerini,Central Macedonia
+πιεριασ,Katerini,Central Macedonia
+pieria,Katerini,Central Macedonia
 βεροια,Veria,Central Macedonia
 βεροιασ,Veria,Central Macedonia
 veria,Veria,Central Macedonia
 veroia,Veria,Central Macedonia
+σκυδρα,Skydra,Central Macedonia
+σκυδρασ,Skydra,Central Macedonia
+skydra,Skydra,Central Macedonia
 πατρα,Patras,Western Greece
 πατρασ,Patras,Western Greece
 patra,Patras,Western Greece
@@ -125,6 +134,14 @@ agrinio,Agrinio,Western Greece
 heraklion,Heraklion,Crete
 iraklio,Heraklion,Crete
 iraklion,Heraklion,Crete
+νεα αλικαρνασσοσ,Heraklion,Crete
+νεασ αλικαρνασσου,Heraklion,Crete
+nea alikarnassos,Heraklion,Crete
+αγιου νικολαου,Agios Nikolaos,Crete
+αγιοσ νικολαοσ κρητη,Agios Nikolaos,Crete
+αγιοσ νικολαοσ κρητησ,Agios Nikolaos,Crete
+αγιοσ νικολαοσ λασιθιου,Agios Nikolaos,Crete
+agios nikolaos crete,Agios Nikolaos,Crete
 χανια,Chania,Crete
 χανιων,Chania,Crete
 chania,Chania,Crete
@@ -147,6 +164,9 @@ trikala,Trikala,Thessaly
 καρδιτσα,Karditsa,Thessaly
 καρδιτσασ,Karditsa,Thessaly
 karditsa,Karditsa,Thessaly
+σκιαθοσ,Skiathos,Thessaly
+σκιαθου,Skiathos,Thessaly
+skiathos,Skiathos,Thessaly
 ιωαννινα,Ioannina,Epirus
 ιωαννινων,Ioannina,Epirus
 γιαννενα,Ioannina,Epirus
@@ -197,6 +217,15 @@ kerkyra,Corfu,Ionian Islands
 ροδου,Rhodes,South Aegean
 rhodes,Rhodes,South Aegean
 rodos,Rhodes,South Aegean
+κωσ,Kos,South Aegean
+κω,Kos,South Aegean
+kos,Kos,South Aegean
+μυκονοσ,Mykonos,South Aegean
+μυκονου,Mykonos,South Aegean
+mykonos,Mykonos,South Aegean
+αντιπαροσ,Antiparos,South Aegean
+αντιπαρου,Antiparos,South Aegean
+antiparos,Antiparos,South Aegean
 μυτιληνη,Mytilene,North Aegean
 μυτιληνησ,Mytilene,North Aegean
 mytilene,Mytilene,North Aegean

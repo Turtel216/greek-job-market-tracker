@@ -1,0 +1,19 @@
+{
+  "source": "skywalker",
+  "source_job_id": "01m7g7h8j9k0m1n2p3q4r5s6t7",
+  "run_date": "2026-10-29",
+  "scraped_at": "2026-10-29T04:00:05Z",
+  "url": "https://www.skywalker.gr/el/aggelia-ergasias/01m7g7h8j9k0m1n2p3q4r5s6t7/it-helpdesk-technician",
+  "title_raw": "IT Helpdesk Technician",
+  "company_raw": "Mock Retail A.E.",
+  "location_raw": "Νομός Αττικής, Βόρειος Τομέας Αθηνών, Δήμος Ηρακλείου, Δήμος Κηφισιάς, Δήμος Χαλανδρίου, Περιφέρεια Αττικής, Ελλάδα",
+  "workplace_raw": "on-site",
+  "employment_type_raw": "Πλήρης απασχόληση",
+  "salary_raw": null,
+  "department_raw": "Τεχνικός Υποστήριξης, Τεχνικοί Η/Υ, Πληροφορική",
+  "description_raw": "We need an IT Helpdesk Technician to support our offices in the northern suburbs. Windows, Active Directory and Microsoft 365 are...",
+  "posted_at_raw": "2026-10-22",
+  "object_key": "raw/skywalker/2026-10-29/run/detail/01m7g7h8j9k0m1n2p3q4r5s6t7.xml.gz",
+  "parser_version": "1",
+  "content_hash": "d39dc3546cac3013dac6a9abb0af27810fbfd8afe752dc4cf68b86bc47d52a5f"
+}

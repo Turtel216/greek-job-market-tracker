@@ -1,0 +1,19 @@
+{
+  "source": "skywalker",
+  "source_job_id": "01m7e5f6g7h8j9k0m1n2p3q4r5",
+  "run_date": "2026-10-29",
+  "scraped_at": "2026-10-29T04:00:05Z",
+  "url": "https://www.skywalker.gr/el/aggelia-ergasias/01m7e5f6g7h8j9k0m1n2p3q4r5/qa-automation-engineer--java-",
+  "title_raw": "QA Automation Engineer (Java)",
+  "company_raw": "Placeholder Trading Ltd",
+  "location_raw": "Ελλάδα, Κύπρος, Ευρώπη, Εξωτερικό",
+  "workplace_raw": "hybrid",
+  "employment_type_raw": "Πλήρης απασχόληση",
+  "salary_raw": null,
+  "department_raw": "Μηχανικοί Τηλεπικοινωνιών, Πληροφορική",
+  "description_raw": "The Role\nOur team is expanding and we are hiring QA Automation Engineers (Java) with Selenium experience to join our fast-growing team. You...",
+  "posted_at_raw": "2026-10-29",
+  "object_key": "raw/skywalker/2026-10-29/run/detail/01m7e5f6g7h8j9k0m1n2p3q4r5.xml.gz",
+  "parser_version": "1",
+  "content_hash": "5c8769878ff912f1b80c714a0cbf8b95c57b8dee72832f5fb5452786deb85ec0"
+}

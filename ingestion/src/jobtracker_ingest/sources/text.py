@@ -22,5 +22,10 @@ def markup_to_text(markup: str) -> str | None:
     for tag in soup.find_all(BLOCK_TAGS):
         tag.insert_before("\n")
         tag.insert_after("\n")
-    lines = (" ".join(line.split()) for line in soup.get_text().splitlines())
+    return tidy_lines(soup.get_text())
+
+
+def tidy_lines(text: str) -> str | None:
+    """Plain text with whitespace collapsed inside lines and blank lines dropped."""
+    lines = (" ".join(line.split()) for line in text.splitlines())
     return "\n".join(line for line in lines if line) or None

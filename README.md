@@ -41,7 +41,7 @@ posting's text, company or link.
 
 ```mermaid
 flowchart LR
-    sources["Job sources<br/>(Greenhouse API, kariera.gr)"]
+    sources["Job sources<br/>(Greenhouse API, kariera.gr,<br/>skywalker.gr)"]
     extract["jobtracker extract<br/>(Python)"]
     store[("Object store<br/>raw payloads, 30 days")]
     load["jobtracker load<br/>parse + scrub PII"]
@@ -151,12 +151,14 @@ write its own schemas, and Metabase reads through a role that sees `marts`,
 | --- | --- | --- |
 | Greenhouse job boards | ATS | Public Job Board JSON API, for a curated list of companies |
 | kariera.gr | Greek job board | HTML pages, using the schema.org JSON-LD embedded in each posting |
+| skywalker.gr | Greek job board | The site's RSS feed only, since posting pages sit behind a Cloudflare challenge; descriptions are cut short and there is no salary |
 
 Sources are listed in [`config/sources.yml`](config/sources.yml), with the
 date their terms and robots.txt were reviewed. Adding a source means
 writing one adapter, one registry entry and its test fixtures; the DAG
-picks it up on its own. The kariera.gr fixtures in the repo are made up,
-because the site's terms do not allow passing its content on.
+picks it up on its own. The kariera.gr and skywalker.gr fixtures in the
+repo are made up, because the sites' terms do not allow passing their
+content on.
 
 ## Running it locally
 

@@ -1,0 +1,19 @@
+{
+  "source": "skywalker",
+  "source_job_id": "01m7h8j9k0m1n2p3q4r5s6t7v8",
+  "run_date": "2026-10-29",
+  "scraped_at": "2026-10-29T04:00:05Z",
+  "url": "https://www.skywalker.gr/el/aggelia-ergasias/01m7h8j9k0m1n2p3q4r5s6t7v8/data-analyst---athina-thessaloniki",
+  "title_raw": "Data Analyst - Αθήνα / Θεσσαλονίκη",
+  "company_raw": "Fictional Analytics I.K.E.",
+  "location_raw": "Νομός Αττικής, Νομός Θεσσαλονίκης, Κεντρικός Τομέας Αθηνών, Δήμος Θεσσαλονίκης, Περιφέρεια Αττικής, Περιφέρεια Κεντρικής Μακεδονίας, Ελλάδα",
+  "workplace_raw": "hybrid",
+  "employment_type_raw": "Πλήρης απασχόληση",
+  "salary_raw": null,
+  "department_raw": "Στέλεχος Πληροφορικής, Πληροφορική",
+  "description_raw": "We are looking for a Data Analyst with strong SQL and Power BI skills for our offices in Athens and Thessaloniki. You will...",
+  "posted_at_raw": "2026-10-18",
+  "object_key": "raw/skywalker/2026-10-29/run/detail/01m7h8j9k0m1n2p3q4r5s6t7v8.xml.gz",
+  "parser_version": "1",
+  "content_hash": "011f0f1f670f08ba0683d303a9d59e0fc55f596c027a406b4ffefee2b5e13dfe"
+}

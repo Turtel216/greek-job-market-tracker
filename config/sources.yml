@@ -44,9 +44,39 @@ sources:
     robots_reviewed_on: 2026-10-25
     contact:
 
+  - name: skywalker
+    # A job board, read from its RSS feed rather than HTML pages
+    kind: job_board_html
+    # Review notes, 2026-10-29:
+    # - robots.txt allows everything for us apart from /manage/, the login
+    #   and password pages, and the apply, contact and delete-account
+    #   paths. Its Content-Signal line says search=yes, ai-train=no,
+    #   use=reference; we train no models and publish only aggregates.
+    # - The terms (in force from 2024-04-02) have no clause on bots or
+    #   scraping. Like kariera's, section 5 limits use to personal job
+    #   search, allows one saved copy and forbids making material available
+    #   to third parties, and section 7 forbids needless load on the site.
+    #   Asking skywalker for written OK first is the safe route.
+    # - Posting pages answer with a Cloudflare challenge (403), which we
+    #   never try to pass, so the adapter reads only the site's own RSS
+    #   feed. It cuts descriptions at about 150 characters and has no
+    #   salary, so skills come from the title and that short text.
+    # - Fixtures are made up, so no skywalker content is committed.
+    enabled: true
+    base_url: https://www.skywalker.gr/el/xml/aggelies-ergasias
+    # Search category ids, as in aggelies-ergasias?category=<id>.
+    # 01hdtm1ff0g1rdef228eftwthm is IT.
+    accounts: [01hdtm1ff0g1rdef228eftwthm]
+    # Higher than the floor while the terms question is open
+    min_delay_seconds: 5
+    # Per category. IT had 3 pages of 25 at review time.
+    max_pages: 10
+    render_js: false
+    terms_reviewed_on: 2026-10-29
+    robots_reviewed_on: 2026-10-29
+    contact:
+
 # Reviewed on 2026-10-25 and not used:
 # - jobfind.gr: its terms (section 4.2e) ban bots, spiders and crawlers, and
 #   section 4.3 bans repeated and systematic extraction of any part of its
 #   database. That covers its RSS feed as well.
-# - skywalker.gr: same personal use terms as kariera. Kept as a fallback
-#   if kariera says no.

@@ -134,8 +134,7 @@ A day that fails to load does not stop the others, and the task fails at
 the end. Clear the failed tasks to run them again; a second reparse of the
 same days inserts nothing new.
 
-This was rehearsed on 2026-10-28 on a local stack. Three days of stored
-Greenhouse fixture runs were loaded by a parser that lost the location, so
+Three days of stored Greenhouse fixture runs were loaded by a parser that lost the location, so
 every job showed city Unknown. A reparse with the fixed parser added nine
 rows, and `dim_jobs` showed the right cities again.
 

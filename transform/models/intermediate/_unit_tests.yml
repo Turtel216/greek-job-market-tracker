@@ -74,6 +74,7 @@ unit_tests:
           - {posting_key: j, title_normalized: "javascript developer", description_text: null}
           - {posting_key: k, title_normalized: "it support technician", description_text: "windows 10 and mac os. ms office and active directory. routers on cisco ios."}
           - {posting_key: l, title_normalized: "τεχνικοσ κινητων", description_text: "γνωσεισ σε ios και android"}
+          - {posting_key: m, title_normalized: "network engineer", description_text: "tcp ip dns and bgp. firewalls fortigate and vpns."}
       - input: ref('skill_aliases')
     expect:
       rows:
@@ -107,8 +108,14 @@ unit_tests:
         - {posting_key: k, skill_id: macos, matched_in: description}
         - {posting_key: k, skill_id: microsoft_365, matched_in: description}
         - {posting_key: k, skill_id: active_directory, matched_in: description}
+        - {posting_key: k, skill_id: cisco, matched_in: description}
         - {posting_key: l, skill_id: ios, matched_in: description}
         - {posting_key: l, skill_id: android, matched_in: description}
+        - {posting_key: m, skill_id: tcp_ip, matched_in: description}
+        - {posting_key: m, skill_id: dns, matched_in: description}
+        - {posting_key: m, skill_id: bgp, matched_in: description}
+        - {posting_key: m, skill_id: fortinet, matched_in: description}
+        - {posting_key: m, skill_id: vpn, matched_in: description}
 
   - name: int_job_candidate_pairs_rules
     description: >

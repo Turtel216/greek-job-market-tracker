@@ -80,6 +80,14 @@ sap,SAP,platform
 softone,SoftOne,platform
 entersoft,Entersoft,platform
 salesforce,Salesforce,platform
+tcp_ip,TCP/IP,networking
+dns,DNS,networking
+dhcp,DHCP,networking
+vpn,VPN,networking
+bgp,BGP,networking
+ospf,OSPF,networking
+cisco,Cisco,networking
+fortinet,Fortinet,networking
 docker,Docker,tool
 kubernetes,Kubernetes,tool
 helm,Helm,tool

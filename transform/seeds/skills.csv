@@ -65,6 +65,21 @@ redshift,Redshift,database
 aws,AWS,cloud
 azure,Azure,cloud
 gcp,Google Cloud,cloud
+linux,Linux,platform
+windows,Windows,platform
+macos,macOS,platform
+android,Android,platform
+ios,iOS,platform
+active_directory,Active Directory,platform
+microsoft_365,Microsoft 365,platform
+intune,Intune,platform
+power_platform,Power Platform,platform
+dynamics_365,Microsoft Dynamics 365,platform
+erp,ERP,platform
+sap,SAP,platform
+softone,SoftOne,platform
+entersoft,Entersoft,platform
+salesforce,Salesforce,platform
 docker,Docker,tool
 kubernetes,Kubernetes,tool
 helm,Helm,tool
@@ -74,7 +89,6 @@ jenkins,Jenkins,tool
 github_actions,GitHub Actions,tool
 gitlab_ci,GitLab CI,tool
 git,Git,tool
-linux,Linux,platform
 nginx,Nginx,tool
 kafka,Apache Kafka,tool
 rabbitmq,RabbitMQ,tool
@@ -94,5 +108,4 @@ jest,Jest,tool
 postman,Postman,tool
 jira,Jira,tool
 figma,Figma,tool
-sap,SAP,tool
-salesforce,Salesforce,tool
+servicenow,ServiceNow,tool

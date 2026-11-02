@@ -55,7 +55,8 @@ unit_tests:
       of c++ and c#, while c++, c#, .net and node.js count as words. Go, R,
       C and React use their pattern_override: go needs golang or a word such
       as developer next to it, r and c need context, objective c is not c,
-      and react native is not react. The title wins over the description.
+      and react native is not react. Cisco ios is not Apple ios. The title
+      wins over the description.
       Inputs are already normalized, as stg_postings gives them.
     model: int_posting_skills
     given:
@@ -71,6 +72,8 @@ unit_tests:
           - {posting_key: h, title_normalized: "embedded c engineer", description_text: "c c++ and python"}
           - {posting_key: i, title_normalized: "objective c developer", description_text: null}
           - {posting_key: j, title_normalized: "javascript developer", description_text: null}
+          - {posting_key: k, title_normalized: "it support technician", description_text: "windows 10 and mac os. ms office and active directory. routers on cisco ios."}
+          - {posting_key: l, title_normalized: "τεχνικοσ κινητων", description_text: "γνωσεισ σε ios και android"}
       - input: ref('skill_aliases')
     expect:
       rows:
@@ -100,6 +103,12 @@ unit_tests:
         - {posting_key: h, skill_id: python, matched_in: description}
         - {posting_key: i, skill_id: objective_c, matched_in: title}
         - {posting_key: j, skill_id: javascript, matched_in: title}
+        - {posting_key: k, skill_id: windows, matched_in: description}
+        - {posting_key: k, skill_id: macos, matched_in: description}
+        - {posting_key: k, skill_id: microsoft_365, matched_in: description}
+        - {posting_key: k, skill_id: active_directory, matched_in: description}
+        - {posting_key: l, skill_id: ios, matched_in: description}
+        - {posting_key: l, skill_id: android, matched_in: description}
 
   - name: int_job_candidate_pairs_rules
     description: >

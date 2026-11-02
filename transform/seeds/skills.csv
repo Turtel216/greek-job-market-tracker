@@ -88,6 +88,11 @@ bgp,BGP,networking
 ospf,OSPF,networking
 cisco,Cisco,networking
 fortinet,Fortinet,networking
+firewall,Firewalls,security
+antivirus,Antivirus,security
+edr,EDR,security
+siem,SIEM,security
+penetration_testing,Penetration Testing,security
 docker,Docker,tool
 kubernetes,Kubernetes,tool
 helm,Helm,tool

@@ -75,6 +75,7 @@ unit_tests:
           - {posting_key: k, title_normalized: "it support technician", description_text: "windows 10 and mac os. ms office and active directory. routers on cisco ios."}
           - {posting_key: l, title_normalized: "τεχνικοσ κινητων", description_text: "γνωσεισ σε ios και android"}
           - {posting_key: m, title_normalized: "network engineer", description_text: "tcp ip dns and bgp. firewalls fortigate and vpns."}
+          - {posting_key: n, title_normalized: "junior penetration tester", description_text: "siem and edr tools. anti malware."}
       - input: ref('skill_aliases')
     expect:
       rows:
@@ -116,6 +117,11 @@ unit_tests:
         - {posting_key: m, skill_id: bgp, matched_in: description}
         - {posting_key: m, skill_id: fortinet, matched_in: description}
         - {posting_key: m, skill_id: vpn, matched_in: description}
+        - {posting_key: m, skill_id: firewall, matched_in: description}
+        - {posting_key: n, skill_id: penetration_testing, matched_in: title}
+        - {posting_key: n, skill_id: siem, matched_in: description}
+        - {posting_key: n, skill_id: edr, matched_in: description}
+        - {posting_key: n, skill_id: antivirus, matched_in: description}
 
   - name: int_job_candidate_pairs_rules
     description: >

@@ -22,6 +22,10 @@ computer vision,data,100
 μηχανικ[α-ω]* δεδομενων,data,100
 αναλυτ[α-ω]* δεδομενων,data,100
 επιστημον[α-ω]* δεδομενων,data,100
+data governance,data,100
+database administrators?,data,100
+dba,data,100
+ai (engineering|product engineers?),data,100
 cyber ?security customer (experts?|support),it_support,95
 cyber ?security,security,90
 (it|information|application|network|cloud|ot|email|offensive|product|data) security,security,90
@@ -48,6 +52,8 @@ infrastructure,devops,80
 sys ?admins?,devops,80
 systems? administrators?,devops,80
 διαχειριστ[α-ω]* συστηματων,devops,80
+(it|ict|linux|unix|windows|senior|junior|lead) systems? engineers?,devops,80
+^systems? engineers?,devops,80
 network (engineer(ing|s)?|administrators?|admins?|architects?|specialists?|technicians?|operations),network,70
 networking,network,70
 noc (engineers?|technicians?|operators?),network,70
@@ -80,6 +86,9 @@ node(js)?,backend,20
 php,backend,20
 golang,backend,20
 ruby,backend,20
+go (developers?|engineers?),backend,20
+net (software )?(developers?|engineers?),backend,20
+pl ?sql,backend,20
 (it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset),it_support,15
 (technical|tech|software|applications?|desktop|onsite|on site|pms|end user|hardware) support,it_support,15
 help ?desk,it_support,15

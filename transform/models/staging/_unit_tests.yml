@@ -443,6 +443,17 @@ unit_tests:
           - {posting_key: am, title: "Senior API Engineer"}
           # An event, not a job
           - {posting_key: an, title: "Developers Day Athens 2026"}
+          - {posting_key: ao, title: "Go Developers"}
+          # The period of .NET is split from the word
+          - {posting_key: ap, title: "Senior. NET Software Engineer"}
+          - {posting_key: aq, title: "Oracle PL/SQL Developer"}
+          - {posting_key: ar, title: "Database Administrator"}
+          - {posting_key: as, title: "Data Governance Officer"}
+          - {posting_key: at, title: "AI Engineering Enablement Expert"}
+          - {posting_key: au, title: "Systems Engineer"}
+          - {posting_key: av, title: "IT System Engineer"}
+          # Not an IT systems engineer
+          - {posting_key: aw, title: "Battery Systems Engineer - NIKI"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -494,6 +505,15 @@ unit_tests:
         - {posting_key: al, role_family: software}
         - {posting_key: am, role_family: software}
         - {posting_key: an, role_family: other}
+        - {posting_key: ao, role_family: backend}
+        - {posting_key: ap, role_family: backend}
+        - {posting_key: aq, role_family: backend}
+        - {posting_key: ar, role_family: data}
+        - {posting_key: as, role_family: data}
+        - {posting_key: at, role_family: data}
+        - {posting_key: au, role_family: devops}
+        - {posting_key: av, role_family: devops}
+        - {posting_key: aw, role_family: other}
 
   - name: stg_postings_salary
     description: >

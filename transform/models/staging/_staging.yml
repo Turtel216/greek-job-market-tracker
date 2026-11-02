@@ -131,7 +131,9 @@ models:
               arguments:
                 values: [intern, junior, mid, senior, lead, unknown]
       - name: role_family
-        description: From role_family_rules on the title, then the department.
+        description: >
+          From role_family_rules on the title, then the department, then
+          role_family_fallback_rules for generic titles. No match gives other.
         data_tests:
           - not_null
           - accepted_values:

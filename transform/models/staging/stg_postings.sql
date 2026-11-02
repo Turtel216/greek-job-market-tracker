@@ -61,6 +61,17 @@ role_family_rules as (
     group by value, priority
 ),
 
+-- Generic titles such as Software Engineer, tried only after the rules
+-- above found nothing in the title or the department
+role_family_fallback_rules as (
+    select
+        value,
+        priority,
+        string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
+    from {{ ref('role_family_fallback_rules') }}
+    group by value, priority
+),
+
 -- The newest row of each posting. There is at most one row per run_date.
 latest as (
     select *
@@ -234,6 +245,10 @@ classified as (
         ) as seniority,
         coalesce(
             {{ match_rules('role_family_rules', [
+                'normalized.title_normalized',
+                'normalized.department_normalized',
+            ]) }},
+            {{ match_rules('role_family_fallback_rules', [
                 'normalized.title_normalized',
                 'normalized.department_normalized',
             ]) }},

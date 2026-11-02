@@ -1,0 +1,8 @@
+pattern,value,priority
+software (engineer(ing|s)?|developers?|development|architects?),software,10
+developers?(?! day),software,10
+programmers?,software,10
+api (engineers?|developers?),software,10
+προγραμματιστ[α-ω]*,software,10
+αναπτυξ[α-ω]* λογισμικου,software,10
+μηχανικ[α-ω]* λογισμικου,software,10

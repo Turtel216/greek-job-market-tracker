@@ -113,6 +113,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, title_normalized: "προγραμματιστησ c++ c# .net αθηνα", description_text: "γνωσεισ python sql docker."}
@@ -139,6 +140,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, title: Senior Backend Developer, content_hash: new, last_run_date: "2026-10-25"}
@@ -167,6 +169,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, title_key: "senior backend engineer java"}
@@ -203,6 +206,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, company_key: aegean payments}
@@ -262,6 +266,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, city: Athens, region: Attica}
@@ -323,6 +328,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, work_mode: remote}
@@ -365,6 +371,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, seniority: senior}
@@ -378,7 +385,10 @@ unit_tests:
         - {posting_key: i, seniority: unknown}
 
   - name: stg_postings_role_family
-    description: Role family comes from the title, then the department; no match gives other.
+    description: >
+      Role family comes from the title, then the department. Generic titles
+      fall back to software only when neither matched a rule; no match at
+      all gives other.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -427,6 +437,12 @@ unit_tests:
           - {posting_key: ai, title: "TECHNICAL SALES / Τεχνική Υποστήριξη Πωλήσεων"}
           # A stack keyword beats it_support
           - {posting_key: aj, title: "IT Support Engineer (Python)"}
+          # A generic title falls back to software
+          - {posting_key: ak, title: "Developer - Αθήνα"}
+          - {posting_key: al, title: "Προγραμματιστής/ Αναλυτής IBM i"}
+          - {posting_key: am, title: "Senior API Engineer"}
+          # An event, not a job
+          - {posting_key: an, title: "Developers Day Athens 2026"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -435,6 +451,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, role_family: fullstack}
@@ -445,10 +462,10 @@ unit_tests:
         - {posting_key: f, role_family: qa}
         - {posting_key: g, role_family: backend}
         - {posting_key: h, role_family: backend}
-        - {posting_key: i, role_family: other}
+        - {posting_key: i, role_family: software}
         - {posting_key: j, role_family: data}
         - {posting_key: k, role_family: mobile}
-        - {posting_key: l, role_family: other}
+        - {posting_key: l, role_family: software}
         - {posting_key: m, role_family: other}
         - {posting_key: n, role_family: security}
         - {posting_key: o, role_family: security}
@@ -473,6 +490,10 @@ unit_tests:
         - {posting_key: ah, role_family: other}
         - {posting_key: ai, role_family: other}
         - {posting_key: aj, role_family: backend}
+        - {posting_key: ak, role_family: software}
+        - {posting_key: al, role_family: software}
+        - {posting_key: am, role_family: software}
+        - {posting_key: an, role_family: other}
 
   - name: stg_postings_salary
     description: >
@@ -516,6 +537,7 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
+      - input: ref('role_family_fallback_rules')
     expect:
       rows:
         - {posting_key: a, salary_min_monthly: "2000.00", salary_max_monthly: "2500.00", salary_currency: EUR, salary_basis: unknown, salary_period: monthly}

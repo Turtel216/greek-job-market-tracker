@@ -290,6 +290,45 @@ seeds:
               arguments:
                 column: value
 
+  - name: role_family_fallback_rules
+    description: >
+      Keywords for generic titles such as "Software Engineer" or
+      "Developer", which say a job is tech but not which kind. They are
+      tried only when no rule in role_family_rules matches the title or the
+      department, so a department such as Data Platform still wins over a
+      generic title. Same columns and matching as role_family_rules.
+    config:
+      column_types:
+        pattern: text
+        value: text
+        priority: integer
+    columns:
+      - name: pattern
+        description: >
+          A Postgres regular expression matched on normalized text, as whole
+          words, like in role_family_rules.
+        data_tests:
+          - unique
+          - not_null
+          - valid_regex
+          - matches_pattern:
+              arguments:
+                pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
+      - name: value
+        description: The value a match gives.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [software]
+      - name: priority
+        description: Higher wins. Rules that share a priority give the same value, so ties cannot change the result.
+        data_tests:
+          - not_null
+          - maps_to_one:
+              arguments:
+                column: value
+
   - name: dedup_labels
     description: >
       Hand-labeled pairs of postings, for the dedup_precision analysis. Each

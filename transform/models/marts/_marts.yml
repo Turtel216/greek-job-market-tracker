@@ -30,7 +30,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: [language, framework, database, cloud, tool]
+                values: [language, framework, database, cloud, platform, networking, security, tool]
 
   - name: dim_jobs
     description: >

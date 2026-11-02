@@ -74,7 +74,7 @@ jenkins,Jenkins,tool
 github_actions,GitHub Actions,tool
 gitlab_ci,GitLab CI,tool
 git,Git,tool
-linux,Linux,tool
+linux,Linux,platform
 nginx,Nginx,tool
 kafka,Apache Kafka,tool
 rabbitmq,RabbitMQ,tool

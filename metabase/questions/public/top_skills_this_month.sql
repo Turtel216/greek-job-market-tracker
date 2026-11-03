@@ -15,6 +15,11 @@ demand as (
     where
         demand.month = (select max(month) from marts.fct_monthly_skill_demand)
         [[and demand.role_family = {{role_family}}]]
+        -- IT support skills only show for the role families that ask for them
+        and (
+            not skills.is_it_support
+            [[or {{role_family}} in ('it_support', 'network', 'security')]]
+        )
     group by demand.month, skills.name
 )
 

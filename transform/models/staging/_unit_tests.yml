@@ -454,6 +454,16 @@ unit_tests:
           - {posting_key: av, title: "IT System Engineer"}
           # Not an IT systems engineer
           - {posting_key: aw, title: "Battery Systems Engineer - NIKI"}
+          # Business analysts are data
+          - {posting_key: ax, title: "IT Business Analyst – Cyprus, Greece or Remote"}
+          - {posting_key: ay, title: "Data Loading Team Lead"}
+          - {posting_key: az, title: "Head of AI & Digital Applications"}
+          # A title that is only IT
+          - {posting_key: ba, title: "Senior IT"}
+          - {posting_key: bb, title: "IoT Solutions Architect"}
+          # Automotive simulation engineers are software
+          - {posting_key: bc, title: "Engineer - Software-Defined Vehicle Simulation and Development - NIKI"}
+          - {posting_key: bd, title: "Integrated Automotive and Computational Sciences Engineer - NIKI"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -514,6 +524,13 @@ unit_tests:
         - {posting_key: au, role_family: devops}
         - {posting_key: av, role_family: devops}
         - {posting_key: aw, role_family: other}
+        - {posting_key: ax, role_family: data}
+        - {posting_key: ay, role_family: data}
+        - {posting_key: az, role_family: data}
+        - {posting_key: ba, role_family: it_support}
+        - {posting_key: bb, role_family: software}
+        - {posting_key: bc, role_family: software}
+        - {posting_key: bd, role_family: software}
 
   - name: stg_postings_salary
     description: >

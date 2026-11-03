@@ -3,6 +3,11 @@ software (engineer(ing|s)?|developers?|development|architects?),software,10
 developers?(?! day),software,10
 programmers?,software,10
 api (engineers?|developers?),software,10
+solutions? architects?,software,10
+iot,software,10
+simulation,software,10
+software defined vehicles?,software,10
+computational sciences?,software,10
 προγραμματιστ[α-ω]*,software,10
 αναπτυξ[α-ω]* λογισμικου,software,10
 μηχανικ[α-ω]* λογισμικου,software,10

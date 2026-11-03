@@ -23,6 +23,9 @@ computer vision,data,100
 αναλυτ[α-ω]* δεδομενων,data,100
 επιστημον[α-ω]* δεδομενων,data,100
 data governance,data,100
+business analysts?,data,100
+data loading,data,100
+(head|director|vp) of (ai|artificial intelligence),data,100
 database administrators?,data,100
 dba,data,100
 ai (engineering|product engineers?),data,100
@@ -91,6 +94,7 @@ net (software )?(developers?|engineers?),backend,20
 pl ?sql,backend,20
 (it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset),it_support,15
 (technical|tech|software|applications?|desktop|onsite|on site|pms|end user|hardware) support,it_support,15
+^(senior|junior) (it|ιτ)$,it_support,15
 help ?desk,it_support,15
 service ?desk,it_support,15
 end ?point,it_support,15

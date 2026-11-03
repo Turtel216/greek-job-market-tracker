@@ -309,6 +309,43 @@ seeds:
               arguments:
                 column: value
 
+  - name: role_family_non_tech_rules
+    description: >
+      Keywords for non-tech titles that tech companies post, such as sales,
+      account management and project management. They give other, like no
+      match at all, but mark the title as classified, so it stays out of
+      qa_unclassified_titles. Tried on the title only, after
+      role_family_rules and before role_family_fallback_rules, so a project
+      manager for software development is other and not software.
+    config:
+      column_types:
+        pattern: text
+        value: text
+        priority: integer
+    columns:
+      - name: pattern
+        description: >
+          A Postgres regular expression matched on normalized text, as whole
+          words, like in role_family_rules.
+        data_tests:
+          - unique
+          - not_null
+          - valid_regex
+          - matches_pattern:
+              arguments:
+                pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
+      - name: value
+        description: The value a match gives.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [other]
+      - name: priority
+        description: Higher wins. Every rule gives other, so it cannot change the result.
+        data_tests:
+          - not_null
+
   - name: role_family_fallback_rules
     description: >
       Keywords for generic titles such as "Software Engineer" or

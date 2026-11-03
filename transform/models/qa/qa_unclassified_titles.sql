@@ -1,7 +1,7 @@
--- Titles that matched no rule in role_family_rules, in the title or the
--- department, so the role family is other. Some are not tech roles at all;
--- add rules for the common ones that are. One row per normalized title,
--- the most common first.
+-- Titles that matched no role family rule, so the role family fell back to
+-- other. Add a rule for the common ones: a tech rule, or a non-tech rule
+-- for roles such as sales. One row per normalized title, the most common
+-- first.
 
 with
 
@@ -20,7 +20,7 @@ unclassified as (
         postings.last_run_date = newest_run.run_date as is_today
     from postings
     cross join newest_run
-    where postings.role_family = 'other' and postings.title_normalized is not null
+    where not postings.role_family_matched and postings.title_normalized is not null
 ),
 
 final as (

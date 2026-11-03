@@ -195,6 +195,7 @@ the `staging` schema:
 | `company_placeholders` | Names such as "confidential" that never identify a company, so they are never matched |
 | `title_word_map` | Title words dropped or mapped to a synonym before titles are compared for dedup |
 | `work_mode_rules`, `seniority_rules`, `role_family_rules` | Keyword rules with a priority; the highest match wins |
+| `role_family_non_tech_rules` | Non-tech titles such as sales and project management, which stay `other` but are kept out of `qa_unclassified_titles` |
 | `role_family_fallback_rules` | Generic titles such as "Software Engineer", which give `software` only when no rule in `role_family_rules` matches the title or the department |
 | `dedup_labels` | Hand-labeled pairs of postings, used to score deduplication |
 

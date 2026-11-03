@@ -1,0 +1,15 @@
+pattern,value,priority
+sales,other,1
+πωλησ[α-ω]*,other,1
+πωλητ[α-ω]*,other,1
+account (managers?|executives?),other,1
+key accounts?,other,1
+back office,other,1
+customer (support|service|care),other,1
+office (administration|administrators?|managers?),other,1
+product (managers?|specialists?),other,1
+project (managers?|coordinators?|administrators?),other,1
+operations analysts?,other,1
+commissioning,other,1
+critical environment,other,1
+τεχνικ[α-ω]* εγκαταστασ[α-ω]* και συντηρησ[α-ω]* συστηματων,other,1

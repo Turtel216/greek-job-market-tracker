@@ -133,12 +133,20 @@ models:
       - name: role_family
         description: >
           From role_family_rules on the title, then the department, then
+          role_family_non_tech_rules on the title, then
           role_family_fallback_rules for generic titles. No match gives other.
         data_tests:
           - not_null
           - accepted_values:
               arguments:
                 values: [data, backend, frontend, fullstack, mobile, devops, qa, software, network, security, it_support, other]
+      - name: role_family_matched
+        description: >
+          True when a rule set the role family, false when no rule matched
+          and it fell back to other. A non-tech title is other with true.
+          qa_unclassified_titles lists the false ones.
+        data_tests:
+          - not_null
       - name: salary_min_monthly
         description: >
           Lower monthly amount. Null when no salary is given, the period is

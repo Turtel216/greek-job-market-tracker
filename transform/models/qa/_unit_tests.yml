@@ -32,3 +32,19 @@ unit_tests:
       rows:
         - {source: greenhouse, last_run_date: "2026-10-02", new_postings: 1, open_postings: 2, closed_postings: 1}
         - {source: lever, last_run_date: "2026-10-02", new_postings: 0, open_postings: 0, closed_postings: 0}
+
+  - name: qa_unclassified_titles_unmatched_only
+    description: >
+      Only titles that matched no rule are listed. A non-tech title is other
+      but matched, so it is left out. postings_today counts the newest run.
+    model: qa_unclassified_titles
+    given:
+      - input: ref('stg_postings')
+        rows:
+          - {posting_key: a, title: Sales Support, title_normalized: sales support, role_family: other, role_family_matched: true, last_run_date: "2026-11-03"}
+          - {posting_key: b, title: Senior Engineer, title_normalized: senior engineer, role_family: other, role_family_matched: false, last_run_date: "2026-11-03"}
+          - {posting_key: c, title: Senior Engineer, title_normalized: senior engineer, role_family: other, role_family_matched: false, last_run_date: "2026-11-02"}
+          - {posting_key: d, title: Data Engineer, title_normalized: data engineer, role_family: data, role_family_matched: true, last_run_date: "2026-11-03"}
+    expect:
+      rows:
+        - {title_normalized: senior engineer, example_title: Senior Engineer, postings: 2, postings_today: 1}

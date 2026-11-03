@@ -61,8 +61,20 @@ role_family_rules as (
     group by value, priority
 ),
 
+-- Non-tech titles such as sales or project management, which stay other.
+-- Tried on the title only, since skywalker departments often list sales
+-- next to the tech categories.
+role_family_non_tech_rules as (
+    select
+        value,
+        priority,
+        string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
+    from {{ ref('role_family_non_tech_rules') }}
+    group by value, priority
+),
+
 -- Generic titles such as Software Engineer, tried only after the rules
--- above found nothing in the title or the department
+-- above found nothing
 role_family_fallback_rules as (
     select
         value,
@@ -243,18 +255,28 @@ classified as (
             {{ match_rules('seniority_rules', ['normalized.title_normalized']) }},
             'unknown'
         ) as seniority,
+        -- Null when no rule matched
         coalesce(
             {{ match_rules('role_family_rules', [
                 'normalized.title_normalized',
                 'normalized.department_normalized',
             ]) }},
+            {{ match_rules('role_family_non_tech_rules', ['normalized.title_normalized']) }},
             {{ match_rules('role_family_fallback_rules', [
                 'normalized.title_normalized',
                 'normalized.department_normalized',
-            ]) }},
-            'other'
-        ) as role_family
+            ]) }}
+        ) as role_family_match
     from normalized
+),
+
+-- No match gives other. A non-tech rule gives other too, but counts as a match.
+role_families as (
+    select
+        posting_key,
+        coalesce(role_family_match, 'other') as role_family,
+        role_family_match is not null as role_family_matched
+    from classified
 ),
 
 final as (
@@ -273,7 +295,8 @@ final as (
         cities.region,
         classified.work_mode,
         classified.seniority,
-        classified.role_family,
+        role_families.role_family,
+        role_families.role_family_matched,
         salary.salary_min_monthly,
         salary.salary_max_monthly,
         salary.salary_currency,
@@ -287,6 +310,7 @@ final as (
     inner join companies on normalized.posting_key = companies.posting_key
     inner join cities on normalized.posting_key = cities.posting_key
     inner join classified on normalized.posting_key = classified.posting_key
+    inner join role_families on normalized.posting_key = role_families.posting_key
     left join title_keys on normalized.posting_key = title_keys.posting_key
     -- The macro is a lateral subquery, so it cannot be a CTE
     left join lateral (  -- noqa: ST05

@@ -187,6 +187,7 @@ the `staging` schema:
 | Seed | Contents |
 | --- | --- |
 | `skills` | Skills with a stable `skill_id` and a category |
+| `it_support_skills` | Everyday IT support skills, such as Windows, that the dashboard shows only for the it_support, network and security role families |
 | `skill_aliases` | Words that mark a skill, with a regex for ambiguous ones such as Go, R and C |
 | `city_aliases` | Greek and Latin place names mapped to a city and region |
 | `company_suffixes` | Legal forms stripped from company names, such as ΑΕ and Ltd |
@@ -251,7 +252,7 @@ changed type fails the build:
 | Model | Grain | Contents |
 | --- | --- | --- |
 | `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` |
-| `dim_skills` | skill | `skill_id`, `name`, `category` |
+| `dim_skills` | skill | `skill_id`, `name`, `category`, `is_it_support` |
 | `bridge_job_skills` | job and skill | Every skill of the job's postings, with `matched_in` |
 | `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. Fully remote jobs count under `Remote` |
 | `fct_monthly_skill_demand` | month, skill, role family | Jobs with the skill, all open jobs and the share. A job counts in every month it was open |

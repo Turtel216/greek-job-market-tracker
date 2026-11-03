@@ -31,6 +31,16 @@ models:
           - accepted_values:
               arguments:
                 values: [language, framework, database, cloud, platform, networking, security, tool]
+      - name: is_it_support
+        description: >
+          True for skills in the it_support_skills seed, such as Windows and
+          Microsoft 365. The dashboard shows them only when the role family
+          filter is it_support, network or security.
+        data_type: boolean
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
 
   - name: dim_jobs
     description: >

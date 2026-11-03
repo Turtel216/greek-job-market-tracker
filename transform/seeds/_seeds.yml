@@ -35,6 +35,25 @@ seeds:
               arguments:
                 values: [language, framework, database, cloud, platform, networking, security, tool]
 
+  - name: it_support_skills
+    description: >
+      Everyday IT support skills, such as Windows and Microsoft 365. The
+      dashboard shows them only when the role family filter is it_support,
+      network or security, so they do not crowd out the other skills.
+    config:
+      column_types:
+        skill_id: text
+    columns:
+      - name: skill_id
+        description: A skill from the skills seed.
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('skills')
+                field: skill_id
+
   - name: skill_aliases
     description: >
       Words that mark a skill in a posting. An alias matches the normalized

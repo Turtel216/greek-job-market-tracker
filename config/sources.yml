@@ -6,7 +6,7 @@ sources:
     kind: ats_api
     # Disabled until the terms and robots.txt review is done and the
     # accounts below are filled in
-    enabled: true
+    enabled: false
     base_url: https://boards-api.greenhouse.io/v1/boards
     # Board tokens of Greek tech companies, as in boards.greenhouse.io/<token>
     accounts: []

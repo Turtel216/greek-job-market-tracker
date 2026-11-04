@@ -7,8 +7,9 @@ snapshots:
     description: >
       One row per version of each posting in stg_postings. The check
       strategy compares content_hash, so a change to any parsed field starts
-      a new version. Postings never leave stg_postings, so no version is
-      ever closed by a delete.
+      a new version. A posting leaves stg_postings only when a new
+      non_job_rules row filters it out; deletes are ignored, so its
+      versions stay as they were.
     relation: ref('stg_postings')
     config:
       unique_key: posting_key

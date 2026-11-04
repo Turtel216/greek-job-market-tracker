@@ -1,0 +1,14 @@
+pattern
+developers? days?
+career days?
+(jobs?|careers?) fairs?
+hackathons?
+webinars?
+postdoc[a-z]*
+post ?doctoral
+phd (cand[a-z.]*|candidates?|students?|positions?|scholarships?)
+(masters?|master s|bachelors?|bachelor s|diploma) thesis
+thesis (opportunit(y|ies)|projects?|positions?)
+μεταδιδακτορικ[α-ω]*
+υποψηφι[α-ω]* διδακτορ[α-ω]*
+διπλωματικ[α-ω]* εργασι[α-ω]*

@@ -195,6 +195,7 @@ the `staging` schema:
 | `company_placeholders` | Names such as "confidential" that never identify a company, so they are never matched |
 | `title_word_map` | Title words dropped or mapped to a synonym before titles are compared for dedup |
 | `work_mode_rules`, `seniority_rules`, `role_family_rules` | Keyword rules with a priority; the highest match wins |
+| `non_job_rules` | Title keywords of postings that are not jobs, such as events and academic positions, which staging drops |
 | `role_family_non_tech_rules` | Non-tech titles such as sales and project management, which stay `other` but are kept out of `qa_unclassified_titles` |
 | `role_family_fallback_rules` | Generic titles such as "Software Engineer", which give `software` only when no rule in `role_family_rules` matches the title or the department |
 | `dedup_labels` | Hand-labeled pairs of postings, used to score deduplication |
@@ -211,7 +212,7 @@ The staging models read `raw.raw_postings`:
 
 | Model | Grain | Contents |
 | --- | --- | --- |
-| `stg_raw_postings` (view) | posting and run_date | `posting_key` and tidy display text, nothing heavier |
+| `stg_raw_postings` (view) | posting and run_date | `posting_key` and tidy display text, without postings that are not jobs |
 | `stg_postings` (table) | posting | The newest row of each posting with normalized text, `company_key`, city, work mode, seniority, role family and monthly salary |
 
 The logic lives in macros in `transform/macros/`:

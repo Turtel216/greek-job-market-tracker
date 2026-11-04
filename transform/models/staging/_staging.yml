@@ -4,7 +4,9 @@ models:
       Every row of raw.raw_postings with its posting_key, and display text
       with whitespace tidied and empty values as null. One row per posting
       and run_date. When a reparse loaded a day again with a new parser
-      version, only the row from the newest load is kept.
+      version, only the row from the newest load is kept. Postings whose
+      title matches non_job_rules, such as events and academic positions,
+      are left out, so no later model sees them.
     data_tests:
       - unique_combination:
           arguments:

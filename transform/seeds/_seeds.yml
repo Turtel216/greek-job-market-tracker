@@ -272,6 +272,27 @@ seeds:
               arguments:
                 column: value
 
+  - name: non_job_rules
+    description: >
+      Title keywords of postings that are not jobs, such as events and
+      academic positions (thesis, PhD, postdoc). stg_raw_postings drops
+      every row whose title matches, so keep the patterns narrow.
+    config:
+      column_types:
+        pattern: text
+    columns:
+      - name: pattern
+        description: >
+          A Postgres regular expression matched on the normalized title, as
+          whole words, like in role_family_rules.
+        data_tests:
+          - unique
+          - not_null
+          - valid_regex
+          - matches_pattern:
+              arguments:
+                pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
+
   - name: role_family_rules
     description: >
       Keywords that set role_family. Looks in the title, then the ATS

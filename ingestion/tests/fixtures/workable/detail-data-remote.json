@@ -1,0 +1,21 @@
+{
+  "company": "Acropolis Analytics",
+  "job": {
+    "application_url": "https://apply.workable.com/j/BBB2222222/apply",
+    "city": "",
+    "code": "",
+    "country": "Greece",
+    "created_at": "2026-10-19",
+    "department": "Data Platform",
+    "description": "<p>Build pipelines with Airflow and dbt.</p>",
+    "employment_type": "Full-time",
+    "published_on": "2026-10-20",
+    "shortcode": "BBB2222222",
+    "shortlink": "https://apply.workable.com/j/BBB2222222",
+    "state": "",
+    "telecommuting": true,
+    "title": "Data Engineer",
+    "url": "https://apply.workable.com/j/BBB2222222",
+    "workplace_type": "remote"
+  }
+}

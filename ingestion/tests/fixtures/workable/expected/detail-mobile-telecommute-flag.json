@@ -1,0 +1,19 @@
+{
+  "source": "workable",
+  "source_job_id": "DDD4444444",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://apply.workable.com/j/DDD4444444",
+  "title_raw": "Mobile Developer",
+  "company_raw": "Acropolis Analytics",
+  "location_raw": "Athens, Attica, Greece",
+  "workplace_raw": "remote",
+  "employment_type_raw": "Full-time",
+  "salary_raw": null,
+  "department_raw": "Mobile, Apps",
+  "description_raw": "Flutter apps.",
+  "posted_at_raw": "2026-10-20",
+  "object_key": "raw/workable/2026-10-25/run/detail/DDD4444444.json.gz",
+  "parser_version": "1",
+  "content_hash": "504eadfae4ea2514620afe711a012391bc523a4f18ea9e2915af63429cc918a8"
+}

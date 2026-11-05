@@ -1,0 +1,23 @@
+{
+  "company": "Acropolis Analytics",
+  "job": {
+    "application_url": "https://apply.workable.com/j/DDD4444444/apply",
+    "city": "Athens",
+    "code": "",
+    "country": "Greece",
+    "created_at": "2026-10-19",
+    "department": [
+      "Mobile",
+      "Apps"
+    ],
+    "description": "<p>Flutter apps.</p>",
+    "employment_type": "Full-time",
+    "published_on": "2026-10-20",
+    "shortcode": "DDD4444444",
+    "shortlink": "https://apply.workable.com/j/DDD4444444",
+    "state": "Attica",
+    "telecommuting": true,
+    "title": "Mobile Developer",
+    "url": "https://apply.workable.com/j/DDD4444444"
+  }
+}

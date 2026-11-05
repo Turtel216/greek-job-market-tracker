@@ -1,0 +1,19 @@
+{
+  "source": "workable",
+  "source_job_id": "EEE5555555",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://apply.workable.com/j/EEE5555555",
+  "title_raw": "Support Engineer",
+  "company_raw": "Acropolis Analytics",
+  "location_raw": null,
+  "workplace_raw": null,
+  "employment_type_raw": null,
+  "salary_raw": null,
+  "department_raw": null,
+  "description_raw": null,
+  "posted_at_raw": "2026-10-19",
+  "object_key": "raw/workable/2026-10-25/run/detail/EEE5555555.json.gz",
+  "parser_version": "1",
+  "content_hash": "c2d8d680139f20d4025a64174da0bb1649a6e2883e95873d42976d321228ebbe"
+}

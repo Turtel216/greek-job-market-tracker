@@ -1,0 +1,21 @@
+{
+  "company": "Acropolis Analytics",
+  "job": {
+    "application_url": "https://apply.workable.com/j/AAA1111111/apply",
+    "city": "Athens",
+    "code": "",
+    "country": "Greece",
+    "created_at": "2026-10-19",
+    "department": "Engineering",
+    "description": "<p>We build <b>payments</b> software.</p><ul><li>Python and PostgreSQL</li><li>Docker</li></ul><p>Contact: hr@example.org</p>",
+    "employment_type": "Full-time",
+    "published_on": "2026-10-20",
+    "shortcode": "AAA1111111",
+    "shortlink": "https://apply.workable.com/j/AAA1111111",
+    "state": "Attica",
+    "telecommuting": false,
+    "title": "Senior Backend Engineer (Python)",
+    "url": "https://apply.workable.com/j/AAA1111111",
+    "workplace_type": "hybrid"
+  }
+}

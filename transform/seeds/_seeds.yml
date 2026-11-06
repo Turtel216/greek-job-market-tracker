@@ -293,6 +293,25 @@ seeds:
               arguments:
                 pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
 
+  - name: abroad_countries
+    description: >
+      Countries outside the market we track. stg_raw_postings drops a
+      posting when every place it lists ends in one of these. Greece, Cyprus
+      and Malta are never listed here. A country missing from the seed shows
+      up in qa_unmapped_locations.
+    config:
+      column_types:
+        country: text
+    columns:
+      - name: country
+        description: The country name after normalize_text.
+        data_tests:
+          - unique
+          - not_null
+          - matches_pattern:
+              arguments:
+                pattern: "^[^A-ZΆ-Ωάέήίόύώϊϋΐΰς]*$"
+
   - name: role_family_rules
     description: >
       Keywords that set role_family. Looks in the title, then the ATS

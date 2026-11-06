@@ -6,7 +6,8 @@ models:
       and run_date. When a reparse loaded a day again with a new parser
       version, only the row from the newest load is kept. Postings whose
       title matches non_job_rules, such as events and academic positions,
-      are left out, so no later model sees them.
+      and postings whose every place is in abroad_countries are left out,
+      so no later model sees them.
     data_tests:
       - unique_combination:
           arguments:

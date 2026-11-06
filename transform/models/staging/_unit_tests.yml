@@ -24,6 +24,7 @@ unit_tests:
             salary_raw: "Base salary: 56000 - 70000 EUR"
             description_raw: ""
       - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
     expect:
       rows:
         - posting_key: 707c7653f4aab6dfd16c51b85a899090  # gitleaks:allow (md5, not a secret)
@@ -72,6 +73,7 @@ unit_tests:
             title_raw: Fixed
             parser_version: "2"
       - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
     expect:
       rows:
         - raw_posting_id: 2
@@ -104,11 +106,38 @@ unit_tests:
           - {raw_posting_id: 6, source: kariera, source_job_id: "6", title_raw: "Senior Developer"}
           - {raw_posting_id: 7, source: kariera, source_job_id: "7", title_raw: null}
       - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
     expect:
       rows:
         - {raw_posting_id: 5, title: "Data Scientist (PhD preferred)"}
         - {raw_posting_id: 6, title: "Senior Developer"}
         - {raw_posting_id: 7, title: null}
+
+  - name: stg_raw_postings_abroad
+    description: >
+      A job only abroad is left out. A job with any place in Greece, Cyprus
+      or Malta stays in, and so does a location that names no country or
+      no location at all.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          - {raw_posting_id: 1, source: workable, source_job_id: "1", title_raw: A, location_raw: "Brussels, Belgium"}
+          - {raw_posting_id: 2, source: workable, source_job_id: "2", title_raw: B, location_raw: "London, England, United Kingdom; Poland"}
+          - {raw_posting_id: 3, source: workable, source_job_id: "3", title_raw: C, location_raw: "London, England, United Kingdom; Athens, Attica, Greece"}
+          - {raw_posting_id: 4, source: workable, source_job_id: "4", title_raw: D, location_raw: "Nicosia, Cyprus"}
+          - {raw_posting_id: 5, source: skywalker, source_job_id: "5", title_raw: E, location_raw: "Ελλάδα, Κύπρος, Ευρώπη, Εξωτερικό"}
+          - {raw_posting_id: 6, source: kariera, source_job_id: "6", title_raw: F, location_raw: "Μαρούσι"}
+          - {raw_posting_id: 7, source: kariera, source_job_id: "7", title_raw: G, location_raw: null}
+      - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
+    expect:
+      rows:
+        - {raw_posting_id: 3, title: C}
+        - {raw_posting_id: 4, title: D}
+        - {raw_posting_id: 5, title: E}
+        - {raw_posting_id: 6, title: F}
+        - {raw_posting_id: 7, title: G}
 
   - name: stg_postings_normalize_text
     description: >

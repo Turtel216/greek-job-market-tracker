@@ -118,6 +118,15 @@ The first adapter is `sources/greenhouse.py`, for the public Greenhouse Job
 Board API. Its fixtures are shaped like real API responses but use a made
 up company; add trimmed real responses during onboarding.
 
+`sources/workable.py` reads Workable careers pages through the documented
+public account endpoint, one registry account per company subdomain. One
+request returns the whole job list with descriptions, so `fetch_detail`
+makes no request and the payload of each posting is its job from that
+response. It never fetches the posting pages under `/j/`, which robots.txt
+disallows. The public endpoint has no pay information. Its fixtures use a
+made up company. The source is disabled until accounts are added; see
+`config/sources.yml`.
+
 `sources/kariera.py` reads the kariera.gr job board, one registry account
 per listing category such as `it-jobs`. It takes almost everything from the
 schema.org JSON-LD on each page and only uses the Next.js flight data for

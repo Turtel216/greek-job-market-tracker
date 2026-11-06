@@ -41,7 +41,7 @@ posting's text, company or link.
 
 ```mermaid
 flowchart LR
-    sources["Job sources<br/>(Greenhouse API, kariera.gr,<br/>skywalker.gr)"]
+    sources["Job sources<br/>(Greenhouse API, Workable API,<br/>kariera.gr, skywalker.gr)"]
     extract["jobtracker extract<br/>(Python)"]
     store[("Object store<br/>raw payloads, 30 days")]
     load["jobtracker load<br/>parse + scrub PII"]
@@ -150,6 +150,7 @@ write its own schemas, and Metabase reads through a role that sees `marts`,
 | Source | Kind | How it is read |
 | --- | --- | --- |
 | Greenhouse job boards | ATS | Public Job Board JSON API, for a curated list of companies |
+| Workable careers pages | ATS | The documented public account endpoint, one request per company, for a curated list of companies |
 | kariera.gr | Greek job board | HTML pages, using the schema.org JSON-LD embedded in each posting |
 | skywalker.gr | Greek job board | The site's RSS feed only, since posting pages sit behind a Cloudflare challenge; descriptions are cut short and there is no salary |
 

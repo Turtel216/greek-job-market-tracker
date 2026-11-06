@@ -14,9 +14,12 @@ big data,data,100
 scientists?,data,100
 ml,data,100
 mlops,data,100
+llmops,data,100
+databricks,data,100
+knowledge graphs?,data,100
 machine learning,data,100
 deep learning,data,100
-(ai|llm|genai) (engineer|developer|scientist)s?,data,100
+(ai|llm|genai) (engineer|developer|scientist|architect)s?,data,100
 nlp,data,100
 computer vision,data,100
 μηχανικ[α-ω]* δεδομενων,data,100
@@ -31,7 +34,7 @@ dba,data,100
 ai (engineering|product engineers?),data,100
 cyber ?security customer (experts?|support),it_support,95
 cyber ?security,security,90
-(it|information|application|network|cloud|ot|email|offensive|product|data) security,security,90
+(it|ict|information|application|network|cloud|ot|email|offensive|product|data) security,security,90
 security (engineer(ing|s)?|analysts?|architects?|consultants?|specialists?|administrators?|officers?|operations),security,90
 infosec,security,90
 soc analysts?,security,90
@@ -52,6 +55,9 @@ site reliability,devops,80
 platform engineer(ing|s)?,devops,80
 cloud,devops,80
 infrastructure,devops,80
+kubernetes,devops,80
+operations (support )?engineers?,devops,80
+systems? (and )?deployment,devops,80
 sys ?admins?,devops,80
 systems? administrators?,devops,80
 διαχειριστ[α-ω]* συστηματων,devops,80
@@ -89,14 +95,18 @@ node(js)?,backend,20
 php,backend,20
 golang,backend,20
 ruby,backend,20
+elixir,backend,20
 go (developers?|engineers?),backend,20
 net (software )?(developers?|engineers?),backend,20
 pl ?sql,backend,20
-(it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset),it_support,15
+(it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset|consultants?|maintenance),it_support,15
+(it|ict|ιτ) services? (managers?|operations),it_support,15
 (technical|tech|software|applications?|desktop|onsite|on site|pms|end user|hardware) support,it_support,15
 ^(senior|junior) (it|ιτ)$,it_support,15
 help ?desk,it_support,15
 service ?desk,it_support,15
+itsm,it_support,15
+sharepoint,it_support,15
 end ?point,it_support,15
 vdi,it_support,15
 applications? (specialists?|administrators?|delivery),it_support,15

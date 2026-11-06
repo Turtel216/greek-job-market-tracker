@@ -3,7 +3,11 @@ software (engineer(ing|s)?|developers?|development|architects?),software,10
 developers?(?! day),software,10
 programmers?,software,10
 api (engineers?|developers?),software,10
-solutions? architects?,software,10
+solutions? (architects?|engineers?),software,10
+application architects?,software,10
+product engineers?,software,10
+forward deployed,software,10
+system integration,software,10
 iot,software,10
 simulation,software,10
 software defined vehicles?,software,10

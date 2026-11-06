@@ -600,6 +600,67 @@ unit_tests:
         - {posting_key: bc, role_family: software}
         - {posting_key: bd, role_family: software}
 
+  - name: stg_postings_role_family_ats_titles
+    description: >
+      Tech titles that ATS sources list next to everything else a company
+      hires for. Legal and HR roles have no rule, so they stay unmatched.
+    model: stg_postings
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          - {posting_key: a, title: "Senior LLMOps Engineer"}
+          - {posting_key: b, title: "Senior Databricks Administrator/Architect"}
+          - {posting_key: c, title: "Semantics / Knowledge Graph Engineer"}
+          - {posting_key: d, title: "AI Architect"}
+          - {posting_key: e, title: "ICT Security Manager"}
+          - {posting_key: f, title: "Kubernetes Systems Engineer"}
+          - {posting_key: g, title: "Senior Operations Support Engineer"}
+          - {posting_key: h, title: "System and Deployment Administrator"}
+          - {posting_key: i, title: "Senior Elixir Engineer"}
+          - {posting_key: j, title: "IT Consultant"}
+          - {posting_key: k, title: "Experienced IT Service / Operations Manager"}
+          - {posting_key: l, title: "Service Management Consultant (ITSM / Low-Code)"}
+          - {posting_key: m, title: "SharePoint (M365) Architect / Team Leader"}
+          - {posting_key: n, title: "Solutions Engineer"}
+          - {posting_key: o, title: "Application Architect"}
+          - {posting_key: p, title: "Product Engineer"}
+          - {posting_key: q, title: "Forward Deployed AI Value Engineer"}
+          - {posting_key: r, title: "System Integration & Workflow Specialist"}
+          - {posting_key: s, title: "Regulatory Lawyer - Banking"}
+          - {posting_key: t, title: "HR Consultant"}
+      - input: ref('city_aliases')
+      - input: ref('company_suffixes')
+      - input: ref('company_aliases')
+      - input: ref('company_placeholders')
+      - input: ref('title_word_map')
+      - input: ref('work_mode_rules')
+      - input: ref('seniority_rules')
+      - input: ref('role_family_rules')
+      - input: ref('role_family_non_tech_rules')
+      - input: ref('role_family_fallback_rules')
+    expect:
+      rows:
+        - {posting_key: a, role_family: data, role_family_matched: true}
+        - {posting_key: b, role_family: data, role_family_matched: true}
+        - {posting_key: c, role_family: data, role_family_matched: true}
+        - {posting_key: d, role_family: data, role_family_matched: true}
+        - {posting_key: e, role_family: security, role_family_matched: true}
+        - {posting_key: f, role_family: devops, role_family_matched: true}
+        - {posting_key: g, role_family: devops, role_family_matched: true}
+        - {posting_key: h, role_family: devops, role_family_matched: true}
+        - {posting_key: i, role_family: backend, role_family_matched: true}
+        - {posting_key: j, role_family: it_support, role_family_matched: true}
+        - {posting_key: k, role_family: it_support, role_family_matched: true}
+        - {posting_key: l, role_family: it_support, role_family_matched: true}
+        - {posting_key: m, role_family: it_support, role_family_matched: true}
+        - {posting_key: n, role_family: software, role_family_matched: true}
+        - {posting_key: o, role_family: software, role_family_matched: true}
+        - {posting_key: p, role_family: software, role_family_matched: true}
+        - {posting_key: q, role_family: software, role_family_matched: true}
+        - {posting_key: r, role_family: software, role_family_matched: true}
+        - {posting_key: s, role_family: other, role_family_matched: false}
+        - {posting_key: t, role_family: other, role_family_matched: false}
+
   - name: stg_postings_role_family_non_tech
     description: >
       Non-tech titles such as sales or project management are other, but

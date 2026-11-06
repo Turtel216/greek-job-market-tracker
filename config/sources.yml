@@ -78,9 +78,6 @@ sources:
 
   - name: workable
     kind: ats_api
-    # Disabled until the accounts below are filled in. An enabled source
-    # with no accounts would fail every day with zero listings.
-    #
     # Review notes, 2026-11-05:
     # - We use only the documented public endpoint from Workable's
     #   developer docs, GET www.workable.com/api/accounts/<subdomain>. It
@@ -98,12 +95,12 @@ sources:
     #   the Workable website, not to these public job data. Not legal
     #   advice.
     # - Fixtures are made up, so no Workable customer content is committed.
-    enabled: false
+    enabled: true
     base_url: https://www.workable.com/api/accounts
     # Account subdomains of Greek tech companies, as in
     # apply.workable.com/<subdomain>. Only add a company whose careers page
     # is public, and check it is not asking to be left out.
-    accounts: []
+    accounts: [skroutz, everypay-1, viva, stoiximan, epignosis, hack-the-box-ltd, xtm, european-dynamics, agileactors, atosgr, semitron]
     # Higher than the floor, the docs give no rate limit
     min_delay_seconds: 5
     max_pages: 1
@@ -113,6 +110,6 @@ sources:
     contact:
 
 # Reviewed on 2026-10-25 and not used:
-# - jobfind.gr: its terms (section 4.2e) ban bots, spiders and crawlers, and
-#   section 4.3 bans repeated and systematic extraction of any part of its
+# - jobfind.gr: its terms ban bots, spiders and crawlers, and
+#   repeated and systematic extraction of any part of its
 #   database. That covers its RSS feed as well.

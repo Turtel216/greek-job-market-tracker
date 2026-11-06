@@ -91,9 +91,9 @@ unit_tests:
 
   - name: stg_raw_postings_non_jobs
     description: >
-      Events and academic positions are not jobs, so their rows are left
-      out. Real jobs that mention a PhD or a developer stay in, and so does
-      a row with no title.
+      Events, academic positions and open applications are not jobs, so
+      their rows are left out. Real jobs that mention a PhD, a developer or
+      joining a team stay in, and so does a row with no title.
     model: stg_raw_postings
     given:
       - input: source('raw', 'raw_postings')
@@ -105,6 +105,11 @@ unit_tests:
           - {raw_posting_id: 5, source: kariera, source_job_id: "5", title_raw: "Data Scientist (PhD preferred)"}
           - {raw_posting_id: 6, source: kariera, source_job_id: "6", title_raw: "Senior Developer"}
           - {raw_posting_id: 7, source: kariera, source_job_id: "7", title_raw: null}
+          - {raw_posting_id: 8, source: workable, source_job_id: "8", title_raw: "Join Skroutz"}
+          - {raw_posting_id: 9, source: workable, source_job_id: "9", title_raw: "Join Hack The Box (Global)"}
+          - {raw_posting_id: 10, source: workable, source_job_id: "10", title_raw: "Join our Innovative Team"}
+          - {raw_posting_id: 11, source: workable, source_job_id: "11", title_raw: "Express Your Interest at XTM"}
+          - {raw_posting_id: 12, source: workable, source_job_id: "12", title_raw: "Join our team as a Backend Developer"}
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
     expect:
@@ -112,6 +117,7 @@ unit_tests:
         - {raw_posting_id: 5, title: "Data Scientist (PhD preferred)"}
         - {raw_posting_id: 6, title: "Senior Developer"}
         - {raw_posting_id: 7, title: null}
+        - {raw_posting_id: 12, title: "Join our team as a Backend Developer"}
 
   - name: stg_raw_postings_abroad
     description: >

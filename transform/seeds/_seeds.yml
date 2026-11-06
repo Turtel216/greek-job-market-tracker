@@ -274,9 +274,10 @@ seeds:
 
   - name: non_job_rules
     description: >
-      Title keywords of postings that are not jobs, such as events and
-      academic positions (thesis, PhD, postdoc). stg_raw_postings drops
-      every row whose title matches, so keep the patterns narrow.
+      Title keywords of postings that are not jobs, such as events,
+      academic positions (thesis, PhD, postdoc) and open applications
+      ("Join Skroutz"). stg_raw_postings drops every row whose title
+      matches, so keep the patterns narrow.
     config:
       column_types:
         pattern: text

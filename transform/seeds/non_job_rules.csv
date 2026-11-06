@@ -12,3 +12,6 @@ thesis (opportunit(y|ies)|projects?|positions?)
 μεταδιδακτορικ[α-ω]*
 υποψηφι[α-ω]* διδακτορ[α-ω]*
 διπλωματικ[α-ω]* εργασι[α-ω]*
+^join (our|the) ([a-z]+ )*team$
+^join (skroutz|hack the box)( global)?$
+express your interest

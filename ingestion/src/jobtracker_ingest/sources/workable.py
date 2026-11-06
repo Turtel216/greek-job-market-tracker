@@ -7,6 +7,9 @@ Detail:  none. The listing already holds everything, so the payload of each
 posting is its job from that response (plus the company name) and
 fetch_detail makes no request. This keeps us at one request per company.
 
+A job open in several places is listed once per place with the same
+shortcode, so the repeats are folded into one job that keeps every place.
+
 The endpoint is documented in Workable's developer docs under public
 endpoints. It needs no login or API key. We do not use the undocumented
 apply.workable.com API or the hosted careers pages.
@@ -27,6 +30,8 @@ PAYLOAD_CONTENT_TYPE = "application/json; charset=utf-8"
 WORKPLACE_TYPES = {"on_site": "on site"}
 # Place fields, most specific first
 PLACE_FIELDS = ("city", "state", "country")
+# Our key on a job for the places of its repeated listings
+OTHER_PLACES = "other_places"
 
 
 class ParseError(ValueError):
@@ -35,7 +40,7 @@ class ParseError(ValueError):
 
 class WorkableAdapter:
     name: ClassVar[str] = "workable"
-    PARSER_VERSION: ClassVar[str] = "1"
+    PARSER_VERSION: ClassVar[str] = "2"
 
     def __init__(self) -> None:
         # The payload of every posting listed in this run, by id, which
@@ -58,13 +63,20 @@ class WorkableAdapter:
             ctx.listings.save_listing_page(result, account=account)
             board = json.loads(result.content)
             company = clean(board.get("name")) or account
+            jobs: dict[str, dict[str, Any]] = {}
             for job in board.get("jobs") or []:
                 job_id = clean(job.get("shortcode"))
-                job_url = clean(job.get("url"))
-                if job_id is None or job_url is None:
+                if job_id is None or clean(job.get("url")) is None:
                     ctx.log.warning("listing_item_skipped", account=account, job=job.get("title"))
                     continue
-                # A job listed twice keeps the first, as extract does
+                if job_id in jobs:
+                    add_place(jobs[job_id], job)
+                else:
+                    jobs[job_id] = job
+
+            for job_id, job in jobs.items():
+                job_url = job["url"].strip()
+                # A job listed by two accounts keeps the first, as extract does
                 self._jobs.setdefault(
                     job_id,
                     RawPayload(
@@ -137,9 +149,21 @@ def listing_fingerprint(job: dict[str, Any]) -> str:
     return hashlib.sha256(card.encode("utf-8")).hexdigest()
 
 
-def location_text(job: dict[str, Any]) -> str | None:
-    parts = [clean(job.get(field)) for field in PLACE_FIELDS]
+def add_place(job: dict[str, Any], repeat: dict[str, Any]) -> None:
+    """Keep the place of a repeated listing on the job it repeats."""
+    place = {field: repeat.get(field) for field in PLACE_FIELDS}
+    job.setdefault(OTHER_PLACES, []).append(place)
+
+
+def place_text(place: dict[str, Any]) -> str | None:
+    parts = [clean(place.get(field)) for field in PLACE_FIELDS]
     return ", ".join(dict.fromkeys(p for p in parts if p)) or None
+
+
+def location_text(job: dict[str, Any]) -> str | None:
+    """Every place of the job, in listing order, separated by semicolons."""
+    places = [place_text(place) for place in [job, *job.get(OTHER_PLACES, [])]]
+    return "; ".join(dict.fromkeys(p for p in places if p)) or None
 
 
 def workplace_text(job: dict[str, Any]) -> str | None:

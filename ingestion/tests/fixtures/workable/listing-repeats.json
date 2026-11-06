@@ -1,0 +1,62 @@
+{
+  "name": "Acropolis Analytics",
+  "description": "Made up company",
+  "jobs": [
+    {
+      "title": "Senior Platform Engineer",
+      "shortcode": "FFF6666666",
+      "employment_type": "Full-time",
+      "telecommuting": true,
+      "department": "Engineering",
+      "url": "https://apply.workable.com/j/FFF6666666",
+      "published_on": "2026-10-20",
+      "created_at": "2026-10-19",
+      "country": "United Kingdom",
+      "city": "London",
+      "state": "England",
+      "description": "<p>Keep the platform running.</p>"
+    },
+    {
+      "title": "Senior Platform Engineer",
+      "shortcode": "FFF6666666",
+      "employment_type": "Full-time",
+      "telecommuting": true,
+      "department": "Engineering",
+      "url": "https://apply.workable.com/j/FFF6666666",
+      "published_on": "2026-10-20",
+      "created_at": "2026-10-19",
+      "country": "Greece",
+      "city": "Athens",
+      "state": "Attica",
+      "description": "<p>Keep the platform running.</p>"
+    },
+    {
+      "title": "Senior Platform Engineer",
+      "shortcode": "FFF6666666",
+      "employment_type": "Full-time",
+      "telecommuting": true,
+      "department": "Engineering",
+      "url": "https://apply.workable.com/j/FFF6666666",
+      "published_on": "2026-10-20",
+      "created_at": "2026-10-19",
+      "country": "Poland",
+      "city": "",
+      "state": "",
+      "description": "<p>Keep the platform running.</p>"
+    },
+    {
+      "title": "Junior Data Analyst",
+      "shortcode": "GGG7777777",
+      "employment_type": "Full-time",
+      "telecommuting": false,
+      "department": "Data",
+      "url": "https://apply.workable.com/j/GGG7777777",
+      "published_on": "2026-10-20",
+      "created_at": "2026-10-19",
+      "country": "Greece",
+      "city": "Athens",
+      "state": "Attica",
+      "description": "<p>Build reports.</p>"
+    }
+  ]
+}

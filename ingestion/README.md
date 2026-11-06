@@ -123,9 +123,10 @@ public account endpoint, one registry account per company subdomain. One
 request returns the whole job list with descriptions, so `fetch_detail`
 makes no request and the payload of each posting is its job from that
 response. It never fetches the posting pages under `/j/`, which robots.txt
-disallows. The public endpoint has no pay information. Its fixtures use a
-made up company. The source is disabled until accounts are added; see
-`config/sources.yml`.
+disallows. The public endpoint has no pay information. A job open in
+several places is listed once per place, so the adapter folds the repeats
+into one posting whose `location_raw` lists every place, separated by
+semicolons. Its fixtures use a made up company.
 
 `sources/kariera.py` reads the kariera.gr job board, one registry account
 per listing category such as `it-jobs`. It takes almost everything from the

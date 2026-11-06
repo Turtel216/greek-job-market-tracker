@@ -1,3 +1,4 @@
+import json
 from collections.abc import Iterator
 from datetime import date
 from pathlib import Path
@@ -17,6 +18,7 @@ from jobtracker_ingest.sources.base import RunContext
 from jobtracker_ingest.sources.workable import (
     WorkableAdapter,
     listing_fingerprint,
+    location_text,
     workplace_text,
 )
 
@@ -111,6 +113,38 @@ def test_job_without_shortcode_or_url_is_skipped(rsps: responses.RequestsMock) -
     assert refs == []
 
 
+def test_repeated_job_keeps_every_place(rsps: responses.RequestsMock) -> None:
+    rsps.get(f"{API}/acropolis?details=true", body=fixture("listing-repeats.json"))
+    ctx = make_ctx(["acropolis"])
+    adapter = WorkableAdapter()
+
+    refs = list(adapter.list_postings(ctx))
+
+    assert [r.source_job_id for r in refs] == ["FFF6666666", "GGG7777777"]
+    posting = adapter.parse(adapter.fetch_detail(refs[0], ctx))
+    assert posting.location_raw == "London, England, United Kingdom; Athens, Attica, Greece; Poland"
+
+
+def test_fingerprint_changes_when_a_place_is_added(rsps: responses.RequestsMock) -> None:
+    rsps.get(f"{API}/acropolis?details=true", body=fixture("listing-repeats.json"))
+    refs = list(WorkableAdapter().list_postings(make_ctx(["acropolis"])))
+    job = json.loads(fixture("listing-repeats.json"))["jobs"][0]
+
+    assert refs[0].listing_fingerprint != listing_fingerprint(job)
+
+
+def test_same_job_in_two_accounts_keeps_the_first(rsps: responses.RequestsMock) -> None:
+    rsps.get(f"{API}/acropolis?details=true", body=fixture("listing-repeats.json"))
+    rsps.get(f"{API}/other?details=true", body=fixture("listing-repeats.json"))
+    ctx = make_ctx(["acropolis", "other"])
+    adapter = WorkableAdapter()
+
+    refs = list(adapter.list_postings(ctx))
+
+    assert len(refs) == 4
+    assert adapter.fetch_detail(refs[2], ctx).account == "acropolis"
+
+
 def test_fingerprint_changes_with_the_job() -> None:
     job = {"shortcode": "A", "title": "Dev"}
     assert listing_fingerprint(job) == listing_fingerprint({"title": "Dev", "shortcode": "A"})
@@ -122,3 +156,9 @@ def test_workplace_prefers_the_type_over_the_flag() -> None:
     assert workplace_text({"workplace_type": "on_site"}) == "on site"
     assert workplace_text({"telecommuting": True}) == "remote"
     assert workplace_text({"telecommuting": False}) is None
+
+
+def test_location_skips_empty_and_repeated_places() -> None:
+    assert location_text({"country": "Greece"}) == "Greece"
+    assert location_text({"country": "Greece", "other_places": [{"country": "Greece"}]}) == "Greece"
+    assert location_text({"other_places": [{"city": ""}]}) is None

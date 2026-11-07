@@ -190,6 +190,40 @@ unit_tests:
         - {raw_posting_id: 11, title: "Digital Services Development Associate"}
         - {raw_posting_id: 12, title: null}
 
+  - name: stg_raw_postings_non_tech_ats_titles
+    description: >
+      ATS sources list everything a company hires for, so legal, HR, finance,
+      marketing and warehouse roles are left out. Tech titles close to them
+      stay in.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          - {raw_posting_id: 1, source: workable, source_job_id: "1", title_raw: "Regulatory Lawyer - Banking"}
+          - {raw_posting_id: 2, source: workable, source_job_id: "2", title_raw: "Legal Counsel - Group Corporate & Operations"}
+          - {raw_posting_id: 3, source: workable, source_job_id: "3", title_raw: "HR Consultant"}
+          - {raw_posting_id: 4, source: workable, source_job_id: "4", title_raw: "Junior Talent Acquisition Specialist"}
+          - {raw_posting_id: 5, source: workable, source_job_id: "5", title_raw: "Assistant Financial Controller"}
+          - {raw_posting_id: 6, source: workable, source_job_id: "6", title_raw: "Growth Marketing Specialist"}
+          - {raw_posting_id: 7, source: workable, source_job_id: "7", title_raw: "Warehouse Staff - Aspropyrgos (WSA 0926)"}
+          - {raw_posting_id: 8, source: workable, source_job_id: "8", title_raw: "IT Presales Manager"}
+          - {raw_posting_id: 9, source: workable, source_job_id: "9", title_raw: "Client Relationship Representative (Field-Based)"}
+          # Data warehouse is a tech rule
+          - {raw_posting_id: 10, source: kariera, source_job_id: "10", title_raw: "Data Warehouse Team Lead"}
+          # Marketing analytics is still data analytics
+          - {raw_posting_id: 11, source: kariera, source_job_id: "11", title_raw: "Marketing Data Analyst"}
+          # Payroll software is not plain HR
+          - {raw_posting_id: 12, source: workable, source_job_id: "12", title_raw: "HR & Payroll Software Consultant"}
+      - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {raw_posting_id: 10, title: "Data Warehouse Team Lead"}
+        - {raw_posting_id: 11, title: "Marketing Data Analyst"}
+        - {raw_posting_id: 12, title: "HR & Payroll Software Consultant"}
+
   - name: stg_postings_normalize_text
     description: >
       normalize_text lowercases, strips Greek and Latin accents, writes the

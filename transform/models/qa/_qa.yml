@@ -33,9 +33,8 @@ models:
   - name: qa_unclassified_titles
     description: >
       Titles that matched no role family rule, so the role family fell back
-      to other. Titles matched by role_family_non_tech_rules are other too
-      but are left out. One row per normalized title. Add rules for the
-      common ones.
+      to other. One row per normalized title. Add rules for the common
+      ones.
     columns:
       - name: title_normalized
         description: The title after normalize_text, the form the rules match.

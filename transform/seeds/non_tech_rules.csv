@@ -1,0 +1,15 @@
+pattern
+sales
+πωλησ[α-ω]*
+πωλητ[α-ω]*
+account (managers?|executives?)
+key accounts?
+back office
+customer (support|service|care)
+office (administration|administrators?|managers?)
+product (managers?|specialists?)
+project (managers?|coordinators?|administrators?)
+operations analysts?
+commissioning
+critical environment
+τεχνικ[α-ω]* εγκαταστασ[α-ω]* και συντηρησ[α-ω]* συστηματων

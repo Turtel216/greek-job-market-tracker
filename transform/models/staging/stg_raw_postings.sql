@@ -1,9 +1,9 @@
 -- Every raw row with its posting_key and tidy text, without postings that
--- are not jobs, such as events and academic positions, and without jobs
--- that are only abroad. This view sees every day of every posting, so it
--- only does cheap work: one regex on the title and one on each place. The
--- other matching and parsing happen in stg_postings, on the latest row of
--- each posting.
+-- are not jobs, such as events and academic positions, without non-tech
+-- jobs and without jobs that are only abroad. This view sees every day of
+-- every posting, so it only does cheap work: a few regexes on the title,
+-- the department and each place. The other matching and parsing happen in
+-- stg_postings, on the latest row of each posting.
 
 with
 
@@ -15,6 +15,19 @@ raw_postings as (
 non_job_rules as (
     select string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
     from {{ ref('non_job_rules') }}
+),
+
+-- Non-tech titles such as sales or legal. All patterns joined into one.
+non_tech_rules as (
+    select string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
+    from {{ ref('non_tech_rules') }}
+),
+
+-- Every role family rule joined into one, since a tech rule beats a
+-- non-tech one
+tech_rules as (
+    select string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
+    from {{ ref('role_family_rules') }}
 ),
 
 -- All countries joined into one pattern for the end of a place. Null when
@@ -58,16 +71,36 @@ cleaned as (
 
 -- Dropped here, so lifecycle, dedup, the marts and the daily summary never
 -- see them. A posting with no title or no location is kept, and so is one
--- with any place that is not abroad.
+-- with any place that is not abroad. A non-tech title is only dropped when
+-- no tech rule matches the title or the department, so a sales engineer
+-- for security stays. Non-tech rules read the title only, since skywalker
+-- departments often list sales next to the tech categories.
 jobs as (
     select cleaned.*
     from cleaned
     cross join non_job_rules
+    cross join non_tech_rules
+    cross join tech_rules
     cross join abroad_countries
     where
         not coalesce(
             {{ normalize_text('cleaned.title') }} ~ {{ whole_words('non_job_rules.pattern') }},
             false
+        )
+        and (
+            not coalesce(
+                {{ normalize_text('cleaned.title') }} ~ {{ whole_words('non_tech_rules.pattern') }},
+                false
+            )
+            or coalesce(
+                {{ normalize_text('cleaned.title') }} ~ {{ whole_words('tech_rules.pattern') }},
+                false
+            )
+            or coalesce(
+                {{ normalize_text('cleaned.department') }}
+                ~ {{ whole_words('tech_rules.pattern') }},
+                false
+            )
         )
         and (
             cleaned.location_text is null

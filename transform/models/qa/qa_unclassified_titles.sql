@@ -1,7 +1,7 @@
 -- Titles that matched no role family rule, so the role family fell back to
--- other. Add a rule for the common ones: a tech rule, or a non-tech rule
--- for roles such as sales. One row per normalized title, the most common
--- first.
+-- other. Add a rule for the common ones: a tech rule, or a row in
+-- non_tech_rules for roles such as sales, which staging then drops. One row
+-- per normalized title, the most common first.
 
 with
 

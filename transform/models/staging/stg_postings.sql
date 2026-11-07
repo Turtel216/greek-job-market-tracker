@@ -61,18 +61,6 @@ role_family_rules as (
     group by value, priority
 ),
 
--- Non-tech titles such as sales or project management, which stay other.
--- Tried on the title only, since skywalker departments often list sales
--- next to the tech categories.
-role_family_non_tech_rules as (
-    select
-        value,
-        priority,
-        string_agg('(?:' || pattern || ')', '|' order by pattern) as pattern
-    from {{ ref('role_family_non_tech_rules') }}
-    group by value, priority
-),
-
 -- Generic titles such as Software Engineer, tried only after the rules
 -- above found nothing
 role_family_fallback_rules as (
@@ -261,7 +249,6 @@ classified as (
                 'normalized.title_normalized',
                 'normalized.department_normalized',
             ]) }},
-            {{ match_rules('role_family_non_tech_rules', ['normalized.title_normalized']) }},
             {{ match_rules('role_family_fallback_rules', [
                 'normalized.title_normalized',
                 'normalized.department_normalized',
@@ -270,7 +257,7 @@ classified as (
     from normalized
 ),
 
--- No match gives other. A non-tech rule gives other too, but counts as a match.
+-- No match gives other
 role_families as (
     select
         posting_key,

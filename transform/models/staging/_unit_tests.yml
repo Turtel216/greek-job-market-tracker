@@ -25,6 +25,8 @@ unit_tests:
             description_raw: ""
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
     expect:
       rows:
         - posting_key: 707c7653f4aab6dfd16c51b85a899090  # gitleaks:allow (md5, not a secret)
@@ -74,6 +76,8 @@ unit_tests:
             parser_version: "2"
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
     expect:
       rows:
         - raw_posting_id: 2
@@ -112,6 +116,8 @@ unit_tests:
           - {raw_posting_id: 12, source: workable, source_job_id: "12", title_raw: "Join our team as a Backend Developer"}
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
     expect:
       rows:
         - {raw_posting_id: 5, title: "Data Scientist (PhD preferred)"}
@@ -137,6 +143,8 @@ unit_tests:
           - {raw_posting_id: 7, source: kariera, source_job_id: "7", title_raw: G, location_raw: null}
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
     expect:
       rows:
         - {raw_posting_id: 3, title: C}
@@ -144,6 +152,43 @@ unit_tests:
         - {raw_posting_id: 5, title: E}
         - {raw_posting_id: 6, title: F}
         - {raw_posting_id: 7, title: G}
+
+  - name: stg_raw_postings_non_tech
+    description: >
+      Non-tech titles such as sales or project management are left out,
+      even for software development. A tech rule on the title or department
+      keeps a posting, and non-tech rules read the title only.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          - {raw_posting_id: 1, source: skywalker, source_job_id: "1", title_raw: "Senior Sales Account Manager | Κύπρος"}
+          - {raw_posting_id: 2, source: skywalker, source_job_id: "2", title_raw: "Υπεύθυνος Πωλήσεων & Τεχνικής Υποστήριξης Τηλεπικοινωνιακού Εξοπλισμού"}
+          - {raw_posting_id: 3, source: kariera, source_job_id: "3", title_raw: "IT PROJECT COORDINATOR | SOFTWARE / IT BACKGROUND"}
+          - {raw_posting_id: 4, source: kariera, source_job_id: "4", title_raw: "Project Manager - Software Development"}
+          - {raw_posting_id: 5, source: kariera, source_job_id: "5", title_raw: "JUNIOR SOFTWARE COMMISSIONING ENGINEER"}
+          - {raw_posting_id: 6, source: kariera, source_job_id: "6", title_raw: "Critical Environment Technician"}
+          - {raw_posting_id: 7, source: kariera, source_job_id: "7", title_raw: "Τεχνικός Εγκατάστασης και Συντήρησης Συστημάτων _SCAN"}
+          # A tech rule on the title wins
+          - {raw_posting_id: 8, source: kariera, source_job_id: "8", title_raw: "Sales Security Engineer"}
+          # A tech rule on the department wins
+          - {raw_posting_id: 9, source: workable, source_job_id: "9", title_raw: "Sales Manager", department_raw: "Cloud Platform"}
+          # A sales department does not drop a software engineer
+          - {raw_posting_id: 10, source: skywalker, source_job_id: "10", title_raw: "Software Engineer", department_raw: "Στέλεχος Πληροφορικής, Πληροφορική, Πωλήσεις"}
+          # No rule at all
+          - {raw_posting_id: 11, source: kariera, source_job_id: "11", title_raw: "Digital Services Development Associate", department_raw: "IT"}
+          - {raw_posting_id: 12, source: kariera, source_job_id: "12", title_raw: null}
+      - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {raw_posting_id: 8, title: "Sales Security Engineer"}
+        - {raw_posting_id: 9, title: "Sales Manager"}
+        - {raw_posting_id: 10, title: "Software Engineer"}
+        - {raw_posting_id: 11, title: "Digital Services Development Associate"}
+        - {raw_posting_id: 12, title: null}
 
   - name: stg_postings_normalize_text
     description: >
@@ -173,7 +218,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -201,7 +245,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -231,7 +274,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -269,7 +311,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -330,7 +371,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -393,7 +433,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -437,7 +476,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -539,7 +577,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -603,7 +640,7 @@ unit_tests:
   - name: stg_postings_role_family_ats_titles
     description: >
       Tech titles that ATS sources list next to everything else a company
-      hires for. Legal and HR roles have no rule, so they stay unmatched.
+      hires for. A title with no rule stays unmatched.
     model: stg_postings
     given:
       - input: ref('stg_raw_postings')
@@ -626,8 +663,8 @@ unit_tests:
           - {posting_key: p, title: "Product Engineer"}
           - {posting_key: q, title: "Forward Deployed AI Value Engineer"}
           - {posting_key: r, title: "System Integration & Workflow Specialist"}
-          - {posting_key: s, title: "Regulatory Lawyer - Banking"}
-          - {posting_key: t, title: "HR Consultant"}
+          - {posting_key: s, title: "Incident & Case Analyst"}
+          - {posting_key: t, title: "Senior Content Engineer"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -636,7 +673,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:
@@ -660,52 +696,6 @@ unit_tests:
         - {posting_key: r, role_family: software, role_family_matched: true}
         - {posting_key: s, role_family: other, role_family_matched: false}
         - {posting_key: t, role_family: other, role_family_matched: false}
-
-  - name: stg_postings_role_family_non_tech
-    description: >
-      Non-tech titles such as sales or project management are other, but
-      role_family_matched is true, so only titles that matched no rule at
-      all show in qa_unclassified_titles. Non-tech rules read the title
-      only and beat the generic fallback rules.
-    model: stg_postings
-    given:
-      - input: ref('stg_raw_postings')
-        rows:
-          - {posting_key: a, title: "Senior Sales Account Manager | Κύπρος"}
-          - {posting_key: b, title: "Υπεύθυνος Πωλήσεων & Τεχνικής Υποστήριξης Τηλεπικοινωνιακού Εξοπλισμού"}
-          - {posting_key: c, title: "IT PROJECT COORDINATOR | SOFTWARE / IT BACKGROUND"}
-          # A project manager stays other even for software development
-          - {posting_key: d, title: "Project Manager - Software Development"}
-          - {posting_key: e, title: "JUNIOR SOFTWARE COMMISSIONING ENGINEER"}
-          - {posting_key: f, title: "Critical Environment Technician"}
-          - {posting_key: g, title: "Τεχνικός Εγκατάστασης και Συντήρησης Συστημάτων _SCAN"}
-          # A sales department does not make a software engineer other
-          - {posting_key: h, title: "Software Engineer", department: "Στέλεχος Πληροφορικής, Πληροφορική, Πωλήσεις"}
-          # No rule at all
-          - {posting_key: i, title: "Digital Services Development Associate", department: "IT"}
-          - {posting_key: j, title: "Engineer", department: "Πωλήσεις"}
-      - input: ref('city_aliases')
-      - input: ref('company_suffixes')
-      - input: ref('company_aliases')
-      - input: ref('company_placeholders')
-      - input: ref('title_word_map')
-      - input: ref('work_mode_rules')
-      - input: ref('seniority_rules')
-      - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
-      - input: ref('role_family_fallback_rules')
-    expect:
-      rows:
-        - {posting_key: a, role_family: other, role_family_matched: true}
-        - {posting_key: b, role_family: other, role_family_matched: true}
-        - {posting_key: c, role_family: other, role_family_matched: true}
-        - {posting_key: d, role_family: other, role_family_matched: true}
-        - {posting_key: e, role_family: other, role_family_matched: true}
-        - {posting_key: f, role_family: other, role_family_matched: true}
-        - {posting_key: g, role_family: other, role_family_matched: true}
-        - {posting_key: h, role_family: software, role_family_matched: true}
-        - {posting_key: i, role_family: other, role_family_matched: false}
-        - {posting_key: j, role_family: other, role_family_matched: false}
 
   - name: stg_postings_salary
     description: >
@@ -749,7 +739,6 @@ unit_tests:
       - input: ref('work_mode_rules')
       - input: ref('seniority_rules')
       - input: ref('role_family_rules')
-      - input: ref('role_family_non_tech_rules')
       - input: ref('role_family_fallback_rules')
     expect:
       rows:

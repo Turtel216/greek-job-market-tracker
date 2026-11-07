@@ -197,7 +197,7 @@ the `staging` schema:
 | `work_mode_rules`, `seniority_rules`, `role_family_rules` | Keyword rules with a priority; the highest match wins |
 | `non_job_rules` | Title keywords of postings that are not jobs, such as events, academic positions and open applications, which staging drops |
 | `abroad_countries` | Countries outside the market we track; staging drops a posting when every place it lists is in one of them |
-| `role_family_non_tech_rules` | Non-tech titles such as sales and project management, which stay `other` but are kept out of `qa_unclassified_titles` |
+| `non_tech_rules` | Non-tech titles such as sales and project management; staging drops a posting when one matches and no rule in `role_family_rules` matches its title or department |
 | `role_family_fallback_rules` | Generic titles such as "Software Engineer", which give `software` only when no rule in `role_family_rules` matches the title or the department |
 | `dedup_labels` | Hand-labeled pairs of postings, used to score deduplication |
 

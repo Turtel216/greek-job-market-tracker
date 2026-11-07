@@ -6,8 +6,9 @@ models:
       and run_date. When a reparse loaded a day again with a new parser
       version, only the row from the newest load is kept. Postings whose
       title matches non_job_rules, such as events and academic positions,
-      and postings whose every place is in abroad_countries are left out,
-      so no later model sees them.
+      non-tech postings matched by non_tech_rules, and postings whose every
+      place is in abroad_countries are left out, so no later model sees
+      them.
     data_tests:
       - unique_combination:
           arguments:
@@ -136,7 +137,6 @@ models:
       - name: role_family
         description: >
           From role_family_rules on the title, then the department, then
-          role_family_non_tech_rules on the title, then
           role_family_fallback_rules for generic titles. No match gives other.
         data_tests:
           - not_null
@@ -146,8 +146,8 @@ models:
       - name: role_family_matched
         description: >
           True when a rule set the role family, false when no rule matched
-          and it fell back to other. A non-tech title is other with true.
-          qa_unclassified_titles lists the false ones.
+          and it fell back to other. qa_unclassified_titles lists the false
+          ones.
         data_tests:
           - not_null
       - name: salary_min_monthly

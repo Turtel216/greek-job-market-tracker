@@ -146,6 +146,12 @@ def test_fingerprint_without_a_record_hashes_the_list_item() -> None:
     assert fingerprint != listing_fingerprint({**item, "name": "Changed"}, None)
 
 
+def test_fingerprint_without_a_record_ignores_the_list_position() -> None:
+    item = {"@type": "ListItem", "position": 9, "name": "QA Engineer", "url": f"{IT}/410109"}
+    moved = {**item, "position": 17}
+    assert listing_fingerprint(moved, None) == listing_fingerprint(item, None)
+
+
 def test_list_postings_reads_the_tanstack_page_state(rsps: responses.RequestsMock) -> None:
     page(rsps, 1, "listing-state-page-1.html")
     page(rsps, 2, "listing-state-past-the-end.html")

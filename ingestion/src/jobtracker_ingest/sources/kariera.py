@@ -62,6 +62,9 @@ FINGERPRINT_FIELDS = (
     "payrollFrequency",
     "location",
 )
+# ListItem fields for the fingerprint when a page has no job records. The
+# position is left out, since it shifts whenever a posting is added above.
+LIST_ITEM_FIELDS = ("name", "url")
 
 
 class ParseError(ValueError):
@@ -271,7 +274,7 @@ def listing_fingerprint(item: dict[str, Any], record: dict[str, Any] | None) -> 
         card: dict[str, Any] = {key: record.get(key) for key in FINGERPRINT_FIELDS}
         card["company"] = dig(record, "company", "name")
     else:
-        card = item
+        card = {key: item.get(key) for key in LIST_ITEM_FIELDS}
     blob = json.dumps(card, sort_keys=True, ensure_ascii=False)
     return hashlib.sha256(blob.encode("utf-8")).hexdigest()
 

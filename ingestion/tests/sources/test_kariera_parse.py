@@ -2,8 +2,9 @@
 
 Each detail-*.html in fixtures/kariera has the expected parse output in
 expected/ under the same name. The pages copy the structure of real
-kariera.gr pages, with the JSON-LD and the Next.js flight data where the
-site puts them, but the companies and texts are made up.
+kariera.gr pages, but the companies and texts are made up. The
+detail-state-*.html pages use the TanStack page state the site has sent
+since 2026-11-04, the others the Next.js flight data it sent before.
 """
 
 import json
@@ -22,7 +23,10 @@ from jobtracker_ingest.sources.kariera import (
     flight_text,
     job_records,
     json_ld,
+    page_records,
     salary_text,
+    state_records,
+    state_text,
 )
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "kariera"
@@ -111,6 +115,46 @@ def test_flight_text_skips_chunks_it_cannot_read() -> None:
 def test_job_records_keeps_the_first_and_skips_broken_ones() -> None:
     flight = '{"id":1,"title":"A"} {"id":1,"title":"B"} {"id":2,"title": oops'
     assert job_records(flight) == {"1": {"id": 1, "title": "A"}}
+
+
+def test_state_text_reads_only_the_tanstack_scripts() -> None:
+    page = soup(
+        '<script>console.log("{id:9,title:1}")</script>'
+        '<script data-tsr-stream-part="">a</script>'
+        '<script type="application/ld+json">{}</script>'
+        '<script data-tsr-stream-part=""></script>'
+        '<script data-tsr-stream-part="">b</script>'
+    )
+    assert state_text(page) == "a\n\nb"
+
+
+def test_state_records_keeps_the_first_and_skips_broken_ones() -> None:
+    state = (
+        '$R[1]={id:1,title:"A",remote:"DISABLED"},$R[2]={id:1,title:"B",favourite:!1},'
+        '$R[3]={id:2,title:"C",apply:function(){}},$R[4]={id:3,title:"D"'
+    )
+    assert state_records(state) == {"1": {"id": 1, "title": "A", "remote": "DISABLED"}}
+
+
+def test_page_records_reads_either_format() -> None:
+    flight = soup('<script>self.__next_f.push([1,"{\\"id\\":1,\\"title\\":\\"A\\"}"])</script>')
+    state = soup('<script data-tsr-stream-part="">x=$R[5]={id:2,title:"B"}</script>')
+    assert page_records(flight) == {"1": {"id": 1, "title": "A"}}
+    assert page_records(state) == {"2": {"id": 2, "title": "B"}}
+    assert page_records(soup("<p>nothing</p>")) == {}
+
+
+def test_a_state_record_that_cannot_be_read_falls_back_to_json_ld() -> None:
+    # Only fully remote work survives, since JSON-LD has no value for the rest
+    page = (
+        '<script type="application/ld+json">{"@type":"JobPosting","title":"QA",'
+        '"jobLocationType":"TELECOMMUTE"}</script>'
+        '<script data-tsr-stream-part="">$R[1]={id:1,title:"QA",remote:"FULLY_REMOTE",'
+        "at:new Date(0)}</script>"
+    )
+    posting = KarieraAdapter().parse(make_payload("1", page.encode()))
+    assert posting.title_raw == "QA"
+    assert posting.workplace_raw == "TELECOMMUTE"
 
 
 @pytest.mark.parametrize(

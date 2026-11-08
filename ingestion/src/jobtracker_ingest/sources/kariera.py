@@ -11,9 +11,16 @@ has to be scraped out of the visible text:
 - schema.org JSON-LD: an ItemList on listing pages and a JobPosting on
   detail pages. This is the main source, since it is a public format the
   site keeps stable for search engines.
-- the Next.js flight data in the self.__next_f.push(...) scripts, which
-  holds the site's own job record. It is used for what JSON-LD cannot say,
-  which is partially or temporarily remote work, and as a fallback.
+- the site's own job record, in the page state. It is used for what JSON-LD
+  cannot say, which is partially or temporarily remote work and on-site
+  work, and as a fallback.
+
+The page state has come in two formats. Up to 2026-11-03 the site used
+Next.js, with the record as JSON in self.__next_f.push(...) scripts (the
+"flight data"). Since 2026-11-04 it uses TanStack Start, which writes the
+record as a JavaScript literal in the <script data-tsr-stream-part>
+scripts. Both are read, so payloads stored before the switch still parse
+the same way.
 
 robots.txt disallows /api/, /_next/data/ and *.json, so the adapter only
 ever reads the HTML pages and never the JSON endpoints behind them.
@@ -22,7 +29,7 @@ ever reads the HTML pages and never the JSON endpoints behind them.
 import hashlib
 import json
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from typing import Any, ClassVar
 
 from bs4 import BeautifulSoup
@@ -30,6 +37,7 @@ from bs4 import BeautifulSoup
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.jsliteral import read_value
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
 # One chunk of flight data, a JSON string inside a push call
@@ -37,6 +45,8 @@ FLIGHT_CHUNK = re.compile(r'\s*self\.__next_f\.push\(\[1,(".*")\]\)\s*;?\s*', re
 # The start of a job record in the flight data. Company objects also have
 # an id, but they are followed by a name, not a title.
 JOB_RECORD = re.compile(r'\{"id":(\d+),"title":')
+# The same in the TanStack page state, where keys have no quotes
+STATE_JOB_RECORD = re.compile(r"\{id:(\d+),title:")
 JOB_ID_IN_URL = re.compile(r"/(\d+)/?$")
 
 # Record fields that describe the posting, for the listing fingerprint.
@@ -60,7 +70,7 @@ class ParseError(ValueError):
 
 class KarieraAdapter:
     name: ClassVar[str] = "kariera"
-    PARSER_VERSION: ClassVar[str] = "1"
+    PARSER_VERSION: ClassVar[str] = "2"
 
     def list_postings(self, ctx: RunContext) -> Iterator[ListingRef]:
         base = ctx.config.base_url.rstrip("/")
@@ -81,9 +91,14 @@ class KarieraAdapter:
 
             ctx.listings.save_listing_page(result, account=category)
             soup = BeautifulSoup(result.content, "html.parser")
-            records = job_records(flight_text(soup))
+            items = item_list(soup)
+            records = page_records(soup)
+            if items and not records:
+                # The work mode then falls back to JSON-LD, which only knows
+                # fully remote jobs. Most likely the page format changed again.
+                ctx.log.warning("job_records_missing", category=category, url=page_url)
             new = 0
-            for item in item_list(soup):
+            for item in items:
                 posting_url = clean(item.get("url"))
                 job_id = job_id_from_url(posting_url)
                 if posting_url is None or job_id is None:
@@ -122,7 +137,7 @@ class KarieraAdapter:
         posting = json_ld(soup, "JobPosting")
         if posting is None:
             raise ParseError(f"no JobPosting JSON-LD in {payload.object_key or payload.url}")
-        record = job_records(flight_text(soup)).get(payload.source_job_id, {})
+        record = page_records(soup).get(payload.source_job_id, {})
         description = posting.get("description")
 
         return RawPosting(
@@ -207,19 +222,46 @@ def flight_text(soup: BeautifulSoup) -> str:
     return "".join(chunks)
 
 
+def state_text(soup: BeautifulSoup) -> str:
+    """The TanStack page state, from every <script data-tsr-stream-part>."""
+    scripts = soup.find_all("script", attrs={"data-tsr-stream-part": True})
+    return "\n".join(script.string or "" for script in scripts)
+
+
+def page_records(soup: BeautifulSoup) -> dict[str, dict[str, Any]]:
+    """The site's job records by id, from whichever format the page uses."""
+    return job_records(flight_text(soup)) or state_records(state_text(soup))
+
+
 def job_records(flight: str) -> dict[str, dict[str, Any]]:
-    """The site's job records by id. Listing pages repeat them, the first one wins."""
+    """The job records in Next.js flight data, by id."""
     decoder = json.JSONDecoder()
+    return first_records(flight, JOB_RECORD, lambda start: decoder.raw_decode(flight, start)[0])
+
+
+def state_records(state: str) -> dict[str, dict[str, Any]]:
+    """The job records in the TanStack page state, by id."""
+    return first_records(state, STATE_JOB_RECORD, lambda start: read_value(state, start)[0])
+
+
+def first_records(
+    text: str, pattern: re.Pattern[str], read: Callable[[int], dict[str, Any]]
+) -> dict[str, dict[str, Any]]:
+    """Every record that pattern finds in text, read with read(start).
+
+    The pattern matches at the opening brace, so read always gives a dict.
+    Listing pages repeat records, for example in a company's other jobs,
+    so the first one wins. A record that cannot be read is skipped.
+    """
     records: dict[str, dict[str, Any]] = {}
-    for match in JOB_RECORD.finditer(flight):
+    for match in pattern.finditer(text):
         job_id = match.group(1)
         if job_id in records:
             continue
         try:
-            record, _ = decoder.raw_decode(flight, match.start())
+            records[job_id] = read(match.start())
         except ValueError:
             continue
-        records[job_id] = record
     return records
 
 

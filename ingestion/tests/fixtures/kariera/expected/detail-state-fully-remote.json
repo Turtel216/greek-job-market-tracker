@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410204",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410204",
+  "title_raw": "Frontend Developer (React)",
+  "company_raw": "Pixelwave",
+  "location_raw": "Πάτρα, Δυτική Ελλάδα, Ελλάδα",
+  "workplace_raw": "FULLY_REMOTE",
+  "employment_type_raw": "CONTRACT",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "Fully remote θέση για Frontend Developer με React και TypeScript.",
+  "posted_at_raw": "2026-11-06T12:00:00.000Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410204.html.gz",
+  "parser_version": "2",
+  "content_hash": "426e9a25a631df7d74e58c97b1149af83c7ec4ee99016f154bd221cfa35f5b6d"
+}

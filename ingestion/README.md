@@ -130,8 +130,11 @@ semicolons. Its fixtures use a made up company.
 
 `sources/kariera.py` reads the kariera.gr job board, one registry account
 per listing category such as `it-jobs`. It takes almost everything from the
-schema.org JSON-LD on each page and only uses the Next.js flight data for
-the remote work field, which JSON-LD has no value for. It never calls the
+schema.org JSON-LD on each page and only uses the site's own job record in
+the page state for the remote work field, which JSON-LD has no value for
+unless the job is fully remote. The site sent that state as Next.js flight
+data until 2026-11-03 and as TanStack Start state since 2026-11-04, and the
+adapter reads both, so older payloads still reparse. It never calls the
 site's JSON endpoints, which robots.txt disallows. Its fixtures copy the
 structure of real pages with made up companies and texts, because the
 site's terms do not allow passing its content on. The source is disabled

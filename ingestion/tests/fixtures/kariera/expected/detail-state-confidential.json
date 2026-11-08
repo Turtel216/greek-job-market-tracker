@@ -1,0 +1,19 @@
+{
+  "source": "kariera",
+  "source_job_id": "410203",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://www.kariera.gr/jobs/it-jobs/410203",
+  "title_raw": "Senior QA Engineer",
+  "company_raw": "confidential",
+  "location_raw": "Αθήνα, Αττική, Ελλάδα",
+  "workplace_raw": "TEMPORARILY_REMOTE",
+  "employment_type_raw": "FULL_TIME",
+  "salary_raw": null,
+  "department_raw": "IT",
+  "description_raw": "Εταιρεία λογισμικού αναζητά Senior QA Engineer.\nΤηλεργασία για τους πρώτους 3 μήνες.",
+  "posted_at_raw": "2026-11-05T07:30:00.000Z",
+  "object_key": "raw/kariera/2026-10-25/run/detail/410203.html.gz",
+  "parser_version": "2",
+  "content_hash": "375429f05479f55d4f46d523b50ea7cad3783a035ce121a430ba9483d1228fc8"
+}

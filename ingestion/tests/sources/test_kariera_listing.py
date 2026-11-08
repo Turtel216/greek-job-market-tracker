@@ -21,9 +21,8 @@ from jobtracker_ingest.sources import get_adapter
 from jobtracker_ingest.sources.base import RunContext
 from jobtracker_ingest.sources.kariera import (
     KarieraAdapter,
-    flight_text,
-    job_records,
     listing_fingerprint,
+    page_records,
 )
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "kariera"
@@ -80,7 +79,7 @@ def page(rsps: responses.RequestsMock, number: int, name: str, base: str = IT) -
 
 
 def records_in(name: str) -> dict[str, dict[str, object]]:
-    return job_records(flight_text(BeautifulSoup(fixture(name), "html.parser")))
+    return page_records(BeautifulSoup(fixture(name), "html.parser"))
 
 
 def test_registered() -> None:
@@ -145,6 +144,59 @@ def test_fingerprint_without_a_record_hashes_the_list_item() -> None:
     fingerprint = listing_fingerprint(item, None)
     assert re.fullmatch(r"[0-9a-f]{64}", fingerprint)
     assert fingerprint != listing_fingerprint({**item, "name": "Changed"}, None)
+
+
+def test_list_postings_reads_the_tanstack_page_state(rsps: responses.RequestsMock) -> None:
+    page(rsps, 1, "listing-state-page-1.html")
+    page(rsps, 2, "listing-state-past-the-end.html")
+    ctx = make_ctx(["it-jobs"])
+
+    with capture_logs() as logs:
+        refs = list(KarieraAdapter().list_postings(ctx))
+
+    assert [r.source_job_id for r in refs] == ["410201", "410202", "410203", "410204"]
+    assert not [log for log in logs if log["event"] == "job_records_missing"]
+
+    records = records_in("listing-state-page-1.html")
+    assert {job_id: r["remote"] for job_id, r in records.items() if "remote" in r} == {
+        "410201": "PARTIALLY_REMOTE",
+        "410202": "DISABLED",
+        "410203": "TEMPORARILY_REMOTE",
+        "410204": "FULLY_REMOTE",
+    }
+    # The company box repeats 410202 in short form further down the page,
+    # and the full record from the job list must win
+    item = {"url": f"{IT}/410202"}
+    assert refs[1].listing_fingerprint == listing_fingerprint(item, records["410202"])
+    assert records["410299"] == {
+        "id": 410299,
+        "title": "Help Desk Specialist",
+        "category": "IT",
+        "favourite": False,
+    }
+
+
+def test_the_fingerprint_does_not_depend_on_the_list_position() -> None:
+    record = records_in("listing-state-page-1.html")["410201"]
+    first = {"@type": "ListItem", "position": 1, "url": f"{IT}/410201"}
+    assert listing_fingerprint(first, record) == listing_fingerprint(
+        {**first, "position": 17}, record
+    )
+
+
+def test_a_listing_page_without_job_records_is_logged(rsps: responses.RequestsMock) -> None:
+    # The JSON-LD list is there but the page state is in a format we do not read
+    html = fixture("listing-state-page-1.html").replace(b"data-tsr-stream-part", b"data-other")
+    rsps.get(f"{IT}?page=1", body=html, content_type="text/html; charset=utf-8")
+    page(rsps, 2, "listing-state-past-the-end.html")
+    ctx = make_ctx(["it-jobs"])
+
+    with capture_logs() as logs:
+        refs = list(KarieraAdapter().list_postings(ctx))
+
+    assert len(refs) == 4
+    missing = [log for log in logs if log["event"] == "job_records_missing"]
+    assert [(m["category"], m["url"]) for m in missing] == [("it-jobs", f"{IT}?page=1")]
 
 
 def test_stops_when_a_page_has_nothing_new(rsps: responses.RequestsMock) -> None:

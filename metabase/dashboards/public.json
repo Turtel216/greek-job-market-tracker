@@ -247,7 +247,7 @@
       "title": "New jobs per month, by seniority",
       "sql": "public/new_jobs_by_seniority.sql",
       "display": "bar",
-      "description": "Jobs first seen each month, by seniority.",
+      "description": "Jobs posted each month, by seniority. Jobs that were open before tracking began are not counted.",
       "settings": {
         "graph.dimensions": [
           "month",
@@ -352,7 +352,7 @@
       "title": "Median days open, by role family",
       "sql": "public/days_open_by_role.sql",
       "display": "bar",
-      "description": "Median days that closed jobs stayed open, from first seen to last seen. Jobs still open are left out.",
+      "description": "Median days that closed jobs stayed open, from the day they were posted to the day they were last seen. Jobs still open are left out.",
       "settings": {
         "graph.dimensions": [
           "role_family"

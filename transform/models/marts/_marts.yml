@@ -296,7 +296,8 @@ models:
     description: >
       Jobs that ask for each skill per month and role family, out of all
       jobs open in that month and role family. A job counts in every month
-      it was open, from first_seen until the day before closed_date. Every
+      it was open, from opened_date until the day before closed_date, and
+      months start with the first month of tracking. Every
       skill has a row for every month and role family with open jobs, so a
       skill nobody asked for shows zero. Sum jobs_with_skill over role
       families for a skill's total in a month.

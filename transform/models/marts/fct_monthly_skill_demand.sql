@@ -1,7 +1,8 @@
 -- How many jobs ask for each skill per month and role family, and what
 -- share of the jobs that is. A job counts in every month it was open: from
--- the month it was first seen to the month before it closed, or to the
--- newest run while it is still open.
+-- the month it opened to the month before it closed, or to the newest run
+-- while it is still open. Months start with the first month of tracking,
+-- since only the jobs still open then are known for earlier months.
 
 with
 
@@ -34,7 +35,7 @@ months as (
     ) as series (month_start)
 ),
 
--- A job is open from first_seen until the day before closed_date
+-- A job is open from opened_date until the day before closed_date
 job_months as (
     select
         jobs.job_id,
@@ -43,7 +44,7 @@ job_months as (
     from jobs
     inner join months
         on
-            jobs.first_seen < months.month_start + interval '1 month'
+            jobs.opened_date < months.month_start + interval '1 month'
             and (jobs.closed_date is null or jobs.closed_date > months.month_start)
 ),
 

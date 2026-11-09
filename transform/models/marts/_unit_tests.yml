@@ -115,28 +115,33 @@ unit_tests:
 
   - name: fct_monthly_skill_demand_open_months
     description: >
-      A job counts in every month from the one it was first seen in to the
-      one before it closed, so a job that closed on the 1st does not count
-      in that month. Every skill gets a row for each month and role family
-      with open jobs, with zero when no job asks for it.
+      A job counts in every month from the one it opened in to the one
+      before it closed, so a job that closed on the 1st does not count in
+      that month. A job that opened before it was first seen counts from the
+      month it opened, but months start with the first month a job was
+      seen. Every skill gets a row for each month and role family with open
+      jobs, with zero when no job asks for it.
     model: fct_monthly_skill_demand
     given:
       - input: ref('dim_jobs')
         rows:
           # September only: closed on the first day of October
-          - {job_id: j1, role_family: backend, first_seen: "2026-09-20", last_seen: "2026-09-30", closed_date: "2026-10-01"}
+          - {job_id: j1, role_family: backend, opened_date: "2026-09-20", first_seen: "2026-09-20", last_seen: "2026-09-30", closed_date: "2026-10-01"}
           # September to November, still open
-          - {job_id: j2, role_family: backend, first_seen: "2026-09-25", last_seen: "2026-11-05", closed_date: null}
+          - {job_id: j2, role_family: backend, opened_date: "2026-09-25", first_seen: "2026-09-25", last_seen: "2026-11-05", closed_date: null}
           # October only
-          - {job_id: j3, role_family: data, first_seen: "2026-10-15", last_seen: "2026-10-31", closed_date: "2026-11-01"}
+          - {job_id: j3, role_family: data, opened_date: "2026-10-15", first_seen: "2026-10-15", last_seen: "2026-10-31", closed_date: "2026-11-01"}
           # November, with no skills
-          - {job_id: j4, role_family: backend, first_seen: "2026-11-02", last_seen: "2026-11-05", closed_date: null}
+          - {job_id: j4, role_family: backend, opened_date: "2026-11-02", first_seen: "2026-11-02", last_seen: "2026-11-05", closed_date: null}
+          # Opened in August, first seen in October: September and October
+          - {job_id: j5, role_family: data, opened_date: "2026-08-10", first_seen: "2026-10-20", last_seen: "2026-10-24", closed_date: "2026-10-25"}
       - input: ref('bridge_job_skills')
         rows:
           - {job_id: j1, skill_id: python}
           - {job_id: j1, skill_id: sql}
           - {job_id: j2, skill_id: python}
           - {job_id: j3, skill_id: sql}
+          - {job_id: j5, skill_id: sql}
       - input: ref('dim_skills')
         rows:
           - {skill_id: python}
@@ -145,9 +150,11 @@ unit_tests:
       rows:
         - {month: "2026-09-01", skill_id: python, role_family: backend, jobs_with_skill: 2, jobs_total: 2, share_of_jobs: "1.0000"}
         - {month: "2026-09-01", skill_id: sql, role_family: backend, jobs_with_skill: 1, jobs_total: 2, share_of_jobs: "0.5000"}
+        - {month: "2026-09-01", skill_id: python, role_family: data, jobs_with_skill: 0, jobs_total: 1, share_of_jobs: "0.0000"}
+        - {month: "2026-09-01", skill_id: sql, role_family: data, jobs_with_skill: 1, jobs_total: 1, share_of_jobs: "1.0000"}
         - {month: "2026-10-01", skill_id: python, role_family: backend, jobs_with_skill: 1, jobs_total: 1, share_of_jobs: "1.0000"}
         - {month: "2026-10-01", skill_id: sql, role_family: backend, jobs_with_skill: 0, jobs_total: 1, share_of_jobs: "0.0000"}
-        - {month: "2026-10-01", skill_id: python, role_family: data, jobs_with_skill: 0, jobs_total: 1, share_of_jobs: "0.0000"}
-        - {month: "2026-10-01", skill_id: sql, role_family: data, jobs_with_skill: 1, jobs_total: 1, share_of_jobs: "1.0000"}
+        - {month: "2026-10-01", skill_id: python, role_family: data, jobs_with_skill: 0, jobs_total: 2, share_of_jobs: "0.0000"}
+        - {month: "2026-10-01", skill_id: sql, role_family: data, jobs_with_skill: 2, jobs_total: 2, share_of_jobs: "1.0000"}
         - {month: "2026-11-01", skill_id: python, role_family: backend, jobs_with_skill: 1, jobs_total: 2, share_of_jobs: "0.5000"}
         - {month: "2026-11-01", skill_id: sql, role_family: backend, jobs_with_skill: 0, jobs_total: 2, share_of_jobs: "0.0000"}

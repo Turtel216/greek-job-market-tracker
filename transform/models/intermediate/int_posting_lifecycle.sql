@@ -1,5 +1,5 @@
--- When each posting was first and last seen, and whether it is still open.
--- A posting closes once it is missing from missed_runs_to_close successful
+-- When each posting was posted, first and last seen, and whether it is
+-- still open. A posting closes once it is missing from missed_runs_to_close successful
 -- runs of its source in a row. Failed runs do not count, so a broken
 -- scraper never closes postings in bulk.
 
@@ -23,10 +23,13 @@ successful_runs as (
     where status = 'succeeded'
 ),
 
+-- kariera moves the posted date forward when a posting is reposted, so the
+-- earliest date any row gave is the one closest to the real one
 sightings as (
     select
         posting_key,
         source,
+        min(posted_at) as posted_at,
         min(run_date) as first_seen,
         max(run_date) as last_seen
     from raw_postings
@@ -53,6 +56,12 @@ final as (
     select
         sightings.posting_key,
         sightings.source,
+        sightings.posted_at,
+        -- A posting that was already open when tracking began, or when its
+        -- source or company was added, opened before it was first seen. A
+        -- posted date after first_seen is not trusted. least skips nulls,
+        -- so with no posted date this is first_seen.
+        least(sightings.posted_at, sightings.first_seen) as opened_date,
         sightings.first_seen,
         sightings.last_seen,
         missed.missed_runs::integer as missed_runs,

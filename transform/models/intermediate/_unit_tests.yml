@@ -49,6 +49,38 @@ unit_tests:
         - {posting_key: e, source: greenhouse, first_seen: "2026-10-03", last_seen: "2026-10-03", missed_runs: 1, is_open: true, closed_date: null}
         - {posting_key: f, source: lever, first_seen: "2026-10-01", last_seen: "2026-10-01", missed_runs: 0, is_open: true, closed_date: null}
 
+  - name: int_posting_lifecycle_opened_date
+    description: >
+      posted_at is the earliest posted date of the posting, so a repost that
+      moves the date forward does not change it. opened_date is posted_at
+      when that is before first_seen, so a posting that was already open
+      on its first run opened earlier. With no posted date, or one after
+      first_seen, opened_date is first_seen.
+    model: int_posting_lifecycle
+    given:
+      - input: ref('stg_raw_postings')
+        rows:
+          # Posted long before its source was first run
+          - {posting_key: a, source: workable, run_date: "2026-11-06", posted_at: "2018-05-23"}
+          # Reposted on the 3rd, which moved the posted date
+          - {posting_key: b, source: kariera, run_date: "2026-11-01", posted_at: "2026-10-02"}
+          - {posting_key: b, source: kariera, run_date: "2026-11-03", posted_at: "2026-11-03"}
+          # Posted the day it was first seen
+          - {posting_key: c, source: kariera, run_date: "2026-11-03", posted_at: "2026-11-03"}
+          # No posted date
+          - {posting_key: d, source: greenhouse, run_date: "2026-11-02", posted_at: null}
+          # A posted date after first_seen
+          - {posting_key: e, source: skywalker, run_date: "2026-11-02", posted_at: "2026-11-04"}
+      - input: source('ops', 'ingest_runs')
+        rows: []
+    expect:
+      rows:
+        - {posting_key: a, posted_at: "2018-05-23", opened_date: "2018-05-23", first_seen: "2026-11-06"}
+        - {posting_key: b, posted_at: "2026-10-02", opened_date: "2026-10-02", first_seen: "2026-11-01"}
+        - {posting_key: c, posted_at: "2026-11-03", opened_date: "2026-11-03", first_seen: "2026-11-03"}
+        - {posting_key: d, posted_at: null, opened_date: "2026-11-02", first_seen: "2026-11-02"}
+        - {posting_key: e, posted_at: "2026-11-04", opened_date: "2026-11-02", first_seen: "2026-11-02"}
+
   - name: int_posting_skills_patterns
     description: >
       Aliases match whole words, so java stays out of javascript and c out

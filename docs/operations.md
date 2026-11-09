@@ -241,7 +241,7 @@ The intermediate models are tables in the `intermediate` schema:
 
 | Model | Grain | Contents |
 | --- | --- | --- |
-| `int_posting_lifecycle` | posting | `first_seen`, `last_seen`, `is_open` and `closed_date`. A posting closes after it is missing from `missed_runs_to_close` successful runs of its source in a row; failed runs in `ops.ingest_runs` do not count |
+| `int_posting_lifecycle` | posting | `posted_at` (the earliest date the source gave), `opened_date` (`posted_at` when it is before `first_seen`, else `first_seen`), `first_seen`, `last_seen`, `is_open` and `closed_date`. A posting closes after it is missing from `missed_runs_to_close` successful runs of its source in a row; failed runs in `ops.ingest_runs` do not count |
 | `int_posting_skills` | posting and skill | Skills found by matching `skill_aliases` on the normalized title and description, with `matched_in` |
 | `int_job_candidate_pairs` | pair of postings | Postings of the same company whose titles have the same words after `title_word_map`, first seen within `dedup_window_days`, and whose city and seniority do not disagree |
 | `int_job_matches` | posting | The `job_id` of each posting. Pairs are joined into clusters, and `job_id` is the `posting_key` of the member first seen, so a full refresh gives the same ids |

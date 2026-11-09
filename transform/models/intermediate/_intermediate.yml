@@ -1,8 +1,8 @@
 models:
   - name: int_posting_lifecycle
     description: >
-      When each posting was first and last seen, and whether it is still
-      open. A posting closes once it is missing from missed_runs_to_close
+      When each posting was posted, first and last seen, and whether it is
+      still open. A posting closes once it is missing from missed_runs_to_close
       (2) successful runs of its source in a row; closed_date is the first
       of those runs. Only runs with a succeeded row in ops.ingest_runs
       count, so a failed run never closes anything. A posting
@@ -19,6 +19,17 @@ models:
                 field: posting_key
       - name: source
         description: Source name from config/sources.yml.
+        data_tests:
+          - not_null
+      - name: posted_at
+        description: >
+          The earliest posted date any row of the posting gave. Null when
+          its source gives none.
+      - name: opened_date
+        description: >
+          The day the posting opened: posted_at when it is before first_seen,
+          else first_seen. A posting that was already open when it was first
+          seen, such as on the first run of a new source, opened before then.
         data_tests:
           - not_null
       - name: first_seen

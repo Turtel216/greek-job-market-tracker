@@ -1,6 +1,7 @@
 -- One row per real-world job. The title and attributes come from the job's
 -- primary posting, the salary from its first posting that states one, and
--- the dates from all of its postings.
+-- the dates from all of its postings. A job opened on the earliest
+-- opened_date of its postings, which can be before tracking began.
 
 {%- set ats_sources = "'" ~ var('ats_sources') | join("', '") ~ "'" %}
 
@@ -34,6 +35,8 @@ members as (
         postings.salary_max_monthly,
         postings.salary_currency,
         postings.salary_basis,
+        lifecycle.posted_at,
+        lifecycle.opened_date,
         lifecycle.first_seen,
         lifecycle.last_seen,
         lifecycle.is_open,
@@ -83,6 +86,8 @@ clusters as (
     select
         job_id,
         count(distinct source) as source_count,
+        min(posted_at) as posted_at,
+        min(opened_date) as opened_date,
         min(first_seen) as first_seen,
         max(last_seen) as last_seen,
         bool_or(is_open) as is_open,
@@ -107,11 +112,13 @@ final as (
         salaries.salary_currency,
         salaries.salary_basis,
         clusters.source_count::integer as source_count,
+        clusters.posted_at,
+        clusters.opened_date,
         clusters.first_seen,
         clusters.last_seen,
         clusters.closed_date,
         clusters.is_open,
-        clusters.last_seen - clusters.first_seen + 1 as days_open
+        clusters.last_seen - clusters.opened_date + 1 as days_open
     from primary_postings
     inner join clusters on primary_postings.job_id = clusters.job_id
     left join salaries on primary_postings.job_id = salaries.job_id

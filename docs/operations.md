@@ -254,7 +254,7 @@ changed type fails the build:
 
 | Model | Grain | Contents |
 | --- | --- | --- |
-| `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` |
+| `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `posted_at`, `opened_date`, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` (counted from `opened_date`) |
 | `dim_skills` | skill | `skill_id`, `name`, `category`, `is_it_support` |
 | `bridge_job_skills` | job and skill | Every skill of the job's postings, with `matched_in` |
 | `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. Fully remote jobs count under `Remote` |

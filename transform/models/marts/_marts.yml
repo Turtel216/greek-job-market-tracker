@@ -49,7 +49,10 @@ models:
       board one (see the ats_sources var), then the posting that knows the
       most attributes, then the earliest seen. The salary comes from the
       first posting in the job that states one. Dates cover every posting
-      of the job.
+      of the job. opened_date and days_open count from the posted date the
+      sources give, so a job that was already open when tracking began, or
+      when its source or company was added, is not counted as opened that
+      day.
     columns:
       - name: job_id
         description: Primary key. The posting_key of the earliest posting in the job.
@@ -136,6 +139,20 @@ models:
           - type: not_null
         data_tests:
           - not_null
+      - name: posted_at
+        description: >
+          The earliest date any posting of the job says it was published.
+          Null when none of its sources gives one.
+        data_type: date
+      - name: opened_date
+        description: >
+          The day the job opened: the earliest of posted_at and first_seen.
+          Can be before tracking began.
+        data_type: date
+        constraints:
+          - type: not_null
+        data_tests:
+          - not_null
       - name: first_seen
         description: First run_date any posting of the job was seen.
         data_type: date
@@ -163,7 +180,7 @@ models:
         data_tests:
           - not_null
       - name: days_open
-        description: last_seen - first_seen + 1.
+        description: last_seen - opened_date + 1.
         data_type: integer
         constraints:
           - type: not_null

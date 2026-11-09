@@ -12,8 +12,8 @@
   "salary_raw": null,
   "department_raw": "Mobile, Apps",
   "description_raw": "Flutter apps.",
-  "posted_at_raw": "2026-10-20",
+  "posted_at_raw": "2026-10-19",
   "object_key": "raw/workable/2026-10-25/run/detail/DDD4444444.json.gz",
-  "parser_version": "2",
-  "content_hash": "504eadfae4ea2514620afe711a012391bc523a4f18ea9e2915af63429cc918a8"
+  "parser_version": "3",
+  "content_hash": "d34ab62148d771170ac1da9cbf66a0958d3f655538a4c7ba8f6c39867223678e"
 }

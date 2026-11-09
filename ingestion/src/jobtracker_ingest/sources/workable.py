@@ -40,7 +40,7 @@ class ParseError(ValueError):
 
 class WorkableAdapter:
     name: ClassVar[str] = "workable"
-    PARSER_VERSION: ClassVar[str] = "2"
+    PARSER_VERSION: ClassVar[str] = "3"
 
     def __init__(self) -> None:
         # The payload of every posting listed in this run, by id, which
@@ -132,7 +132,7 @@ class WorkableAdapter:
             description_raw=markup_to_text(job["description"])
             if isinstance(job.get("description"), str)
             else None,
-            posted_at_raw=clean(job.get("published_on")) or clean(job.get("created_at")),
+            posted_at_raw=posted_text(job),
             object_key=payload.object_key,
             parser_version=self.PARSER_VERSION,
         )
@@ -175,6 +175,18 @@ def workplace_text(job: dict[str, Any]) -> str | None:
     if job.get("telecommuting") is True:
         return "remote"
     return None
+
+
+def posted_text(job: dict[str, Any]) -> str | None:
+    """The earlier of published_on and created_at.
+
+    Republishing a job moves published_on to that day, while created_at keeps
+    the day the job was made. One company republished every job on the same
+    day, so published_on alone made old jobs look new. Both are ISO dates, so
+    the earlier one is the smaller text.
+    """
+    dates = [clean(job.get(field)) for field in ("published_on", "created_at")]
+    return min((d for d in dates if d), default=None)
 
 
 def department_text(job: dict[str, Any]) -> str | None:

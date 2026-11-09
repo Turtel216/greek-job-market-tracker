@@ -12,8 +12,8 @@
   "salary_raw": null,
   "department_raw": "Data Platform",
   "description_raw": "Build pipelines with Airflow and dbt.",
-  "posted_at_raw": "2026-10-20",
+  "posted_at_raw": "2026-10-19",
   "object_key": "raw/workable/2026-10-25/run/detail/BBB2222222.json.gz",
-  "parser_version": "2",
-  "content_hash": "8ee198feffee6b2156721fb67634c44287718d8b9a25931cb1fc5dd50c0157bc"
+  "parser_version": "3",
+  "content_hash": "ba285cc9478b5637d975b1286f2f9e46956c2f936e90dfc68ccd16a427b1ed50"
 }

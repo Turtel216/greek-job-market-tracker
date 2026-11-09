@@ -1,0 +1,19 @@
+{
+  "source": "workable",
+  "source_job_id": "FFF6666666",
+  "run_date": "2026-10-25",
+  "scraped_at": "2026-10-25T03:00:12Z",
+  "url": "https://apply.workable.com/j/FFF6666666",
+  "title_raw": "Java Developer",
+  "company_raw": "Acropolis Analytics",
+  "location_raw": "Athens, Attica, Greece",
+  "workplace_raw": null,
+  "employment_type_raw": "Full-time",
+  "salary_raw": null,
+  "department_raw": "Engineering",
+  "description_raw": "We are looking for a Java developer to work on our payment services.",
+  "posted_at_raw": "2025-09-17",
+  "object_key": "raw/workable/2026-10-25/run/detail/FFF6666666.json.gz",
+  "parser_version": "3",
+  "content_hash": "60dbbb5c8ff6f125d3f5a89f0327407f4944f1d12ab5f94fc06b83b15591974f"
+}

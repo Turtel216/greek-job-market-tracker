@@ -12,8 +12,8 @@
   "salary_raw": null,
   "department_raw": "Engineering",
   "description_raw": "Keep the platform running.",
-  "posted_at_raw": "2026-10-20",
+  "posted_at_raw": "2026-10-19",
   "object_key": "raw/workable/2026-10-25/run/detail/FFF6666666.json.gz",
-  "parser_version": "2",
-  "content_hash": "e736c44b62291d24f37d8ebf02bde1bb13b2a89e5a814f153e0902875e138e51"
+  "parser_version": "3",
+  "content_hash": "09ba8f7069047361dc5e329bfb0c4e78e93f6e5838c3a5eef7b83f63f7be7eef"
 }

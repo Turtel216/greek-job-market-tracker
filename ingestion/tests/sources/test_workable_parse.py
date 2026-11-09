@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from jobtracker_ingest.core.models import RawPayload
-from jobtracker_ingest.sources.workable import ParseError, WorkableAdapter
+from jobtracker_ingest.sources.workable import ParseError, WorkableAdapter, posted_text
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "workable"
 DETAILS = sorted(FIXTURES.glob("detail-*.json"))
@@ -59,6 +59,25 @@ def test_company_falls_back_to_the_account() -> None:
     record["company"] = ""
     posting = WorkableAdapter().parse(payload_for(path, json.dumps(record).encode()))
     assert posting.company_raw == "acropolis"
+
+
+@pytest.mark.parametrize(
+    ("published_on", "created_at", "expected"),
+    [
+        # Republished long after it was made
+        ("2026-11-02", "2025-09-17", "2025-09-17"),
+        ("2026-10-20", "2026-10-20", "2026-10-20"),
+        # Not seen in real payloads, but the earlier date still wins
+        ("2026-10-18", "2026-10-19", "2026-10-18"),
+        (None, "2026-10-19", "2026-10-19"),
+        ("2026-10-20", "", "2026-10-20"),
+        (None, None, None),
+    ],
+)
+def test_posted_date_is_the_earlier_one(
+    published_on: str | None, created_at: str | None, expected: str | None
+) -> None:
+    assert posted_text({"published_on": published_on, "created_at": created_at}) == expected
 
 
 @pytest.mark.parametrize("content", [b"not json", b"[]", b'{"company": "x"}', b'{"job": 3}'])

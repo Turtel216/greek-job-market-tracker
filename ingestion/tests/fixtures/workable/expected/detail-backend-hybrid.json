@@ -12,8 +12,8 @@
   "salary_raw": null,
   "department_raw": "Engineering",
   "description_raw": "We build payments software.\nPython and PostgreSQL\nDocker\nContact: hr@example.org",
-  "posted_at_raw": "2026-10-20",
+  "posted_at_raw": "2026-10-19",
   "object_key": "raw/workable/2026-10-25/run/detail/AAA1111111.json.gz",
-  "parser_version": "2",
-  "content_hash": "6ce21d3d8c58de97eef55db5441a0347ad0c8c18a1d8c6de57135d302376d894"
+  "parser_version": "3",
+  "content_hash": "666c8be98c565d556b6bc9fa3ec93e8e8d3adff80902754604cbe81e7fe866aa"
 }

@@ -267,14 +267,18 @@ models:
         data_tests:
           - not_null
       - name: new_postings
-        description: Jobs first seen on this day.
+        description: >
+          Jobs opened on this day, from dim_jobs.opened_date. Jobs opened
+          before the first day of the spine are not new on any day.
         data_type: integer
         constraints:
           - type: not_null
         data_tests:
           - not_null
       - name: open_postings
-        description: Jobs open on this day, from the day first seen until the day before closing.
+        description: >
+          Jobs open on this day, from the day they opened (or the first day of
+          the spine, if that is later) until the day before closing.
         data_type: integer
         constraints:
           - type: not_null

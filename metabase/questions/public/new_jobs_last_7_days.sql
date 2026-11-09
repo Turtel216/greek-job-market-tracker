@@ -1,4 +1,5 @@
--- Jobs first seen in the 7 days up to the newest run
+-- Jobs opened in the 7 days up to the newest run, by the date the source
+-- says they were posted
 select coalesce(sum(new_postings), 0) as new_jobs
 from marts.fct_daily_postings
 where

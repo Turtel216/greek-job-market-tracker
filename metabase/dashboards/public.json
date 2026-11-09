@@ -55,7 +55,7 @@
       "title": "New jobs, last 7 days",
       "sql": "public/new_jobs_last_7_days.sql",
       "display": "scalar",
-      "description": "Jobs first seen in the 7 days up to the newest run.",
+      "description": "Jobs posted in the 7 days up to the newest run.",
       "row": 3,
       "col": 6,
       "width": 6,
@@ -168,7 +168,7 @@
       "title": "New jobs per week, by role family",
       "sql": "public/new_jobs_per_week.sql",
       "display": "bar",
-      "description": "Jobs first seen each week over the last 26 weeks. The first week of tracking also counts every job that was already open.",
+      "description": "Jobs opened each week over the last 26 weeks, by the date the source says they were posted. Jobs that were open before tracking began are not counted.",
       "settings": {
         "graph.dimensions": [
           "week",

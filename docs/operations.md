@@ -257,7 +257,7 @@ changed type fails the build:
 | `dim_jobs` | job | Attributes of the primary posting (ATS first, then the one that knows the most, then the earliest), the first stated salary, `posted_at`, `opened_date`, `first_seen`, `last_seen`, `closed_date`, `is_open`, `days_open` (counted from `opened_date`) |
 | `dim_skills` | skill | `skill_id`, `name`, `category`, `is_it_support` |
 | `bridge_job_skills` | job and skill | Every skill of the job's postings, with `matched_in` |
-| `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. Fully remote jobs count under `Remote` |
+| `fct_daily_postings` | day, role family, city | New, open and closed jobs on a date spine. A job is new on its `opened_date`, and jobs opened before tracking began are open but never new. Fully remote jobs count under `Remote` |
 | `fct_monthly_skill_demand` | month, skill, role family | Jobs with the skill, all open jobs and the share. A job counts in every month it was open |
 
 The `qa_*` views (`qa_unmapped_locations`, `qa_unclassified_titles`,

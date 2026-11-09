@@ -1,5 +1,6 @@
--- Jobs first seen each week over the last 26 weeks, by role family. The
--- first week of tracking also counts every job that was already open.
+-- Jobs opened each week over the last 26 weeks, by role family. A job
+-- opens on the date its source says it was posted, or the day it was first
+-- seen when that is earlier. Jobs opened before tracking began are not new.
 select
     date_trunc('week', date)::date as week,
     role_family,

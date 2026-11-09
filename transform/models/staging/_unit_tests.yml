@@ -42,6 +42,44 @@ unit_tests:
           salary_text: "Base salary: 56000 - 70000 EUR"
           description: null
 
+  - name: stg_raw_postings_posted_at
+    description: >
+      posted_at is the date in posted_at_raw. A timestamp with a time zone
+      becomes its Europe/Athens date, so 22:30 UTC is the next day. A
+      timestamp without a zone keeps its date. Empty, unknown or impossible
+      dates give null.
+    model: stg_raw_postings
+    given:
+      - input: source('raw', 'raw_postings')
+        rows:
+          # Workable and skywalker
+          - {raw_posting_id: 1, source: workable, source_job_id: "1", posted_at_raw: "2026-11-02"}
+          # kariera, before and after midnight in Athens
+          - {raw_posting_id: 2, source: kariera, source_job_id: "2", posted_at_raw: "2026-11-06T10:48:08.322Z"}
+          - {raw_posting_id: 3, source: kariera, source_job_id: "3", posted_at_raw: "2026-11-06T22:30:00.000Z"}
+          # Greenhouse, with an offset
+          - {raw_posting_id: 4, source: greenhouse, source_job_id: "4", posted_at_raw: "2026-10-22T03:05:51-04:00"}
+          - {raw_posting_id: 5, source: greenhouse, source_job_id: "5", posted_at_raw: "2026-10-22T23:30:00"}
+          - {raw_posting_id: 6, source: workable, source_job_id: "6", posted_at_raw: null}
+          - {raw_posting_id: 7, source: workable, source_job_id: "7", posted_at_raw: "2 days ago"}
+          - {raw_posting_id: 8, source: workable, source_job_id: "8", posted_at_raw: "2026-02-30"}
+          - {raw_posting_id: 9, source: kariera, source_job_id: "9", posted_at_raw: "2026-13-01T10:00:00Z"}
+      - input: ref('non_job_rules')
+      - input: ref('abroad_countries')
+      - input: ref('non_tech_rules')
+      - input: ref('role_family_rules')
+    expect:
+      rows:
+        - {raw_posting_id: 1, posted_at: "2026-11-02"}
+        - {raw_posting_id: 2, posted_at: "2026-11-06"}
+        - {raw_posting_id: 3, posted_at: "2026-11-07"}
+        - {raw_posting_id: 4, posted_at: "2026-10-22"}
+        - {raw_posting_id: 5, posted_at: "2026-10-22"}
+        - {raw_posting_id: 6, posted_at: null}
+        - {raw_posting_id: 7, posted_at: null}
+        - {raw_posting_id: 8, posted_at: null}
+        - {raw_posting_id: 9, posted_at: null}
+
   - name: stg_raw_postings_newest_parse
     description: >
       After a reparse, each posting and day keeps only the row from the

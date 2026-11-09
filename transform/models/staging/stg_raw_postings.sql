@@ -63,6 +63,9 @@ cleaned as (
         {{ squish('department_raw') }} as department,
         -- Line breaks are kept for now; normalize_text removes them later
         nullif(btrim(description_raw), '') as description,
+        -- The date the source says it was published. Some sources move it
+        -- forward when a posting is reposted, so lifecycle takes the earliest.
+        {{ parse_posted_date('posted_at_raw') }} as posted_at,
         content_hash,
         parser_version,
         load_id

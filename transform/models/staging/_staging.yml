@@ -65,6 +65,11 @@ models:
         description: ATS department or job board category.
       - name: description
         description: Plain text description, PII scrubbed.
+      - name: posted_at
+        description: >
+          The date the source says the posting was published, from
+          posted_at_raw. A timestamp becomes its Europe/Athens date. Null
+          when the source gives none or the text is not an ISO date.
       - name: content_hash
         description: sha256 of the parsed fields.
       - name: parser_version

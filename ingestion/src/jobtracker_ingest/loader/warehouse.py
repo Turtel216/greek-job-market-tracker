@@ -102,6 +102,13 @@ from ops.posting_fingerprints
 where source = %(source)s
 """
 
+# Postings seen since the date may still reuse their stored detail
+SELECT_DETAIL_KEYS_IN_USE = """
+select distinct detail_object_key
+from ops.posting_fingerprints
+where last_seen_run_date >= %(since)s
+"""
+
 
 class WarehouseTx(Protocol):
     def insert_raw_postings(self, postings: Sequence[RawPosting], load_id: UUID) -> int:
@@ -118,6 +125,10 @@ class WarehouseTx(Protocol):
 class Warehouse(Protocol):
     def fingerprints(self, source: str) -> dict[str, Fingerprint]:
         """The stored fingerprints of one source, by source_job_id."""
+        ...
+
+    def detail_keys_in_use(self, since: date) -> set[str]:
+        """Stored detail keys of every posting seen on or after since."""
         ...
 
     def transaction(self) -> AbstractContextManager[WarehouseTx]:
@@ -204,6 +215,11 @@ class PostgresWarehouse:
             rows = [Fingerprint.model_validate(row) for row in cur]
         return {row.source_job_id: row for row in rows}
 
+    def detail_keys_in_use(self, since: date) -> set[str]:
+        with self.conn.cursor() as cur:
+            cur.execute(SELECT_DETAIL_KEYS_IN_USE, {"since": since})
+            return {row[0] for row in cur}
+
     @contextmanager
     def transaction(self) -> Iterator[WarehouseTx]:
         with self.conn.transaction():
@@ -222,6 +238,13 @@ class MemoryWarehouse:
     def fingerprints(self, source: str) -> dict[str, Fingerprint]:
         return {
             job_id: fp for (src, job_id), fp in self.posting_fingerprints.items() if src == source
+        }
+
+    def detail_keys_in_use(self, since: date) -> set[str]:
+        return {
+            fp.detail_object_key
+            for fp in self.posting_fingerprints.values()
+            if fp.last_seen_run_date >= since
         }
 
     @contextmanager

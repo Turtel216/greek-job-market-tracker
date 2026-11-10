@@ -183,6 +183,17 @@ def test_fingerprints_round_trip_and_keep_the_newest(warehouse: PostgresWarehous
     assert warehouse.fingerprints("kariera") == {}
 
 
+def test_detail_keys_in_use_are_those_of_postings_seen_since(
+    warehouse: PostgresWarehouse,
+) -> None:
+    with warehouse.transaction() as tx:
+        tx.upsert_fingerprints([fingerprint("1", "a", DAY_2), fingerprint("2", "b", DAY_1)])
+
+    key = "raw/greenhouse/2026-10-25/r1/detail/{}.json.gz"
+    assert warehouse.detail_keys_in_use(DAY_2) == {key.format("1")}
+    assert warehouse.detail_keys_in_use(DAY_1) == {key.format("1"), key.format("2")}
+
+
 def test_ingest_run_is_replaced_on_a_second_load(
     warehouse: PostgresWarehouse, admin: psycopg.Connection[tuple[object, ...]]
 ) -> None:

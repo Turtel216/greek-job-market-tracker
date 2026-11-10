@@ -1,5 +1,5 @@
 import json
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from uuid import UUID
 
 import pytest
@@ -21,6 +21,7 @@ from jobtracker_ingest.loader.load import LoadError, run_load
 from jobtracker_ingest.loader.models import IngestRun
 from jobtracker_ingest.loader.runs import NoCompleteRun
 from jobtracker_ingest.loader.warehouse import MemoryWarehouse
+from jobtracker_ingest.maintenance.retention import prune_raw
 from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter
 
 LOAD_1 = UUID("00000000-0000-0000-0000-000000000001")
@@ -298,3 +299,27 @@ def failed_run() -> IngestRun:
         extract_counts={},
         http_stats={},
     )
+
+
+def test_retention_keeps_a_detail_that_is_still_reused(
+    store: MemoryObjectStore, warehouse: MemoryWarehouse, write_run: WriteRun
+) -> None:
+    write_run([fixture_posting("4012345008")])
+    load(store, warehouse)
+    first_key = warehouse.posting_fingerprints[("greenhouse", "4012345008")].detail_object_key
+
+    # The detail fetch failed every day since, so each load reused it, and
+    # by day 40 its run is past the 30 day retention
+    day_40 = DAY_1 + timedelta(days=40)
+    write_run([fixture_posting("4012345008", fetch=False)], run_date=day_40, run_id="r40")
+    load(store, warehouse, run_date=day_40, load_id=LOAD_2)
+
+    result = prune_raw(store, warehouse, day_40 + timedelta(days=1))
+
+    assert result.kept_in_use == 1
+    assert list(store.list_keys("raw/greenhouse/2026-10-25/")) == [first_key]
+
+    day_41 = day_40 + timedelta(days=1)
+    write_run([fixture_posting("4012345008", fetch=False)], run_date=day_41, run_id="r41")
+    run = load(store, warehouse, run_date=day_41, load_id=LOAD_2)
+    assert (run.details_reused, run.details_missing) == (1, 0)

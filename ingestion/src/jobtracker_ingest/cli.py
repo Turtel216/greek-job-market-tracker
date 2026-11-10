@@ -4,6 +4,7 @@
     jobtracker load --source greenhouse --run-date 2026-10-25
     jobtracker reparse --source greenhouse --start-date 2026-10-20 --end-date 2026-10-25
     jobtracker load-dbt-results --run-date 2026-10-25 --folder /opt/airflow/logs/dbt/2026-10-25
+    jobtracker prune-raw --run-date 2026-11-28
 
 Exit codes: 0 on success, 1 on a failure worth retrying later, and 3 when
 the source blocked us. Airflow does not retry a block, since the source is
@@ -23,13 +24,14 @@ from botocore.exceptions import BotoCoreError, ClientError
 from jobtracker_ingest.core.http import BlockedError, HttpError, PoliteClient, user_agent_from_env
 from jobtracker_ingest.core.logs import configure_logging
 from jobtracker_ingest.core.registry import load_registry
-from jobtracker_ingest.core.storage import S3ObjectStore
+from jobtracker_ingest.core.storage import DeleteError, S3ObjectStore
 from jobtracker_ingest.extract import ExtractError, detail_needed, run_extract
 from jobtracker_ingest.loader.dbt_results import load_dbt_results
 from jobtracker_ingest.loader.load import LoadError, run_load
 from jobtracker_ingest.loader.reparse import run_reparse
 from jobtracker_ingest.loader.runs import NoCompleteRun
 from jobtracker_ingest.loader.warehouse import PostgresWarehouse
+from jobtracker_ingest.maintenance.retention import KEEP_DAYS, prune_raw
 from jobtracker_ingest.sources import get_adapter
 
 EXIT_FAILED = 1
@@ -70,6 +72,20 @@ def build_parser() -> argparse.ArgumentParser:
     dbt_results.add_argument("--run-date", required=True, type=date.fromisoformat)
     dbt_results.add_argument(
         "--folder", required=True, type=Path, help="folder with one artifacts folder per dbt step"
+    )
+
+    prune = commands.add_parser(
+        "prune-raw", help="delete raw payloads older than the retention period"
+    )
+    prune.add_argument("--run-date", required=True, type=date.fromisoformat)
+    prune.add_argument(
+        "--keep-days",
+        type=int,
+        default=KEEP_DAYS,
+        help=f"days of payloads to keep before run-date (default: {KEEP_DAYS})",
+    )
+    prune.add_argument(
+        "--dry-run", action="store_true", help="log what would be deleted, delete nothing"
     )
     return parser
 
@@ -197,6 +213,23 @@ def load_dbt(args: argparse.Namespace) -> int:
     return 0
 
 
+def prune(args: argparse.Namespace) -> int:
+    log = structlog.get_logger("jobtracker_ingest.cli")
+    try:
+        with PostgresWarehouse.connect() as warehouse:
+            prune_raw(
+                S3ObjectStore.from_env(),
+                warehouse,
+                args.run_date,
+                keep_days=args.keep_days,
+                dry_run=args.dry_run,
+            )
+    except (ValueError, DeleteError, psycopg.Error, BotoCoreError, ClientError) as err:
+        log.error("prune_failed", error=f"{type(err).__name__}: {err}")
+        return EXIT_FAILED
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     configure_logging()
     args = build_parser().parse_args(argv)
@@ -208,6 +241,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return reparse(args)
     if args.command == "load-dbt-results":
         return load_dbt(args)
+    if args.command == "prune-raw":
+        return prune(args)
     return 2
 
 

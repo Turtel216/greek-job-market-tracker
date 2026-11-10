@@ -344,3 +344,43 @@ def test_load_dbt_results_when_the_database_is_down_returns_1(
 
     monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
     assert load_dbt_results(DBT_FIXTURES) == cli.EXIT_FAILED
+
+
+OLD_KEY = "raw/greenhouse/2026-10-01/r1/_manifest.json"
+NEW_KEY = "raw/greenhouse/2026-11-01/r1/_manifest.json"
+
+
+def prune_raw(*extra: str) -> int:
+    return cli.main(["prune-raw", "--run-date", "2026-11-28", *extra])
+
+
+def test_prune_raw(store: MemoryObjectStore) -> None:
+    store.put(OLD_KEY, b"{}", "application/json")
+    store.put(NEW_KEY, b"{}", "application/json")
+    assert prune_raw() == 0
+    assert list(store.objects) == [NEW_KEY]
+
+
+def test_prune_raw_dry_run_and_keep_days(store: MemoryObjectStore) -> None:
+    store.put(OLD_KEY, b"{}", "application/json")
+    store.put(NEW_KEY, b"{}", "application/json")
+    assert prune_raw("--keep-days", "7", "--dry-run") == 0
+    assert list(store.objects) == [OLD_KEY, NEW_KEY]
+
+
+def test_prune_raw_with_zero_keep_days_returns_1(store: MemoryObjectStore) -> None:
+    store.put(NEW_KEY, b"{}", "application/json")
+    assert prune_raw("--keep-days", "0") == cli.EXIT_FAILED
+    assert list(store.objects) == [NEW_KEY]
+
+
+def test_prune_raw_when_the_database_is_down_deletes_nothing(
+    store: MemoryObjectStore, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def refuse() -> None:
+        raise psycopg.OperationalError("connection refused")
+
+    store.put(OLD_KEY, b"{}", "application/json")
+    monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
+    assert prune_raw() == cli.EXIT_FAILED
+    assert list(store.objects) == [OLD_KEY]

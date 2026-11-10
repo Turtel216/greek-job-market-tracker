@@ -9,6 +9,7 @@ from botocore.response import StreamingBody
 from botocore.stub import Stubber
 
 from jobtracker_ingest.core.storage import (
+    DeleteError,
     MemoryObjectStore,
     ObjectNotFound,
     S3ObjectStore,
@@ -94,6 +95,44 @@ def test_s3_list_keys_pages_through_results(s3: S3ObjectStore) -> None:
         )
         assert list(s3.list_keys("raw/")) == ["raw/a", "raw/b"]
         assert list(s3.list_keys("x/")) == []
+
+
+def delete_params(keys: list[str]) -> dict[str, object]:
+    return {
+        "Bucket": BUCKET,
+        "Delete": {"Objects": [{"Key": key} for key in keys], "Quiet": True},
+    }
+
+
+def test_s3_delete_sends_batches_of_1000(s3: S3ObjectStore) -> None:
+    keys = [f"raw/{i:04d}" for i in range(1001)]
+    with Stubber(s3.client) as stub:
+        stub.add_response("delete_objects", {}, delete_params(keys[:1000]))
+        stub.add_response("delete_objects", {}, delete_params(keys[1000:]))
+        s3.delete(keys)
+        stub.assert_no_pending_responses()
+
+
+def test_s3_delete_nothing_sends_no_request(s3: S3ObjectStore) -> None:
+    with Stubber(s3.client) as stub:
+        s3.delete([])
+        stub.assert_no_pending_responses()
+
+
+def test_s3_delete_raises_when_a_key_fails(s3: S3ObjectStore) -> None:
+    errors = {"Errors": [{"Key": "raw/b", "Code": "AccessDenied", "Message": "no"}]}
+    with Stubber(s3.client) as stub:
+        stub.add_response("delete_objects", errors, delete_params(["raw/a", "raw/b"]))
+        with pytest.raises(DeleteError, match="1 of 2 keys not deleted, first raw/b"):
+            s3.delete(["raw/a", "raw/b"])
+
+
+def test_memory_delete_ignores_missing_keys() -> None:
+    store = MemoryObjectStore()
+    store.put("raw/a", b"1", "x/y")
+    store.put("raw/b", b"2", "x/y")
+    store.delete(["raw/a", "raw/gone"])
+    assert list(store.list_keys("raw/")) == ["raw/b"]
 
 
 def test_from_env(monkeypatch: pytest.MonkeyPatch) -> None:

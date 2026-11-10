@@ -8,12 +8,15 @@ works. Keys follow this layout:
       listing/page-0001.json.gz
       detail/<source_job_id>.json.gz
 
+Only the retention job deletes objects; everything else treats raw
+payloads as immutable.
+
 MemoryObjectStore does the same in memory for tests.
 """
 
 import gzip
 import os
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from datetime import date
 from typing import TYPE_CHECKING, Protocol
 
@@ -26,9 +29,16 @@ if TYPE_CHECKING:
 
 MANIFEST_NAME = "_manifest.json"
 
+# The S3 API takes at most this many keys in one delete request
+DELETE_BATCH_SIZE = 1000
+
 
 class ObjectNotFound(KeyError):
     """No object under this key, for example after the 30 day retention."""
+
+
+class DeleteError(Exception):
+    """The store refused to delete some keys."""
 
 
 def run_prefix(source: str, run_date: date, run_id: str) -> str:
@@ -46,6 +56,10 @@ class ObjectStore(Protocol):
     def get(self, key: str) -> bytes: ...
 
     def list_keys(self, prefix: str) -> Iterator[str]: ...
+
+    def delete(self, keys: Sequence[str]) -> None:
+        """Delete these keys. A key that is already gone is not an error."""
+        ...
 
 
 class S3ObjectStore:
@@ -84,6 +98,22 @@ class S3ObjectStore:
             for obj in page.get("Contents", []):
                 yield obj["Key"]
 
+    def delete(self, keys: Sequence[str]) -> None:
+        for start in range(0, len(keys), DELETE_BATCH_SIZE):
+            batch = keys[start : start + DELETE_BATCH_SIZE]
+            response = self.client.delete_objects(
+                Bucket=self.bucket,
+                # Quiet, so the answer lists only the keys that failed
+                Delete={"Objects": [{"Key": key} for key in batch], "Quiet": True},
+            )
+            errors = response.get("Errors", [])
+            if errors:
+                first = errors[0]
+                raise DeleteError(
+                    f"{len(errors)} of {len(batch)} keys not deleted, first "
+                    f"{first.get('Key')}: {first.get('Code')} {first.get('Message')}"
+                )
+
 
 class MemoryObjectStore:
     """Keeps objects in a dict. Records the order of puts for tests."""
@@ -106,3 +136,8 @@ class MemoryObjectStore:
 
     def list_keys(self, prefix: str) -> Iterator[str]:
         yield from sorted(k for k in self.objects if k.startswith(prefix))
+
+    def delete(self, keys: Sequence[str]) -> None:
+        for key in keys:
+            self.objects.pop(key, None)
+            self.content_types.pop(key, None)

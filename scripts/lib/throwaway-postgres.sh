@@ -15,7 +15,7 @@ docker run -d --rm --name "$TEST_DB_NAME" -p 127.0.0.1::5432 \
     -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD="$TEST_DB_PASSWORD" -e POSTGRES_DB=warehouse \
     -e LOADER_PASSWORD="$TEST_DB_PASSWORD" -e TRANSFORMER_PASSWORD="$TEST_DB_PASSWORD" \
     -e BI_READER_PASSWORD="$TEST_DB_PASSWORD" -e AIRFLOW_DB_PASSWORD="$TEST_DB_PASSWORD" \
-    -e METABASE_DB_PASSWORD="$TEST_DB_PASSWORD" \
+    -e METABASE_DB_PASSWORD="$TEST_DB_PASSWORD" -e BACKUP_PASSWORD="$TEST_DB_PASSWORD" \
     -v "$PWD/infra/postgres/init:/docker-entrypoint-initdb.d:ro" \
     "$TEST_DB_IMAGE" >/dev/null
 trap 'docker stop "$TEST_DB_NAME" >/dev/null' EXIT

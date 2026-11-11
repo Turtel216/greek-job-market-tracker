@@ -11,7 +11,7 @@ COMPOSE ?= docker compose
 AIRFLOW_IMAGE ?= jobtracker-airflow:dev
 
 .DEFAULT_GOAL := help
-.PHONY: help setup dbt-setup up down db-tables dashboards lint test test-db test-dags test-metabase dbt-build test-dbt dedup-sample dedup-label-sample airflow-image dbt-lock backup restore
+.PHONY: help setup dbt-setup up down db-tables db-backup-role backup-dir dashboards lint test test-db test-dags test-metabase dbt-build test-dbt dedup-sample dedup-label-sample airflow-image dbt-lock backup restore
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*## "} {printf "  %-14s %s\n", $$1, $$2}'
@@ -36,6 +36,18 @@ down: ## Stop the whole stack
 db-tables: ## Create the raw and ops tables on a running stack
 	$(COMPOSE) exec -T postgres sh -c 'psql -v ON_ERROR_STOP=1 -U "$$POSTGRES_USER" \
 		-d "$$POSTGRES_DB" -f /docker-entrypoint-initdb.d/03-raw-and-ops-tables.sql'
+
+# Like db-tables, for the read-only role the nightly backup connects as. Set
+# BACKUP_PASSWORD in .env and run `make up` first, so the container has it.
+db-backup-role: ## Create the backup role on a running stack
+	$(COMPOSE) exec -T postgres bash /docker-entrypoint-initdb.d/04-backup-role.sh
+
+# Docker creates a missing BACKUP_DIR owned by root, and the Airflow user
+# (uid 50000) cannot write there. This hands it over, from a container, so
+# it needs no sudo on the host.
+backup-dir: ## Let the Airflow scheduler write to BACKUP_DIR
+	$(COMPOSE) run --rm --no-deps --user 0:0 --entrypoint sh airflow-scheduler \
+		-c 'chown 50000:0 /opt/airflow/backups && chmod 750 /opt/airflow/backups'
 
 # metabase-init runs once on `make up`. This runs it again, so Metabase
 # matches the definitions in metabase/ after changing them.
@@ -91,8 +103,12 @@ dbt-lock: ## Regenerate the locked dbt requirements for the Airflow image
 	$(UV) pip compile infra/airflow/requirements-dbt.in --python-version 3.12 \
 		--universal --no-header --quiet -o infra/airflow/requirements-dbt.txt
 
-backup: ## Dump the warehouse and metabase_app databases
-	./scripts/backup.sh
+# The nightly jobtracker_maintenance DAG does the same at 03:00
+backup: ## Dump the warehouse and metabase_app databases now
+	COMPOSE="$(COMPOSE)" ./scripts/backup.sh
 
-restore: ## Restore a dump into a scratch database
-	./scripts/restore.sh
+# DUMP picks a dump under BACKUP_DIR, such as
+# metabase_app/metabase_app-2026-11-28.dump; the newest warehouse dump by
+# default. KEEP=1 keeps the scratch database afterwards.
+restore: ## Restore a dump into a scratch database and check it
+	COMPOSE="$(COMPOSE)" ./scripts/restore.sh $(DUMP)

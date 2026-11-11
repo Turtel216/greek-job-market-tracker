@@ -35,6 +35,8 @@ x-airflow-common: &airflow-common
     WAREHOUSE_DB: ${WAREHOUSE_DB}
     LOADER_PASSWORD: ${LOADER_PASSWORD}
     TRANSFORMER_PASSWORD: ${TRANSFORMER_PASSWORD}
+    # The nightly pg_dump connects as the read-only backup role
+    BACKUP_PASSWORD: ${BACKUP_PASSWORD}
     DBT_TARGET: ${DBT_TARGET:-dev}
     # The daily summary reads qa.qa_source_status as the read-only role
     AIRFLOW_CONN_WAREHOUSE_READER: postgresql://bi_reader:${BI_READER_PASSWORD}@postgres:5432/${WAREHOUSE_DB}
@@ -68,11 +70,14 @@ services:
       BI_READER_PASSWORD: ${BI_READER_PASSWORD}
       AIRFLOW_DB_PASSWORD: ${AIRFLOW_DB_PASSWORD}
       METABASE_DB_PASSWORD: ${METABASE_DB_PASSWORD}
+      BACKUP_PASSWORD: ${BACKUP_PASSWORD}
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
+      # Read only, so `make restore` can restore a dump from here
+      - ${BACKUP_DIR:-./backups}:/backups:ro
     healthcheck:
       # Checks over TCP so it stays unhealthy while the init scripts run
       test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
@@ -149,10 +154,15 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  # Schedules the DAGs and runs their tasks
+  # Schedules the DAGs and runs their tasks. Only it gets the backup folder,
+  # since the backup task runs here. `make backup-dir` lets it write there.
   airflow-scheduler:
     <<: *airflow-common
     command: scheduler
+    volumes:
+      - ./dags:/opt/airflow/dags:ro
+      - airflow-logs:/opt/airflow/logs
+      - ${BACKUP_DIR:-./backups}:/opt/airflow/backups
     healthcheck:
       test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
       interval: 30s

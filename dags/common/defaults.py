@@ -20,6 +20,13 @@ DBT_POOL = "dbt"
 # the run scheduled then.
 DAILY_RUN_HOUR = 6
 
+# jobtracker_maintenance runs at this hour, Europe/Athens, well before the
+# daily run
+MAINTENANCE_HOUR = 3
+
+# Where the backup task writes its dumps, mounted from BACKUP_DIR on the host
+BACKUP_FOLDER = "/opt/airflow/backups"
+
 # config/sources.yml in the repo. The Airflow image sets JOBTRACKER_SOURCES,
 # the same variable the ingestion CLI reads, so both see the same registry.
 REPO_REGISTRY = Path(__file__).resolve().parents[2] / "config" / "sources.yml"

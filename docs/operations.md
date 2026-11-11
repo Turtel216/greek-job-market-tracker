@@ -10,6 +10,7 @@ The ingestion CLI has its own notes in
 cp .env.example .env    # then fill in real values
 make setup              # install dev dependencies, dbt and git hooks
 make up                 # start Postgres, the object store, Airflow and Metabase
+make backup-dir         # once, so the nightly backup can write to BACKUP_DIR
 make help               # list every target
 ```
 
@@ -27,6 +28,11 @@ start with an empty volume. After changing them, reset the database with
 `docker compose down -v`, or run `make db-tables` to add the raw and ops
 tables, such as `ops.dbt_runs`, to an existing one. It also moves an older
 `raw.raw_postings` to the natural key that includes `parser_version`.
+
+`04-backup-role.sh` creates the read-only `backup` role the nightly
+`pg_dump` connects as. On a database created before it existed, set
+`BACKUP_PASSWORD` in `.env`, run `make up` so the containers get it, and
+then `make db-backup-role`. Running it again only resets the password.
 
 ## Airflow image
 
@@ -56,6 +62,7 @@ edit `infra/airflow/requirements-dbt.in` and run `make dbt-lock`.
 | `jobtracker_daily` | 06:00 | Extract, load, dbt build, daily summary |
 | `jobtracker_watchdog` | 10:00 | Alerts when today's daily run has not succeeded |
 | `jobtracker_reparse` | Manual | Loads stored payloads again after a parser fix |
+| `jobtracker_maintenance` | 03:00 | Deletes raw payloads after 30 days, backs up the databases |
 
 DAGs are paused when first created. Unpause them in the UI once at least
 one source is enabled.
@@ -137,6 +144,33 @@ same days inserts nothing new.
 Three days of stored Greenhouse fixture runs were loaded by a parser that lost the location, so
 every job showed city Unknown. A reparse with the fixed parser added nine
 rows, and `dim_jobs` showed the right cities again.
+
+### jobtracker_maintenance
+
+Runs at 03:00, well before the daily run, with three tasks that do not
+depend on each other, so one failing never stops the others. Each retries
+once and alerts on failure like every other task.
+
+| Task | Command | Does |
+| --- | --- | --- |
+| `prune_raw` | `jobtracker prune-raw` | Deletes raw payloads more than 30 days old |
+| `backup_warehouse` | `jobtracker backup --database $WAREHOUSE_DB` | Dumps the warehouse |
+| `backup_metabase` | `jobtracker backup --database metabase_app` | Dumps Metabase's own database, with the dashboards and users |
+
+`prune_raw` goes by the `run_date` in each key, so the oldest day kept is
+`run_date` minus 30 days. Raw payloads may still hold the emails, phone
+numbers and names that the loader scrubs, so they are not kept longer. One
+exception: a stored detail that a posting seen in the last 30 days still
+reuses, from `ops.posting_fingerprints`, is kept, since the next load needs
+it. That only happens when its detail fetch kept failing, as extract
+fetches any detail older than 14 days again. Keys that do not follow the
+raw layout are logged and left alone. To see what a run would delete:
+
+```sh
+docker compose exec airflow-scheduler jobtracker prune-raw --run-date 2026-11-28 --dry-run
+```
+
+See [Backups](#backups) for the two backup tasks.
 
 ### Shared code and alerts
 
@@ -345,6 +379,93 @@ make dashboards
 
 Metabase keeps its own data in the `metabase_app` database. Public links
 start with `METABASE_SITE_URL`.
+
+## Backups
+
+`jobtracker_maintenance` dumps the `warehouse` and `metabase_app` databases
+every night with `pg_dump -Fc`, connected as the read-only `backup` role.
+Dumps go to `BACKUP_DIR` on the host (`./backups` by default), which only
+the scheduler mounts, at `/opt/airflow/backups`:
+
+```text
+backups/
+  warehouse/warehouse-2026-11-28.dump
+  metabase_app/metabase_app-2026-11-28.dump
+```
+
+- `pg_dump` writes to a `.partial` file, and `pg_restore --list` reads it
+  back before it is renamed, so a dump that failed half way never looks
+  like a good one. A second backup on the same day replaces that day's dump.
+- A dump smaller than half the one before it fails the task. The dump is
+  kept to look at, and nothing is pruned that night. If the database really
+  did shrink, the next night compares with the smaller dump and passes.
+- After a good dump, old ones are pruned: the 14 newest are kept, plus the
+  newest of each of the 8 newest ISO weeks.
+- Raw payloads are not backed up, since they expire after 30 days anyway.
+  `raw.raw_postings` is in the warehouse dump, so every model can be rebuilt
+  from it.
+
+The Airflow user (uid 50000) writes the dumps, so the folder and the dumps
+belong to it and the host user cannot read them without `sudo`. Run
+`make backup-dir` once after the first `make up`, and again after pointing
+`BACKUP_DIR` at a new folder: Docker creates a missing folder owned by
+root, and this hands it to the Airflow user. On the server, point
+`BACKUP_DIR` at a separate disk, and copy the folder off the server as
+root.
+
+To back up now, for example before an upgrade, run `make backup`. It runs
+the same command in the scheduler.
+
+### Restore test
+
+Test a restore once a month, and after any change to the backup setup:
+
+```sh
+make restore                                             # newest warehouse dump
+make restore DUMP=metabase_app/metabase_app-2026-11-28.dump
+```
+
+It restores the dump into a scratch database, `restore_warehouse` or
+`restore_metabase_app`, fails when nothing came back, prints the tables per
+schema and the rows in the main tables, and drops the scratch database.
+The live databases are never touched. It runs in the postgres container,
+which mounts `BACKUP_DIR` read-only at `/backups`. Then add a row to the
+log below.
+
+| Date | Dump | Result |
+| --- | --- | --- |
+
+### Recovering a database
+
+To replace a lost or broken database with a dump:
+
+1. Stop everything that writes to it: `docker compose stop airflow-scheduler
+   airflow-dag-processor airflow-apiserver metabase`.
+2. Restore the dump and keep it:
+   `make restore DUMP=warehouse/warehouse-2026-11-28.dump KEEP=1`.
+3. Swap the databases, then give the roles back the database level grants,
+   which a dump does not carry:
+
+   ```sh
+   docker compose exec -T postgres sh -c 'psql -U "$POSTGRES_USER" -d postgres' <<'SQL'
+   alter database warehouse rename to warehouse_broken;
+   alter database restore_warehouse rename to warehouse;
+   revoke all on database warehouse from public;
+   grant connect on database warehouse to loader, transformer, bi_reader, backup;
+   grant temporary on database warehouse to transformer;
+   SQL
+   ```
+
+   For `metabase_app`, the grants are `revoke all on database metabase_app
+   from public; alter database metabase_app owner to metabase_app; grant
+   connect on database metabase_app to backup`.
+4. `make up`, check the dashboards, then drop the broken database.
+
+The roles themselves are not in the dumps; the init scripts create them
+from `.env` on a new volume. Days between the dump and the recovery are
+lost from `raw.raw_postings`, since listings only show current postings,
+but stored payloads of those days can be loaded again with
+`jobtracker_reparse`.
 
 ## Tests
 

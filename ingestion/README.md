@@ -107,6 +107,45 @@ The warehouse tests in `tests/loader/test_postgres.py` need a real
 Postgres and are skipped by `make test`. `make test-db` starts a throwaway
 one with the init scripts and runs them.
 
+## Maintenance
+
+Two commands keep storage in check. The nightly `jobtracker_maintenance`
+DAG runs both.
+
+`jobtracker prune-raw` deletes raw payloads more than 30 days before the
+run date from the object store:
+
+```sh
+jobtracker prune-raw --run-date 2026-11-28 --dry-run
+```
+
+The run date in each key decides its age. A stored detail that a posting
+seen within the 30 days still reuses, from `ops.posting_fingerprints`, is
+kept, so the next load can still parse it. Keys outside the
+`raw/<source>/<run_date>/<run_id>/` layout are logged and left alone.
+`--keep-days` changes the 30 days, and `--dry-run` logs what would be
+deleted without deleting it. It reads the warehouse as the `loader` role
+and deletes nothing when the warehouse is down. This is the only code that
+deletes raw objects.
+
+`jobtracker backup` dumps one database with `pg_dump -Fc` and prunes its
+old dumps down to the 14 newest and the newest of each of the 8 newest
+weeks:
+
+```sh
+jobtracker backup --database warehouse --run-date 2026-11-28 --folder /opt/airflow/backups
+```
+
+The dump goes to `<folder>/<database>/<database>-<run_date>.dump`. It fails
+when `pg_dump` fails, when `pg_restore --list` cannot read the dump, or when
+the dump is under half the size of the one before; in that last case the
+dump is kept and nothing is pruned. It connects as the read-only `backup`
+role with `POSTGRES_HOST`, `POSTGRES_PORT` and `BACKUP_PASSWORD` (and
+`BACKUP_USER`, which defaults to `backup`), and needs `pg_dump` and
+`pg_restore` on the PATH, which the Airflow image has.
+
+Both exit with 1 on any failure.
+
 ## Adding a source
 
 Write an adapter in `sources/` that follows `sources/base.py`, register it

@@ -74,6 +74,9 @@ Airflow runs the whole thing once a day at 06:00 Athens time:
    fallback), a summary of new, open and closed postings goes out at the
    end of each run, and a watchdog alerts if the run has not succeeded by
    10:00.
+6. **Maintain.** Every night a maintenance DAG deletes raw payloads older
+   than 30 days and backs up the warehouse and Metabase databases with
+   `pg_dump`.
 
 ## Stack
 
@@ -173,10 +176,12 @@ cd greek-job-market-tracker
 cp .env.example .env    # fill in the passwords and keys; each one says how to generate it
 make setup              # dev dependencies, dbt and git hooks
 make up                 # Postgres, Garage, Airflow and Metabase
+make backup-dir         # let Airflow write the nightly backups to BACKUP_DIR
 ```
 
 Then open Airflow at <http://localhost:8080> (user `admin`) and Metabase at
-<http://localhost:3000>. Unpause `jobtracker_daily` to start collecting.
+<http://localhost:3000>. Unpause `jobtracker_daily` to start collecting,
+and `jobtracker_maintenance` for retention and backups.
 
 To see the transformation layer work without scraping anything, build the
 dbt project against a throwaway Postgres loaded with a made-up sample of
@@ -220,7 +225,7 @@ The pipeline, the warehouse and both dashboards are built and tested
 locally. Still to do:
 
 - Deploy to a server behind HTTPS (Caddy) and publish the dashboard.
-- Nightly backups with a tested restore.
+- Run the first restore test of the nightly backups on the server.
 - Run unattended for four weeks on both sources, which is my definition of
   done for the first version.
 - Score deduplication on hand-labeled real postings. It currently reaches

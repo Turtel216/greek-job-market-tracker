@@ -5,6 +5,7 @@
     jobtracker reparse --source greenhouse --start-date 2026-10-20 --end-date 2026-10-25
     jobtracker load-dbt-results --run-date 2026-10-25 --folder /opt/airflow/logs/dbt/2026-10-25
     jobtracker prune-raw --run-date 2026-11-28
+    jobtracker backup --database warehouse --run-date 2026-11-28 --folder /opt/airflow/backups
 
 Exit codes: 0 on success, 1 on a failure worth retrying later, and 3 when
 the source blocked us. Airflow does not retry a block, since the source is
@@ -31,6 +32,7 @@ from jobtracker_ingest.loader.load import LoadError, run_load
 from jobtracker_ingest.loader.reparse import run_reparse
 from jobtracker_ingest.loader.runs import NoCompleteRun
 from jobtracker_ingest.loader.warehouse import PostgresWarehouse
+from jobtracker_ingest.maintenance.backup import BackupError, backup_database
 from jobtracker_ingest.maintenance.retention import KEEP_DAYS, prune_raw
 from jobtracker_ingest.sources import get_adapter
 
@@ -86,6 +88,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     prune.add_argument(
         "--dry-run", action="store_true", help="log what would be deleted, delete nothing"
+    )
+
+    dump = commands.add_parser(
+        "backup", help="dump one database with pg_dump and prune its old dumps"
+    )
+    dump.add_argument("--database", required=True)
+    dump.add_argument("--run-date", required=True, type=date.fromisoformat)
+    dump.add_argument(
+        "--folder", required=True, type=Path, help="backup folder, one subfolder per database"
     )
     return parser
 
@@ -230,6 +241,16 @@ def prune(args: argparse.Namespace) -> int:
     return 0
 
 
+def backup(args: argparse.Namespace) -> int:
+    log = structlog.get_logger("jobtracker_ingest.cli")
+    try:
+        backup_database(args.database, args.run_date, args.folder)
+    except (BackupError, OSError) as err:
+        log.error("backup_failed", database=args.database, error=f"{type(err).__name__}: {err}")
+        return EXIT_FAILED
+    return 0
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     configure_logging()
     args = build_parser().parse_args(argv)
@@ -243,6 +264,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         return load_dbt(args)
     if args.command == "prune-raw":
         return prune(args)
+    if args.command == "backup":
+        return backup(args)
     return 2
 
 

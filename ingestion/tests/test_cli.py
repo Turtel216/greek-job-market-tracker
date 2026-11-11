@@ -384,3 +384,23 @@ def test_prune_raw_when_the_database_is_down_deletes_nothing(
     monkeypatch.setattr(cli.PostgresWarehouse, "connect", refuse)
     assert prune_raw() == cli.EXIT_FAILED
     assert list(store.objects) == [OLD_KEY]
+
+
+def test_backup(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def dump(database: str, path: Path) -> None:
+        path.write_bytes(b"dump")
+
+    real = cli.backup_database
+    monkeypatch.setattr(
+        cli, "backup_database", lambda database, day, folder: real(database, day, folder, dump)
+    )
+    args = ["backup", "--database", "warehouse", "--run-date", "2026-11-28"]
+    assert cli.main([*args, "--folder", str(tmp_path)]) == 0
+    assert (tmp_path / "warehouse" / "warehouse-2026-11-28.dump").read_bytes() == b"dump"
+
+
+def test_backup_failure_returns_1(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("BACKUP_PASSWORD", raising=False)
+    args = ["backup", "--database", "warehouse", "--run-date", "2026-11-28"]
+    assert cli.main([*args, "--folder", str(tmp_path)]) == cli.EXIT_FAILED
+    assert list((tmp_path / "warehouse").iterdir()) == []

@@ -15,6 +15,22 @@ def clean(value: Any) -> str | None:
     return value.strip() or None
 
 
+def as_list(value: Any) -> list[Any]:
+    """value as a list: a list as it is, None as [], anything else in a list."""
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]
+
+
+def joined(value: Any) -> str | None:
+    """One text or a list of texts, cleaned and joined with commas.
+
+    Anything that is not text is left out, so a list of numbers gives None.
+    """
+    found = [clean(v) for v in as_list(value)]
+    return ", ".join(f for f in found if f) or None
+
+
 def markup_to_text(markup: str) -> str | None:
     """HTML as plain text, one block per line, with whitespace collapsed."""
     soup = BeautifulSoup(markup, "html.parser")

@@ -16,7 +16,8 @@ import pytest
 
 from jobtracker_ingest.core.models import RawPayload
 from jobtracker_ingest.sources.base import ParseError
-from jobtracker_ingest.sources.skywalker import SkywalkerAdapter, joined, values
+from jobtracker_ingest.sources.skywalker import SkywalkerAdapter, values
+from jobtracker_ingest.sources.text import joined
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "skywalker"
 DETAILS = sorted(FIXTURES.glob("detail-*.xml"))

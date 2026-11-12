@@ -29,7 +29,7 @@ from typing import ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
-from jobtracker_ingest.sources.text import clean, job_id_from_url, tidy_lines
+from jobtracker_ingest.sources.text import clean, job_id_from_url, joined, tidy_lines
 
 # Every feed title starts with "Available job position: " in Greek
 TITLE_PREFIX = re.compile(r"^\s*Διαθέσιμη θέση εργασίας\s*:\s*")
@@ -185,7 +185,3 @@ def values(item: ET.Element, *tags: str) -> list[str]:
             if text and text not in found:
                 found.append(text)
     return found
-
-
-def joined(found: list[str]) -> str | None:
-    return ", ".join(found) or None

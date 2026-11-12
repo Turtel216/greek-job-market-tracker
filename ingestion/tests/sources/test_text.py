@@ -2,7 +2,13 @@ import re
 
 import pytest
 
-from jobtracker_ingest.sources.text import job_id_from_url, markup_to_text, tidy_lines
+from jobtracker_ingest.sources.text import (
+    as_list,
+    job_id_from_url,
+    joined,
+    markup_to_text,
+    tidy_lines,
+)
 
 
 @pytest.mark.parametrize(
@@ -34,3 +40,25 @@ def test_markup_to_text_puts_blocks_on_their_own_lines() -> None:
 )
 def test_job_id_from_url(url: str | None, job_id: str | None) -> None:
     assert job_id_from_url(url, re.compile(r"/(\d+)/?$")) == job_id
+
+
+@pytest.mark.parametrize(
+    ("value", "items"),
+    [(None, []), ("a", ["a"]), (["a", "b"], ["a", "b"]), ({"a": 1}, [{"a": 1}])],
+)
+def test_as_list(value: object, items: list[object]) -> None:
+    assert as_list(value) == items
+
+
+@pytest.mark.parametrize(
+    ("value", "text"),
+    [
+        (" Full-time ", "Full-time"),
+        (["Engineering", " ", None, "Data "], "Engineering, Data"),
+        ([3, {"name": "x"}], None),
+        ([], None),
+        (None, None),
+    ],
+)
+def test_joined(value: object, text: str | None) -> None:
+    assert joined(value) == text

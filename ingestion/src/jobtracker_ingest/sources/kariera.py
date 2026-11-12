@@ -38,7 +38,13 @@ from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import FetchesDetailPage, ParseError, RunContext
 from jobtracker_ingest.sources.jsliteral import read_value
-from jobtracker_ingest.sources.text import clean, job_id_from_url, markup_to_text
+from jobtracker_ingest.sources.text import (
+    as_list,
+    clean,
+    job_id_from_url,
+    joined,
+    markup_to_text,
+)
 
 # One chunk of flight data, a JSON string inside a push call
 FLIGHT_CHUNK = re.compile(r'\s*self\.__next_f\.push\(\[1,(".*")\]\)\s*;?\s*', re.S)
@@ -150,12 +156,6 @@ class KarieraAdapter(FetchesDetailPage):
             object_key=payload.object_key,
             parser_version=self.PARSER_VERSION,
         )
-
-
-def as_list(value: Any) -> list[Any]:
-    if value is None:
-        return []
-    return value if isinstance(value, list) else [value]
 
 
 def dig(value: Any, *keys: str) -> Any:
@@ -272,11 +272,6 @@ def address_text(address: Any) -> str | None:
 def places_text(places: Any) -> str | None:
     found = [address_text(dig(place, "address")) for place in as_list(places)]
     return "; ".join(dict.fromkeys(f for f in found if f)) or None
-
-
-def joined(value: Any) -> str | None:
-    found = [clean(v) for v in as_list(value)]
-    return ", ".join(f for f in found if f) or None
 
 
 def salary_text(base_salary: Any) -> str | None:

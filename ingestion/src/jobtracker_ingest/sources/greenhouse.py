@@ -17,7 +17,7 @@ from typing import Any, ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
 # Metadata field names that companies use for these values, lowercased
@@ -67,7 +67,12 @@ class GreenhouseAdapter:
         )
 
     def parse(self, payload: RawPayload) -> RawPosting:
-        job = json.loads(payload.content)
+        try:
+            job = json.loads(payload.content)
+        except ValueError as err:
+            raise ParseError(f"not JSON: {payload.object_key or payload.url}") from err
+        if not isinstance(job, dict):
+            raise ParseError(f"not a Greenhouse job: {payload.object_key or payload.url}")
         metadata = metadata_values(job.get("metadata"))
         return RawPosting(
             source=payload.source,

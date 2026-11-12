@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 from jobtracker_ingest.core.models import RawPayload
+from jobtracker_ingest.sources.base import ParseError
 from jobtracker_ingest.sources.greenhouse import GreenhouseAdapter, salary_text
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "greenhouse"
@@ -50,6 +51,15 @@ def test_parse_matches_expected(path: Path) -> None:
 def test_parse_is_repeatable(path: Path) -> None:
     adapter = GreenhouseAdapter()
     assert adapter.parse(payload_for(path)) == adapter.parse(payload_for(path))
+
+
+@pytest.mark.parametrize(
+    ("content", "error"), [(b"not json", "not JSON"), (b"[]", "not a Greenhouse job")]
+)
+def test_parse_rejects_other_payloads(content: bytes, error: str) -> None:
+    payload = payload_for(DETAILS[0]).model_copy(update={"content": content})
+    with pytest.raises(ParseError, match=error):
+        GreenhouseAdapter().parse(payload)
 
 
 @pytest.mark.parametrize(

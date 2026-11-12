@@ -29,7 +29,7 @@ from typing import ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
-from jobtracker_ingest.sources.text import clean, tidy_lines
+from jobtracker_ingest.sources.text import clean, job_id_from_url, tidy_lines
 
 # Every feed title starts with "Available job position: " in Greek
 TITLE_PREFIX = re.compile(r"^\s*Διαθέσιμη θέση εργασίας\s*:\s*")
@@ -79,7 +79,7 @@ class SkywalkerAdapter(ServesListedPayloads):
             new = 0
             for item in feed_items(result.content, page_url):
                 url = clean(item.findtext("link"))
-                job_id = job_id_from_url(url)
+                job_id = job_id_from_url(url, JOB_ID_IN_URL)
                 if url is None or job_id is None:
                     ctx.log.warning("listing_item_skipped", category=category, link=url)
                     continue
@@ -139,11 +139,6 @@ class SkywalkerAdapter(ServesListedPayloads):
             object_key=payload.object_key,
             parser_version=self.PARSER_VERSION,
         )
-
-
-def job_id_from_url(url: str | None) -> str | None:
-    match = JOB_ID_IN_URL.search(url or "")
-    return match.group(1) if match else None
 
 
 def feed_items(content: bytes, url: str) -> list[ET.Element]:

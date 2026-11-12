@@ -38,7 +38,7 @@ from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import FetchesDetailPage, ParseError, RunContext
 from jobtracker_ingest.sources.jsliteral import read_value
-from jobtracker_ingest.sources.text import clean, markup_to_text
+from jobtracker_ingest.sources.text import clean, job_id_from_url, markup_to_text
 
 # One chunk of flight data, a JSON string inside a push call
 FLIGHT_CHUNK = re.compile(r'\s*self\.__next_f\.push\(\[1,(".*")\]\)\s*;?\s*', re.S)
@@ -99,7 +99,7 @@ class KarieraAdapter(FetchesDetailPage):
             new = 0
             for item in items:
                 posting_url = clean(item.get("url"))
-                job_id = job_id_from_url(posting_url)
+                job_id = job_id_from_url(posting_url, JOB_ID_IN_URL)
                 if posting_url is None or job_id is None:
                     ctx.log.warning("listing_item_skipped", category=category, item=item)
                     continue
@@ -150,11 +150,6 @@ class KarieraAdapter(FetchesDetailPage):
             object_key=payload.object_key,
             parser_version=self.PARSER_VERSION,
         )
-
-
-def job_id_from_url(url: str | None) -> str | None:
-    match = JOB_ID_IN_URL.search(url or "")
-    return match.group(1) if match else None
 
 
 def as_list(value: Any) -> list[Any]:

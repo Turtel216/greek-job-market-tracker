@@ -1,5 +1,6 @@
 """Small text helpers shared by the source adapters."""
 
+import re
 from typing import Any
 
 from bs4 import BeautifulSoup
@@ -29,3 +30,9 @@ def tidy_lines(text: str) -> str | None:
     """Plain text with whitespace collapsed inside lines and blank lines dropped."""
     lines = (" ".join(line.split()) for line in text.splitlines())
     return "\n".join(line for line in lines if line) or None
+
+
+def job_id_from_url(url: str | None, pattern: re.Pattern[str]) -> str | None:
+    """The posting id in url, which is the first group of pattern."""
+    match = pattern.search(url or "")
+    return match.group(1) if match else None

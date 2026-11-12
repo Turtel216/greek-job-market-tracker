@@ -9,7 +9,6 @@ workplace type, so it is read from a custom metadata field when a company
 sets one, and dbt falls back to the text otherwise.
 """
 
-import hashlib
 import html
 import json
 from collections.abc import Iterator
@@ -18,7 +17,7 @@ from typing import Any, ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import FetchesDetailPage, ParseError, RunContext
-from jobtracker_ingest.sources.text import clean, markup_to_text
+from jobtracker_ingest.sources.text import clean, json_hash, markup_to_text
 
 # Metadata field names that companies use for these values, lowercased
 WORKPLACE_FIELDS = ("workplace type", "workplace", "work mode", "location type", "remote")
@@ -87,8 +86,7 @@ def listing_fingerprint(job: dict[str, Any]) -> str:
     updated_at = clean(job.get("updated_at"))
     if updated_at:
         return updated_at
-    card = json.dumps(job, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(card.encode("utf-8")).hexdigest()
+    return json_hash(job)
 
 
 def metadata_values(metadata: Any) -> dict[str, str]:

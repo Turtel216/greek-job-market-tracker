@@ -15,7 +15,6 @@ endpoints. It needs no login or API key. We do not use the undocumented
 apply.workable.com API or the hosted careers pages.
 """
 
-import hashlib
 import json
 from collections.abc import Iterator
 from typing import Any, ClassVar
@@ -23,7 +22,7 @@ from typing import Any, ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
-from jobtracker_ingest.sources.text import clean, joined, markup_to_text
+from jobtracker_ingest.sources.text import clean, joined, json_hash, markup_to_text
 
 PAYLOAD_CONTENT_TYPE = "application/json; charset=utf-8"
 # Workable writes on_site, which the work mode seed reads as "on site"
@@ -129,8 +128,7 @@ def job_bytes(company: str, job: dict[str, Any]) -> bytes:
 
 def listing_fingerprint(job: dict[str, Any]) -> str:
     """Hash of the whole job, since the endpoint has no updated_at."""
-    card = json.dumps(job, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(card.encode("utf-8")).hexdigest()
+    return json_hash(job)
 
 
 def add_place(job: dict[str, Any], repeat: dict[str, Any]) -> None:

@@ -1,5 +1,7 @@
 """Small text helpers shared by the source adapters."""
 
+import hashlib
+import json
 import re
 from typing import Any
 
@@ -52,3 +54,13 @@ def job_id_from_url(url: str | None, pattern: re.Pattern[str]) -> str | None:
     """The posting id in url, which is the first group of pattern."""
     match = pattern.search(url or "")
     return match.group(1) if match else None
+
+
+def json_hash(value: Any) -> str:
+    """sha256 of value as JSON with sorted keys, for listing fingerprints.
+
+    Changing how this is computed changes every stored fingerprint, and the
+    next run then fetches every detail again.
+    """
+    blob = json.dumps(value, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(blob.encode("utf-8")).hexdigest()

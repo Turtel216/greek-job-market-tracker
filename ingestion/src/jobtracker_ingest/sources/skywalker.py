@@ -19,8 +19,6 @@ is safe on feed data.
 """
 
 import copy
-import hashlib
-import json
 import re
 import xml.etree.ElementTree as ET
 from collections.abc import Iterator
@@ -29,7 +27,7 @@ from typing import ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
-from jobtracker_ingest.sources.text import clean, job_id_from_url, joined, tidy_lines
+from jobtracker_ingest.sources.text import clean, job_id_from_url, joined, json_hash, tidy_lines
 
 # Every feed title starts with "Available job position: " in Greek
 TITLE_PREFIX = re.compile(r"^\s*Διαθέσιμη θέση εργασίας\s*:\s*")
@@ -168,8 +166,7 @@ def listing_fingerprint(item: ET.Element) -> str:
         for child in item
         if child.tag not in NOT_FINGERPRINTED
     ]
-    blob = json.dumps(fields, ensure_ascii=False)
-    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+    return json_hash(fields)
 
 
 def values(item: ET.Element, *tags: str) -> list[str]:

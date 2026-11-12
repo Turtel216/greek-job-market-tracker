@@ -26,7 +26,6 @@ robots.txt disallows /api/, /_next/data/ and *.json, so the adapter only
 ever reads the HTML pages and never the JSON endpoints behind them.
 """
 
-import hashlib
 import json
 import re
 from collections.abc import Callable, Iterator
@@ -43,6 +42,7 @@ from jobtracker_ingest.sources.text import (
     clean,
     job_id_from_url,
     joined,
+    json_hash,
     markup_to_text,
 )
 
@@ -253,8 +253,7 @@ def listing_fingerprint(item: dict[str, Any], record: dict[str, Any] | None) -> 
         card["company"] = dig(record, "company", "name")
     else:
         card = {key: item.get(key) for key in LIST_ITEM_FIELDS}
-    blob = json.dumps(card, sort_keys=True, ensure_ascii=False)
-    return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+    return json_hash(card)
 
 
 def address_text(address: Any) -> str | None:

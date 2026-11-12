@@ -6,6 +6,7 @@ from jobtracker_ingest.sources.text import (
     as_list,
     job_id_from_url,
     joined,
+    json_hash,
     markup_to_text,
     tidy_lines,
 )
@@ -62,3 +63,10 @@ def test_as_list(value: object, items: list[object]) -> None:
 )
 def test_joined(value: object, text: str | None) -> None:
     assert joined(value) == text
+
+
+def test_json_hash_is_stable() -> None:
+    # Stored fingerprints were made with exactly this encoding: sorted keys,
+    # non-ASCII text kept as is
+    expected = "38573c8cbfea4ef51d44f3696ddb9588c217516d060a75817ceb06b9e9c89996"
+    assert json_hash({"b": [1, None], "a": "Αθήνα"}) == expected

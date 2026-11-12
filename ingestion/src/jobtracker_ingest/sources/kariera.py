@@ -36,7 +36,7 @@ from bs4 import BeautifulSoup
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import ParseError, RunContext
+from jobtracker_ingest.sources.base import FetchesDetailPage, ParseError, RunContext
 from jobtracker_ingest.sources.jsliteral import read_value
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
@@ -67,7 +67,7 @@ FINGERPRINT_FIELDS = (
 LIST_ITEM_FIELDS = ("name", "url")
 
 
-class KarieraAdapter:
+class KarieraAdapter(FetchesDetailPage):
     name: ClassVar[str] = "kariera"
     PARSER_VERSION: ClassVar[str] = "2"
 
@@ -117,19 +117,6 @@ class KarieraAdapter:
             if new == 0:
                 return
         ctx.log.warning("max_pages_reached", category=category, max_pages=ctx.config.max_pages)
-
-    def fetch_detail(self, ref: ListingRef, ctx: RunContext) -> RawPayload:
-        result = ctx.client.get(ref.detail_url or ref.url)
-        return RawPayload(
-            source=self.name,
-            source_job_id=ref.source_job_id,
-            url=ref.url,
-            run_date=ctx.run_date,
-            fetched_at=result.fetched_at,
-            content=result.content,
-            content_type=result.content_type,
-            account=ref.account,
-        )
 
     def parse(self, payload: RawPayload) -> RawPosting:
         soup = BeautifulSoup(payload.content, "html.parser")

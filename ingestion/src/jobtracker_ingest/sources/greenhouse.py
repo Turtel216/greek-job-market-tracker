@@ -17,7 +17,7 @@ from typing import Any, ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import ParseError, RunContext
+from jobtracker_ingest.sources.base import FetchesDetailPage, ParseError, RunContext
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
 # Metadata field names that companies use for these values, lowercased
@@ -25,7 +25,7 @@ WORKPLACE_FIELDS = ("workplace type", "workplace", "work mode", "location type",
 EMPLOYMENT_FIELDS = ("employment type", "job type", "contract type")
 
 
-class GreenhouseAdapter:
+class GreenhouseAdapter(FetchesDetailPage):
     name: ClassVar[str] = "greenhouse"
     PARSER_VERSION: ClassVar[str] = "2"
 
@@ -52,19 +52,6 @@ class GreenhouseAdapter:
                     account=board,
                     detail_url=f"{base}/{board}/jobs/{job_id}?pay_transparency=true",
                 )
-
-    def fetch_detail(self, ref: ListingRef, ctx: RunContext) -> RawPayload:
-        result = ctx.client.get(ref.detail_url or ref.url)
-        return RawPayload(
-            source=self.name,
-            source_job_id=ref.source_job_id,
-            url=ref.url,
-            run_date=ctx.run_date,
-            fetched_at=result.fetched_at,
-            content=result.content,
-            content_type=result.content_type,
-            account=ref.account,
-        )
 
     def parse(self, payload: RawPayload) -> RawPosting:
         try:

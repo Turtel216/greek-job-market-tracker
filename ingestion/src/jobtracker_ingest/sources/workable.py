@@ -22,7 +22,7 @@ from typing import Any, ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import ParseError, RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
 PAYLOAD_CONTENT_TYPE = "application/json; charset=utf-8"
@@ -34,14 +34,11 @@ PLACE_FIELDS = ("city", "state", "country")
 OTHER_PLACES = "other_places"
 
 
-class WorkableAdapter:
+class WorkableAdapter(ServesListedPayloads):
+    """The detail of a posting is its job as listed, so no detail requests."""
+
     name: ClassVar[str] = "workable"
     PARSER_VERSION: ClassVar[str] = "3"
-
-    def __init__(self) -> None:
-        # The payload of every posting listed in this run, by id, which
-        # fetch_detail hands out without a request
-        self._jobs: dict[str, RawPayload] = {}
 
     def list_postings(self, ctx: RunContext) -> Iterator[ListingRef]:
         base = ctx.config.base_url.rstrip("/")
@@ -72,9 +69,7 @@ class WorkableAdapter:
 
             for job_id, job in jobs.items():
                 job_url = job["url"].strip()
-                # A job listed by two accounts keeps the first, as extract does
-                self._jobs.setdefault(
-                    job_id,
+                self.keep_listed(
                     RawPayload(
                         source=self.name,
                         source_job_id=job_id,
@@ -84,7 +79,7 @@ class WorkableAdapter:
                         content=job_bytes(company, job),
                         content_type=PAYLOAD_CONTENT_TYPE,
                         account=account,
-                    ),
+                    )
                 )
                 yield ListingRef(
                     source_job_id=job_id,
@@ -92,13 +87,6 @@ class WorkableAdapter:
                     listing_fingerprint=listing_fingerprint(job),
                     account=account,
                 )
-
-    def fetch_detail(self, ref: ListingRef, ctx: RunContext) -> RawPayload:
-        """The job as listed. No request, the listing has the whole posting."""
-        try:
-            return self._jobs[ref.source_job_id]
-        except KeyError:
-            raise LookupError(f"{ref.source_job_id} was not listed in this run") from None
 
     def parse(self, payload: RawPayload) -> RawPosting:
         where = payload.object_key or payload.url

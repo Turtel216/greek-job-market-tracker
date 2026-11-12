@@ -28,7 +28,7 @@ from typing import ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import ParseError, RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
 from jobtracker_ingest.sources.text import clean, tidy_lines
 
 # Every feed title starts with "Available job position: " in Greek
@@ -53,14 +53,11 @@ class FeedError(ValueError):
     """A listing page is not the RSS feed, so the site changed something."""
 
 
-class SkywalkerAdapter:
+class SkywalkerAdapter(ServesListedPayloads):
+    """The detail of a posting is its feed item, since detail pages are off limits."""
+
     name: ClassVar[str] = "skywalker"
     PARSER_VERSION: ClassVar[str] = "1"
-
-    def __init__(self) -> None:
-        # The payload of every posting listed in this run, by id, which
-        # fetch_detail hands out without a request
-        self._items: dict[str, RawPayload] = {}
 
     def list_postings(self, ctx: RunContext) -> Iterator[ListingRef]:
         for category in ctx.config.accounts:
@@ -90,9 +87,7 @@ class SkywalkerAdapter:
                     continue
                 seen.add(job_id)
                 new += 1
-                # A posting listed in two categories keeps the first, as extract does
-                self._items.setdefault(
-                    job_id,
+                self.keep_listed(
                     RawPayload(
                         source=self.name,
                         source_job_id=job_id,
@@ -102,7 +97,7 @@ class SkywalkerAdapter:
                         content=item_bytes(item),
                         content_type=ITEM_CONTENT_TYPE,
                         account=category,
-                    ),
+                    )
                 )
                 yield ListingRef(
                     source_job_id=job_id,
@@ -114,13 +109,6 @@ class SkywalkerAdapter:
             if new == 0:
                 return
         ctx.log.warning("max_pages_reached", category=category, max_pages=ctx.config.max_pages)
-
-    def fetch_detail(self, ref: ListingRef, ctx: RunContext) -> RawPayload:
-        """The posting's feed item. No request, since detail pages are off limits."""
-        try:
-            return self._items[ref.source_job_id]
-        except KeyError:
-            raise LookupError(f"{ref.source_job_id} was not listed in this run") from None
 
     def parse(self, payload: RawPayload) -> RawPosting:
         where = payload.object_key or payload.url

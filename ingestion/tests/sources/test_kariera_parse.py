@@ -16,9 +16,9 @@ import pytest
 from bs4 import BeautifulSoup
 
 from jobtracker_ingest.core.models import RawPayload
+from jobtracker_ingest.sources.base import ParseError
 from jobtracker_ingest.sources.kariera import (
     KarieraAdapter,
-    ParseError,
     address_text,
     flight_text,
     job_records,

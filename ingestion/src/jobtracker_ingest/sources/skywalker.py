@@ -28,7 +28,7 @@ from typing import ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext
 from jobtracker_ingest.sources.text import clean, tidy_lines
 
 # Every feed title starts with "Available job position: " in Greek
@@ -47,10 +47,6 @@ NOT_FINGERPRINTED = ("companyLogo",)
 PLACE_FIELDS = ("state", "city", "municipality", "geoDepartment", "country")
 # Most specific first, for role_family when the title gives no signal
 DEPARTMENT_FIELDS = ("jobType", "subCategory", "category")
-
-
-class ParseError(ValueError):
-    """The payload is not a skywalker feed item."""
 
 
 class FeedError(ValueError):

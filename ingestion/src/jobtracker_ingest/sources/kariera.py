@@ -36,7 +36,7 @@ from bs4 import BeautifulSoup
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext
 from jobtracker_ingest.sources.jsliteral import read_value
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
@@ -65,10 +65,6 @@ FINGERPRINT_FIELDS = (
 # ListItem fields for the fingerprint when a page has no job records. The
 # position is left out, since it shifts whenever a posting is added above.
 LIST_ITEM_FIELDS = ("name", "url")
-
-
-class ParseError(ValueError):
-    """The page does not look like a kariera job page."""
 
 
 class KarieraAdapter:

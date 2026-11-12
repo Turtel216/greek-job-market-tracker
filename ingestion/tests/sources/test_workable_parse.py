@@ -12,7 +12,8 @@ from pathlib import Path
 import pytest
 
 from jobtracker_ingest.core.models import RawPayload
-from jobtracker_ingest.sources.workable import ParseError, WorkableAdapter, posted_text
+from jobtracker_ingest.sources.base import ParseError
+from jobtracker_ingest.sources.workable import WorkableAdapter, posted_text
 
 FIXTURES = Path(__file__).parents[1] / "fixtures" / "workable"
 DETAILS = sorted(FIXTURES.glob("detail-*.json"))

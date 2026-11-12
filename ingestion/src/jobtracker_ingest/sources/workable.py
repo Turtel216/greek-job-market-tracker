@@ -22,7 +22,7 @@ from typing import Any, ClassVar
 
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
-from jobtracker_ingest.sources.base import RunContext
+from jobtracker_ingest.sources.base import ParseError, RunContext
 from jobtracker_ingest.sources.text import clean, markup_to_text
 
 PAYLOAD_CONTENT_TYPE = "application/json; charset=utf-8"
@@ -32,10 +32,6 @@ WORKPLACE_TYPES = {"on_site": "on site"}
 PLACE_FIELDS = ("city", "state", "country")
 # Our key on a job for the places of its repeated listings
 OTHER_PLACES = "other_places"
-
-
-class ParseError(ValueError):
-    """The payload is not a Workable job."""
 
 
 class WorkableAdapter:

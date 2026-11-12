@@ -15,6 +15,10 @@ from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.core.registry import SourceConfig
 
 
+class ParseError(ValueError):
+    """A stored payload is not what the adapter expected, so it cannot be parsed."""
+
+
 class ListingSink(Protocol):
     """Where an adapter hands the listing pages it fetched."""
 

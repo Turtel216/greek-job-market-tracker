@@ -23,7 +23,7 @@ from typing import Any, ClassVar
 from jobtracker_ingest.core.http import DisallowedByRobots, HttpStatusError
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
 from jobtracker_ingest.sources.base import ParseError, RunContext, ServesListedPayloads
-from jobtracker_ingest.sources.text import clean, markup_to_text
+from jobtracker_ingest.sources.text import clean, joined, markup_to_text
 
 PAYLOAD_CONTENT_TYPE = "application/json; charset=utf-8"
 # Workable writes on_site, which the work mode seed reads as "on site"
@@ -174,9 +174,5 @@ def posted_text(job: dict[str, Any]) -> str | None:
 
 
 def department_text(job: dict[str, Any]) -> str | None:
-    department = job.get("department")
     # Workable sends a list on some accounts and a string on others
-    if isinstance(department, list):
-        found = [clean(d) for d in department]
-        return ", ".join(d for d in found if d) or None
-    return clean(department)
+    return joined(job.get("department"))

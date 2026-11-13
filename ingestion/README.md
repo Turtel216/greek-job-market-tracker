@@ -153,6 +153,13 @@ in `sources/__init__.py`, and add its fixtures under
 `tests/fixtures/<source>/` with the expected parse output in `expected/`.
 `parse` must be pure, so it can run again on stored payloads.
 
+`sources/base.py` also has the parts adapters share. An adapter gets
+`fetch_detail` from `FetchesDetailPage` when each posting has its own
+detail page or endpoint, or from `ServesListedPayloads` when the listing
+already holds every posting. `parse` raises `ParseError` for a payload it
+cannot read. Small helpers for text, posting ids in URLs and listing
+fingerprints are in `sources/text.py`.
+
 The first adapter is `sources/greenhouse.py`, for the public Greenhouse Job
 Board API. Its fixtures are shaped like real API responses but use a made
 up company; add trimmed real responses during onboarding.

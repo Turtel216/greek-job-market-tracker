@@ -174,7 +174,7 @@ def test_one_bad_payload_does_not_stop_the_load(
     assert (run.rows_parsed, run.parse_errors, run.status) == (1, 1, "succeeded")
     failed = next(log for log in logs if log["event"] == "parse_failed")
     assert failed["source_job_id"] == "999"
-    assert failed["error"].startswith("JSONDecodeError")
+    assert failed["error"].startswith("ParseError: not JSON")
     # The posting that failed gets no fingerprint, so extract fetches it again
     assert ("greenhouse", "999") not in warehouse.posting_fingerprints
 

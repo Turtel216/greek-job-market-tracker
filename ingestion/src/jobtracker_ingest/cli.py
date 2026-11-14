@@ -14,7 +14,7 @@ stopped for the day.
 
 import argparse
 import sys
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import UTC, date, datetime
 from pathlib import Path
 
@@ -251,22 +251,21 @@ def backup(args: argparse.Namespace) -> int:
     return 0
 
 
+COMMANDS: dict[str, Callable[[argparse.Namespace], int]] = {
+    "extract": extract,
+    "load": load,
+    "reparse": reparse,
+    "load-dbt-results": load_dbt,
+    "prune-raw": prune,
+    "backup": backup,
+}
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     configure_logging()
     args = build_parser().parse_args(argv)
-    if args.command == "extract":
-        return extract(args)
-    if args.command == "load":
-        return load(args)
-    if args.command == "reparse":
-        return reparse(args)
-    if args.command == "load-dbt-results":
-        return load_dbt(args)
-    if args.command == "prune-raw":
-        return prune(args)
-    if args.command == "backup":
-        return backup(args)
-    return 2
+    # argparse requires a command, so the lookup always finds one
+    return COMMANDS[args.command](args)
 
 
 if __name__ == "__main__":

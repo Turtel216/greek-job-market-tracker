@@ -8,7 +8,9 @@ the stored payloads, so parse must never touch the network.
 from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import date
-from typing import Any, ClassVar, Protocol
+from typing import ClassVar, Protocol
+
+from structlog.typing import FilteringBoundLogger
 
 from jobtracker_ingest.core.http import FetchResult, PoliteClient
 from jobtracker_ingest.core.models import ListingRef, RawPayload, RawPosting
@@ -38,7 +40,7 @@ class RunContext:
     run_id: str
     client: PoliteClient
     listings: ListingSink
-    log: Any
+    log: FilteringBoundLogger
 
 
 class SourceAdapter(Protocol):

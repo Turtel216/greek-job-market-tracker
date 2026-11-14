@@ -28,6 +28,7 @@ from urllib.parse import urljoin, urlsplit
 import requests
 import structlog
 from requests.structures import CaseInsensitiveDict
+from structlog.typing import FilteringBoundLogger
 
 from jobtracker_ingest import __version__
 from jobtracker_ingest.core.blocks import block_reason, is_login_url
@@ -168,14 +169,14 @@ class PoliteClient:
         min_delay_seconds: float,
         session: requests.Session | None = None,
         limiter: HostRateLimiter | None = None,
-        logger: Any = None,
+        logger: FilteringBoundLogger | None = None,
         sleep: Callable[[float], None] = time.sleep,
         max_retries: int = MAX_RETRIES,
     ) -> None:
         self.user_agent = user_agent
         self.session = session or requests.Session()
         self.limiter = limiter or HostRateLimiter(min_delay_seconds, sleep=sleep)
-        self.log = logger or structlog.get_logger(__name__)
+        self.log: FilteringBoundLogger = logger or structlog.get_logger(__name__)
         self.stats = ClientStats()
         self.blocked: BlockedError | None = None
         self._sleep = sleep

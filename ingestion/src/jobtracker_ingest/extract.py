@@ -44,10 +44,6 @@ def new_run_id(now: datetime | None = None) -> str:
     return f"{started:%Y%m%dT%H%M%SZ}-{uuid.uuid4().hex[:8]}"
 
 
-def fetch_everything(ref: ListingRef) -> bool:
-    return True
-
-
 def detail_needed(known: Mapping[str, Fingerprint], now: datetime) -> NeedsDetail:
     """The detail fetch strategy, from what the loader stored.
 
@@ -74,7 +70,9 @@ def run_extract(
     store: ObjectStore,
     client: PoliteClient,
     run_id: str | None = None,
-    needs_detail: NeedsDetail = fetch_everything,
+    *,
+    # No default, so a caller never fetches every detail by mistake
+    needs_detail: NeedsDetail,
 ) -> RunManifest:
     started_at = datetime.now(UTC)
     run_id = run_id or new_run_id(started_at)

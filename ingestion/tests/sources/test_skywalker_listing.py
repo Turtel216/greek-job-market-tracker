@@ -72,6 +72,10 @@ def make_ctx(accounts: list[str], max_pages: int = 10) -> RunContext:
     return RunContext(config, date(2026, 10, 29), "r1", client, writer, structlog.get_logger())
 
 
+def fetch_all(ref: ListingRef) -> bool:
+    return True
+
+
 def fixture(name: str) -> bytes:
     return (FIXTURES / name).read_bytes()
 
@@ -268,7 +272,15 @@ def test_a_full_extract_stores_feed_pages_and_items(rsps: responses.RequestsMock
     store = MemoryObjectStore()
     adapter = SkywalkerAdapter()
 
-    manifest = run_extract(adapter, ctx.config, date(2026, 10, 29), store, ctx.client, run_id="r1")
+    manifest = run_extract(
+        adapter,
+        ctx.config,
+        date(2026, 10, 29),
+        store,
+        ctx.client,
+        run_id="r1",
+        needs_detail=fetch_all,
+    )
 
     prefix = "raw/skywalker/2026-10-29/r1/"
     assert [p.key for p in manifest.listing_pages] == [

@@ -13,6 +13,7 @@ from structlog.testing import capture_logs
 
 from jobtracker_ingest.core.http import PoliteClient
 from jobtracker_ingest.core.manifest import RunWriter
+from jobtracker_ingest.core.models import ListingRef
 from jobtracker_ingest.core.ratelimit import HostRateLimiter
 from jobtracker_ingest.core.registry import SourceConfig
 from jobtracker_ingest.core.storage import MemoryObjectStore
@@ -63,6 +64,10 @@ def make_ctx(accounts: list[str], max_pages: int = 50) -> RunContext:
     client = PoliteClient(UA, 5, limiter=limiter, sleep=lambda s: None)
     writer = RunWriter(MemoryObjectStore(), "kariera", date(2026, 10, 25), "r1")
     return RunContext(config, date(2026, 10, 25), "r1", client, writer, structlog.get_logger())
+
+
+def fetch_all(ref: ListingRef) -> bool:
+    return True
 
 
 def fixture(name: str) -> bytes:
@@ -296,7 +301,13 @@ def test_a_full_extract_stores_html_payloads(rsps: responses.RequestsMock) -> No
     store = MemoryObjectStore()
 
     manifest = run_extract(
-        KarieraAdapter(), ctx.config, date(2026, 10, 25), store, ctx.client, run_id="r1"
+        KarieraAdapter(),
+        ctx.config,
+        date(2026, 10, 25),
+        store,
+        ctx.client,
+        run_id="r1",
+        needs_detail=fetch_all,
     )
 
     prefix = "raw/kariera/2026-10-25/r1/"

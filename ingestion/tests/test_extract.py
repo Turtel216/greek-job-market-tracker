@@ -51,6 +51,10 @@ def config(accounts: list[str] | None = None) -> SourceConfig:
     )
 
 
+def fetch_all(ref: ListingRef) -> bool:
+    return True
+
+
 def fixture(name: str) -> bytes:
     return (FIXTURES / name).read_bytes()
 
@@ -87,7 +91,13 @@ def test_writes_payloads_then_the_manifest(
     mock_board(rsps)
 
     manifest = run_extract(
-        GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1"
+        GreenhouseAdapter(),
+        config(),
+        RUN_DATE,
+        store,
+        make_client(),
+        run_id="r1",
+        needs_detail=fetch_all,
     )
 
     assert store.put_order == [
@@ -110,7 +120,13 @@ def test_manifest_is_enough_to_parse_again(
 ) -> None:
     mock_board(rsps)
     manifest = run_extract(
-        GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1"
+        GreenhouseAdapter(),
+        config(),
+        RUN_DATE,
+        store,
+        make_client(),
+        run_id="r1",
+        needs_detail=fetch_all,
     )
 
     posting = manifest.postings[0]
@@ -140,7 +156,13 @@ def test_a_gone_posting_is_listed_without_a_detail(
     rsps.get(detail_url("4012345010"), body=fixture("detail-remote-flags.json"), content_type=JSON)
 
     manifest = run_extract(
-        GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1"
+        GreenhouseAdapter(),
+        config(),
+        RUN_DATE,
+        store,
+        make_client(),
+        run_id="r1",
+        needs_detail=fetch_all,
     )
 
     assert manifest.counts["detail_errors"] == 1
@@ -179,6 +201,7 @@ def test_a_posting_on_two_boards_is_kept_once(
         store,
         make_client(),
         run_id="r1",
+        needs_detail=fetch_all,
     )
 
     assert manifest.counts["postings"] == 3
@@ -192,7 +215,15 @@ def test_zero_listings_fails_without_a_manifest(
     rsps.get(BOARD, body=fixture("listing-empty.json"), content_type=JSON)
 
     with pytest.raises(ExtractError, match="zero listings"):
-        run_extract(GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1")
+        run_extract(
+            GreenhouseAdapter(),
+            config(),
+            RUN_DATE,
+            store,
+            make_client(),
+            run_id="r1",
+            needs_detail=fetch_all,
+        )
 
     assert f"{PREFIX}_manifest.json" not in store.objects
 
@@ -204,7 +235,15 @@ def test_a_block_stops_the_run_without_a_manifest(
     rsps.get(detail_url("4012345008"), status=403)
 
     with pytest.raises(BlockedError):
-        run_extract(GreenhouseAdapter(), config(), RUN_DATE, store, make_client(), run_id="r1")
+        run_extract(
+            GreenhouseAdapter(),
+            config(),
+            RUN_DATE,
+            store,
+            make_client(),
+            run_id="r1",
+            needs_detail=fetch_all,
+        )
 
     assert f"{PREFIX}_manifest.json" not in store.objects
 

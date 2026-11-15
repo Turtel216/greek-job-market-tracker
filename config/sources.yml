@@ -19,8 +19,7 @@ sources:
 
   - name: kariera
     kind: job_board_html
-    # Disabled until the maintainer signs off the terms review below and
-    # fills in the two dates.
+    # Disabled until the maintainer signs off the terms review below.
     #
     # Review notes, 2026-10-25:
     # - robots.txt allows /jobs and disallows /admin/, /_next/data/, /api/

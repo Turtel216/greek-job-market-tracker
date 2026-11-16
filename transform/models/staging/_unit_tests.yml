@@ -151,6 +151,7 @@ unit_tests:
           - {raw_posting_id: 9, source: workable, source_job_id: "9", title_raw: "Join Hack The Box (Global)"}
           - {raw_posting_id: 10, source: workable, source_job_id: "10", title_raw: "Join our Innovative Team"}
           - {raw_posting_id: 11, source: workable, source_job_id: "11", title_raw: "Express Your Interest at XTM"}
+          - {raw_posting_id: 13, source: workable, source_job_id: "13", title_raw: "Expression of Interest - Global Talent Community XTM"}
           - {raw_posting_id: 12, source: workable, source_job_id: "12", title_raw: "Join our team as a Backend Developer"}
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')

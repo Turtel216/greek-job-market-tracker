@@ -15,3 +15,4 @@ thesis (opportunit(y|ies)|projects?|positions?)
 ^join (our|the) ([a-z]+ )*team$
 ^join (skroutz|hack the box)( global)?$
 express your interest
+expressions? of interest

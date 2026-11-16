@@ -253,6 +253,21 @@ unit_tests:
           - {raw_posting_id: 11, source: kariera, source_job_id: "11", title_raw: "Marketing Data Analyst"}
           # Payroll software is not plain HR
           - {raw_posting_id: 12, source: workable, source_job_id: "12", title_raw: "HR & Payroll Software Consultant"}
+          - {raw_posting_id: 13, source: workable, source_job_id: "13", title_raw: "AML/CFT Investigator"}
+          - {raw_posting_id: 14, source: workable, source_job_id: "14", title_raw: "Accounting and Tax Manager"}
+          - {raw_posting_id: 15, source: workable, source_job_id: "15", title_raw: "ISV Partnership Manager"}
+          - {raw_posting_id: 16, source: workable, source_job_id: "16", title_raw: "Partner Success Manager"}
+          - {raw_posting_id: 17, source: workable, source_job_id: "17", title_raw: "Business Operations Support Analyst"}
+          - {raw_posting_id: 18, source: workable, source_job_id: "18", title_raw: "Head Of Commercial Enablement"}
+          # Financial crime cases, not IT incidents, even in a Technology department
+          - {raw_posting_id: 19, source: workable, source_job_id: "19", title_raw: "Incident & Case Analyst", department_raw: "Technology"}
+          - {raw_posting_id: 20, source: workable, source_job_id: "20", title_raw: "Health applications R&D Manager fluent in English"}
+          - {raw_posting_id: 21, source: workable, source_job_id: "21", title_raw: "Energy Engineer (Design of Energy Software/ Energy Engineering)"}
+          - {raw_posting_id: 22, source: workable, source_job_id: "22", title_raw: "Συντηρητής Επαγγελματικού Κτιρίου / Ηλεκτρολόγος"}
+          - {raw_posting_id: 23, source: workable, source_job_id: "23", title_raw: "Designer"}
+          # Only a bare designer title is dropped
+          - {raw_posting_id: 24, source: skywalker, source_job_id: "24", title_raw: "WEB DEVELOPER - DESIGNER"}
+          - {raw_posting_id: 25, source: workable, source_job_id: "25", title_raw: "Senior UX Designer (Research & Prototyping)"}
       - input: ref('non_job_rules')
       - input: ref('abroad_countries')
       - input: ref('non_tech_rules')
@@ -262,6 +277,8 @@ unit_tests:
         - {raw_posting_id: 10, title: "Data Warehouse Team Lead"}
         - {raw_posting_id: 11, title: "Marketing Data Analyst"}
         - {raw_posting_id: 12, title: "HR & Payroll Software Consultant"}
+        - {raw_posting_id: 24, title: "WEB DEVELOPER - DESIGNER"}
+        - {raw_posting_id: 25, title: "Senior UX Designer (Research & Prototyping)"}
 
   - name: stg_postings_normalize_text
     description: >

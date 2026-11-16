@@ -9,7 +9,7 @@ customer (support|service|care)
 office (administration|administrators?|managers?)
 product (managers?|specialists?)
 project (managers?|coordinators?|administrators?)
-operations analysts?
+operations (support )?analysts?
 commissioning
 critical environment
 τεχνικ[α-ω]* εγκαταστασ[α-ω]* και συντηρησ[α-ω]* συστηματων
@@ -20,7 +20,7 @@ business development
 presales
 marketing
 bid (managers?|assistants?)
-customer success
+(customer|partner) success
 lawyers?
 paralegals?
 (legal|litigation) counsel
@@ -38,3 +38,14 @@ warehouse (staff|team lead)
 product owners?
 (revenue|operations) coordinators?
 drivers success
+partnerships?
+commercial
+account(ing|ants?)
+aml
+case analysts?
+risk management
+r d managers?
+energy engineers?
+ηλεκτρολογ[α-ω]*
+graphic designers?
+^designers?$

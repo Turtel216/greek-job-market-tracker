@@ -753,8 +753,15 @@ unit_tests:
           - {posting_key: p, title: "Product Engineer"}
           - {posting_key: q, title: "Forward Deployed AI Value Engineer"}
           - {posting_key: r, title: "System Integration & Workflow Specialist"}
-          - {posting_key: s, title: "Incident & Case Analyst"}
-          - {posting_key: t, title: "Senior Content Engineer"}
+          - {posting_key: s, title: "Senior Content Engineer, Labs"}
+          - {posting_key: t, title: "IT Operations Senior Manager - Athens & Helaklion, Crete"}
+          - {posting_key: u, title: "Service Delivery Manager"}
+          - {posting_key: v, title: "Service Management Support Officer, for international e-Government projects"}
+          - {posting_key: w, title: "HR & Payroll Software Consultant - ScanHRMS"}
+          - {posting_key: x, title: "Τεχνικός / Μηχανικός Υπολογιστών / Αυτοματισμών / συστημάτων Ασφαλείας"}
+          - {posting_key: y, title: "Traffic & GIS Analyst - Νέα Ερυθραία"}
+          - {posting_key: z, title: "Senior UX Designer (Research & Prototyping)"}
+          - {posting_key: aa, title: "UX/AX Specialist fluent in German"}
       - input: ref('city_aliases')
       - input: ref('company_suffixes')
       - input: ref('company_aliases')
@@ -784,8 +791,15 @@ unit_tests:
         - {posting_key: p, role_family: software, role_family_matched: true}
         - {posting_key: q, role_family: software, role_family_matched: true}
         - {posting_key: r, role_family: software, role_family_matched: true}
-        - {posting_key: s, role_family: other, role_family_matched: false}
-        - {posting_key: t, role_family: other, role_family_matched: false}
+        - {posting_key: s, role_family: software, role_family_matched: true}
+        - {posting_key: t, role_family: it_support, role_family_matched: true}
+        - {posting_key: u, role_family: it_support, role_family_matched: true}
+        - {posting_key: v, role_family: it_support, role_family_matched: true}
+        - {posting_key: w, role_family: it_support, role_family_matched: true}
+        - {posting_key: x, role_family: it_support, role_family_matched: true}
+        - {posting_key: y, role_family: data, role_family_matched: true}
+        - {posting_key: z, role_family: other, role_family_matched: false}
+        - {posting_key: aa, role_family: other, role_family_matched: false}
 
   - name: stg_postings_salary
     description: >

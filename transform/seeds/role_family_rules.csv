@@ -28,6 +28,7 @@ computer vision,data,100
 data governance,data,100
 business analysts?,data,100
 data loading,data,100
+gis,data,100
 (head|director|vp) of (ai|artificial intelligence),data,100
 database administrators?,data,100
 dba,data,100
@@ -99,18 +100,20 @@ elixir,backend,20
 go (developers?|engineers?),backend,20
 net (software )?(developers?|engineers?),backend,20
 pl ?sql,backend,20
-(it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset|consultants?|maintenance),it_support,15
+(it|ict|ιτ) (support|helpdesk|help desk|technicians?|administrators?|admins?|assistants?|managers?|officers?|applications?|asset|consultants?|maintenance|operations),it_support,15
 (it|ict|ιτ) services? (managers?|operations),it_support,15
 (technical|tech|software|applications?|desktop|onsite|on site|pms|end user|hardware) support,it_support,15
 ^(senior|junior) (it|ιτ)$,it_support,15
 help ?desk,it_support,15
 service ?desk,it_support,15
 itsm,it_support,15
+service (delivery|management),it_support,15
 sharepoint,it_support,15
 end ?point,it_support,15
 vdi,it_support,15
 applications? (specialists?|administrators?|delivery),it_support,15
 τεχνικ[α-ω]* (πληροφορικ[α-ω]*|υπολογιστ[α-ω]*|η υ),it_support,15
+μηχανικ[α-ω]* υπολογιστων,it_support,15
 υποστηριξ[α-ω]* χρηστων,it_support,15
 erp,it_support,15
 sap,it_support,15
@@ -122,3 +125,4 @@ dynamics 365,it_support,15
 business central,it_support,15
 navision,it_support,15
 odoo,it_support,15
+software consultants?,it_support,15
